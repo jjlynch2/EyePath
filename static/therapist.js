@@ -361,6 +361,7 @@ const stream = connectState("therapist", (s) => {
   renderLaptop();
   $("#setCount").textContent = `Set ${s.sets}`;
   $("#setCount").hidden = !s.sets;
+  $("#appVersion").textContent = s.appVersion ? `EyePath ${s.appVersion}` : "";
   const key = JSON.stringify(s.presets.map((x) => x.name));
   if (key !== presetsKey) { presetsKey = key; renderPresets(); }
 }, (ok) => { connected = ok; renderStatus(); }, pageId);

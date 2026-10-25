@@ -13,6 +13,7 @@ const silent = () => offline || state.screen === "code";
 // ---- connection
 connectState("client", (s) => {
   state = s;
+  $("appVersion").textContent = s.appVersion ? `EyePath ${s.appVersion}` : "";
   renderScreen();
   maybeSoundCheck();
 }, (ok) => {

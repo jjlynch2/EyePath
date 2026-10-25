@@ -20,6 +20,7 @@ const os = require("os");
 const path = require("path");
 const { performance } = require("perf_hooks");
 const { makeQr } = require("./qr");
+const APP_VERSION = require("./package.json").version;   // shown small on the QR screen and the remote
 
 const STATIC = path.join(__dirname, "static");
 
@@ -239,7 +240,7 @@ class Session {
 
   snapshot() {
     return {
-      params: this.params, run: this.run, lastRun: this.lastRun || null, presets: this.presets,
+      appVersion: APP_VERSION, params: this.params, run: this.run, lastRun: this.lastRun || null, presets: this.presets,
       clients: this.count("client"), screen: this.screen,
       sets: this.setCount, laptop: this.extraState ? this.extraState() : {}, soundCheck: this.soundCheck || null,
     };

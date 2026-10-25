@@ -69,6 +69,8 @@ body.client .code-screen, body.client .code-screen * { cursor: auto; }
 .code-text .big-mono { margin-bottom: 10px; }
 .keys-box { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--bg); }
 .keys-title { margin: 0 0 8px; color: var(--muted); font-size: .85rem; }
+.app-version { margin: 14px 0 0; color: var(--muted); font-size: .8rem; opacity: .75; }
+.panel > .app-version { text-align: center; margin: 4px 0 0; }
 .keys-grid { display: grid; grid-template-columns: max-content 1fr max-content 1fr; gap: 8px 12px; align-items: center; margin: 0; }
 .keys-grid dt { margin: 0; text-align: right; white-space: nowrap; }
 .keys-grid dd { margin: 0; font-size: .9rem; }
@@ -125,9 +127,13 @@ body.therapist { height: auto; min-height: 100%; }
   max-width: 1100px; margin: 0 auto; padding: 12px 16px 40px;
   display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr);
 }
+/* The cards: one column on a phone, in each card's "order"; on a wider screen two
+   columns that each stack their own cards, so there are no gaps between rows. */
+.cols { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
+.col { display: contents; }
 @media (min-width: 860px) {
-  .panel { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-  .live { grid-column: 1 / -1; }
+  .cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .col { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr); }
 }
 
 .live {
