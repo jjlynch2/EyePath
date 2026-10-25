@@ -178,7 +178,7 @@
         <button data-value="jump">Jump</button>
       </div>
       <p class="help">Smooth slows down at each side; Steady keeps one speed; Jump snaps from side to side
-        (quick "saccade" eye movements, used in some memory research).</p>
+        (quick "saccade" eye movements, based on Christman et al., 2003).</p>
     </div>
     <label class="field"><span>Pause at each edge <b id="pauseVal"></b></span>
       <input type="range" min="0" max="1000" step="10" data-param="pause" data-num></label>
@@ -249,6 +249,14 @@
   </details>
 
 </main>
+
+<!-- Shown after Quit, in case the browser won't let the page close its own tab. -->
+<div id="closedScreen" class="closed-screen" hidden>
+  <div class="card">
+    <h2>EyePath is closed</h2>
+    <p class="help">It has quit on the computer. You can close this tab.</p>
+  </div>
+</div>
 
 <script src="/static/common.js"></script>
 <script src="/static/therapist.js"></script>

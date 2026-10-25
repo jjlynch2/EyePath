@@ -375,8 +375,13 @@ $("#soundCheckBtn").addEventListener("click", () => {
   b.textContent = "Playing: left… right…";
   setTimeout(() => { b.textContent = "Test sound: left, then right"; }, 1800);
 });
-$("#quitBtn").addEventListener("click", () => {
-  if (confirm("Quit EyePath")) sendCommand({ type: "quit" });
+$("#quitBtn").addEventListener("click", async () => {
+  if (!confirm("Quit EyePath")) return;
+  if (!(await sendCommand({ type: "quit" }).catch(() => false))) return;
+  $("#closedScreen").hidden = false;
+  // Browsers only let a page close its own tab in some cases (e.g. a tab opened
+  // just for the remote by scanning the QR code); otherwise the message stays.
+  window.close();
 });
 
 let screensKey = "";

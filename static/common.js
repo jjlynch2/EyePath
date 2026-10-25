@@ -215,6 +215,9 @@ const Dual = (() => {
     if (!s) {
       const random = seeded(dual.seed);
       s = { random, list: [], nextAt: 1200 + random() * (hi - lo) };
+      // Keep just the newest two (the current set and the last one, which the remote's
+      // summary may still use); a page left open all day doesn't keep every set.
+      if (sequences.size >= 2) sequences.delete(sequences.keys().next().value);
       sequences.set(key, s);
     }
     while (s.nextAt <= upto) {

@@ -137,9 +137,17 @@ if (!app.requestSingleInstanceLock()) {
       app.quit();
     });
     // Keep the remote's "Show on" in step with where the window is.
-    for (const ev of ["enter-full-screen", "leave-full-screen", "moved"]) {
+    for (const ev of ["enter-full-screen", "leave-full-screen"]) {
       win.on(ev, () => { if (win === lightWindow) refreshDisplays(); });
     }
+    // Dragging the window (after F) sends many "moved" events on a Mac: only
+    // update the remote when it ends up on a different screen.
+    let shownOn = display.id;
+    win.on("moved", () => {
+      if (win !== lightWindow) return;
+      const id = screen.getDisplayMatching(win.getBounds()).id;
+      if (id !== shownOn) { shownOn = id; refreshDisplays(); }
+    });
     return win;
   }
 

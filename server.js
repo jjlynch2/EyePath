@@ -31,8 +31,8 @@ const DEFAULT_PARAMS = {
   // motion
   pattern: "horizontal",  // the track; see CHOICES. Changes apply from the next set.
   track: false,           // draw the track faintly behind the ball
-  speed: 2.0,             // sweeps per second (one sweep = one side to the other); 2 sweeps/s = 1 Hz,
-                          // the usual speed in EMDR research (Hz there = full back-and-forths per second)
+  speed: 2.0,             // sweeps per second (one sweep = one side to the other); 2 sweeps/s = 1 Hz
+                          // (Hz = full back-and-forths per second)
   pause: 80,              // ms the light rests at each edge
   easing: "sine",         // "sine" (slows at the edges), "linear" (steady) or "jump" (snaps side to side)
   travel: 90,             // % of screen width the light travels
@@ -65,7 +65,7 @@ const DEFAULT_PARAMS = {
 // They are starting points, not clinical recommendations.
 const STARTER_PRESETS = [
   ["Standard", {}],                                              // 1 Hz
-  ["Fast · 1.2 Hz", { speed: 2.4, passes: 36, pause: 50 }],     // the speed that did best in lab studies
+  ["Fast · 1.2 Hz", { speed: 2.4, passes: 36, pause: 50 }],     // 1.2 Hz: from van Veen et al. (2015)
   ["Slow & short", { speed: 1.0, passes: 8, pause: 150 }],     // 0.5 Hz
   ["Sound only", { visual: false, sound: "tone" }],
   ["Gentle star", { shape: "star", color: "#ffd23f", speed: 1.6, passes: 16, size: 8 }],  // 0.8 Hz
@@ -379,6 +379,9 @@ class Session {
     };
     this.run.target = this.targetFor(this.run, moveFrac / 2, t0);
     this.setCount++;
+    // Started from the computer's keys while the code shows and no phone is connected
+    // (e.g. to try the light): show the code again when the set ends.
+    if (this.screen === "code" && this.count("therapist") === 0) this.codeWhenIdle = true;
     this.screen = "light";
     this.codeHidesOnConnect = false;
     this.scheduleEnd();
@@ -462,7 +465,10 @@ class Session {
 // signing secret, so no device stays connected from an earlier session.
 class Auth {
   static COOKIE = "eyepath_session";
-  static MAX_AGE = 24 * 3600;      // a session never outlives the app anyway
+  // How long the phone's browser keeps the cookie. The app accepts it for as long as
+  // it keeps running (a clinic may leave it on for days); quitting ends it, because
+  // the next launch has a new signing secret.
+  static MAX_AGE = 30 * 24 * 3600;
   static CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";   // no 0/O, 1/I/L
 
   constructor() {
@@ -495,8 +501,7 @@ class Auth {
       const [name, ...rest] = part.trim().split("=");
       if (name !== Auth.COOKIE) continue;
       const [issued, sig] = rest.join("=").split(".");
-      if (/^\d+$/.test(issued || "") && sig && safeEqual(sig, this.sign(issued)) &&
-          Date.now() / 1000 - Number(issued) < Auth.MAX_AGE) return true;
+      if (/^\d+$/.test(issued || "") && sig && safeEqual(sig, this.sign(issued))) return true;
     }
     return false;
   }

@@ -52,6 +52,7 @@ function renderCode(info) {
   $("quitKey").textContent = info.system === "Darwin" ? "⌘Q" : "Ctrl+Q";
   const onNetwork = /^\d+\.\d+\.\d+\.\d+$/.test(info.address);
   $("addr").textContent = onNetwork ? `${info.address}:${info.port}` : "Not connected to a network";
+  $("qr").hidden = !onNetwork;                     // a QR code would lead nowhere without a network
   $("code").textContent = `${info.code.slice(0, 3)}-${info.code.slice(3)}`;
   $("prefix").textContent = onNetwork ? info.address.split(".").slice(0, 3).join(".") + "." : "the same numbers";
   const key = `${info.address}|${info.pairKey}`;

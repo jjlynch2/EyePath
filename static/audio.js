@@ -55,7 +55,8 @@ class BilateralAudio {
     return ctx.currentTime + (perfMs - performance.now()) / 1000 - latency;
   }
 
-  playTouch(k, at, params, pattern) {
+  // Touch k of the current set, reached at server time t, sounding at audio time at.
+  playTouch(k, at, params, pattern, t) {
     const ctx = this.ctx;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -83,7 +84,7 @@ class BilateralAudio {
     osc.connect(gain).connect(pan).connect(this.master);
     osc.start(at);
     osc.stop(end);
-    const entry = { k, at, osc };
+    const entry = { run: this.runId, k, t, at, osc };
     this.pending.push(entry);
     osc.onended = () => { this.pending = this.pending.filter((e) => e !== entry); };
   }
@@ -110,12 +111,16 @@ class BilateralAudio {
     return { toneLen, gap };
   }
 
-  cancelFrom(k) {
+  // Stop queued sounds that haven't started yet and match `which`.
+  cancelWhere(which) {
     const now = this.ctx.currentTime;
     for (const e of this.pending) {
-      if (e.k >= k && e.at > now) { try { e.osc.stop(); } catch (err) { /* already stopped */ } }
+      if (e.at > now && which(e)) { try { e.osc.stop(); } catch (err) { /* already stopped */ } }
     }
   }
+
+  // The current set's touches from k on.
+  cancelFrom(k) { this.cancelWhere((e) => e.run === this.runId && e.k >= k); }
 
   // Call often (every frame and from a timer). Schedules what is coming up.
   // silent: play nothing (the code screen is showing or the app is unreachable).
@@ -138,7 +143,14 @@ class BilateralAudio {
 
     const touchSounds = params.sound === "click" || params.sound === "tone";
     if (run.status !== "running" || silent) {
-      if (this.runId) this.cancelFrom(0);
+      if (silent) {
+        this.cancelWhere(() => true);                    // code screen or app unreachable: nothing plays
+      } else if (this.runId) {
+        // The set ended. Touches that happened keep their sound (with a sound delay it can
+        // still be waiting to play); touches that now never happen (after Stop now) don't.
+        const cutoff = run.status === "stopping" ? run.stopT : now;
+        this.cancelWhere((e) => e.t > cutoff);
+      }
       this.runId = null;
     } else {
       // When speed, pause or movement change mid-set, touches still to come move
@@ -146,7 +158,10 @@ class BilateralAudio {
       const timing = `${run.anchorT}|${run.anchorPhase}|${run.rate}|${run.moveFrac}|${run.easing}`;
       if (run.id !== this.runId || timing !== this.timing) {
         const sameSet = run.id === this.runId;
-        if (!sameSet && this.runId) this.cancelFrom(0);   // a new set
+        if (!sameSet && this.runId) {                     // a new set straight after another
+          const old = this.runId;
+          this.cancelWhere((e) => e.run === old && e.t > now);
+        }
         this.runId = run.id;
         this.timing = timing;
         // Next touch from now; touches already past keep their sound (it may still be
@@ -156,18 +171,19 @@ class BilateralAudio {
         // A sound already playing (possible with a negative sound delay) isn't queued twice.
         if (sameSet) {
           for (const e of this.pending) {
-            if (e.at <= this.ctx.currentTime) this.nextTouch = Math.max(this.nextTouch, e.k + 1);
+            if (e.run === this.runId && e.at <= this.ctx.currentTime) this.nextTouch = Math.max(this.nextTouch, e.k + 1);
           }
         }
         this.cancelFrom(this.nextTouch);
       }
       const last = run.target == null ? Infinity : run.target;   // touches 0..target-1
       this.cancelFrom(last);
-      const horizon = now + 200;
+      // Queue 200 ms ahead, plus enough for a negative sound delay (sound earlier than the light).
+      const horizon = now + 200 + Math.max(0, -offset);
       while (this.nextTouch < last) {
         const t = Motion.timeAtPhase(run, this.nextTouch + run.moveFrac);
         if (t > horizon) break;
-        if (touchSounds && t >= now - 15) this.playTouch(this.nextTouch, this.audioTime(t, offset), params, run.pattern);
+        if (touchSounds && t >= now - 15) this.playTouch(this.nextTouch, this.audioTime(t, offset), params, run.pattern, t);
         this.nextTouch++;
       }
       if (!touchSounds) this.cancelFrom(0);

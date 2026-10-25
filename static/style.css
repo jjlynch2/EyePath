@@ -91,7 +91,9 @@ body.client .code-screen, body.client .code-screen * { cursor: auto; }
 .status-dot.bad { opacity: .8; }
 
 /* ---------------------------------------------------------------- therapist */
-body.therapist { min-height: 100%; }
+/* Grow with the content (the shared rule above fixes body at one screen tall), or the
+   top bar, which can only stay pinned inside body, scrolls away near the end. */
+body.therapist { height: auto; min-height: 100%; }
 .topbar {
   position: sticky; top: 0; z-index: 5;
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
@@ -171,6 +173,12 @@ body.therapist { min-height: 100%; }
 @media (min-width: 860px) { .btn-stopnow { min-height: 44px; } }
 
 .card { background: var(--card); border-radius: var(--radius); padding: 14px; min-width: 0; }
+.closed-screen {
+  position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px;
+  background: var(--bg); text-align: center;
+}
+.closed-screen .card { max-width: 22rem; padding: 24px; }
+.closed-screen .card h2 { font-size: 1.25rem; margin-bottom: 8px; }
 .card h2 { font-size: 1rem; margin: 0; font-weight: 600; }
 .card.small h2 { margin-bottom: 4px; }
 details.card > summary {

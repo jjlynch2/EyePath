@@ -2,7 +2,8 @@
 
 A free, open-source light bar for EMDR therapists, running on the therapist's laptop. A ball moves along a
 track on the client's screen, with bilateral sound in headphones, and the
-therapist controls it from their phone.
+therapist controls it from their phone. The moving light is for the eye movements used in EMDR
+(Shapiro, 1989; see [References](#references)).
 
 Everything runs on the laptop and the local Wi-Fi. No internet, accounts or
 cloud service. The app stores nothing about clients beyond what a therapist chooses to put in a
@@ -79,10 +80,10 @@ running just reopens the screen.
   **Fun shapes** for children: dog, cat, butterfly, fish, turtle, unicorn, rocket, gold star, rainbow
   and ball. Animals turn to face the way they're moving.
 - **Speed** is shown in sweeps per second (one side to the other) and in Hz (full back-and-forths per
-  second). The default is 1 Hz; lab studies found 1.2 Hz worked better than
-  0.8 Hz (van Veen et al., 2015). Speed and edge pause can change during a set without the ball jumping.
-- **Movement**: Smooth (slows at each side), Steady, or Jump (snaps from side to side, like the "saccade"
-  eye movements that improved memory retrieval in lab studies by Christman and colleagues).
+  second). The default is 1 Hz. The Fast · 1.2 Hz preset is based on van Veen et al. (2015). Speed and
+  edge pause can change during a set without the ball jumping.
+- **Movement**: Smooth (slows at each side), Steady, or Jump (snaps from side to side; based on the
+  horizontal saccades in Christman et al., 2003).
 - **Sound**: click or tone on each side, or a sweep that pans with the ball. Use headphones. For Bluetooth
   headphones, raise **Sound delay** (usually 150–250 ms) until the sound lines up with the light.
   **Test sound** plays a tone in the left ear, then the right, with "Left" / "Right" shown on that side of
@@ -92,10 +93,8 @@ running just reopens the screen.
   starter presets leave them as they are.
 - **Dual attention** (optional): colour flashes, numbers or letters appear on the light at random
   moments, easy, medium or hard. The client counts the flashes or says each number or letter aloud;
-  the answers show under the counter on the remote. Lab studies find that extra working-memory load
-  can strengthen the effect of the eye movements, with harder tasks working better (Littel & van Schie,
-  2019), and EMDR 2.0, which adds such tasks, did as well as standard EMDR with fewer sets in a
-  non-clinical trial (Matthijssen et al., 2021).
+  the answers show under the counter on the remote. Based on Littel & van Schie (2019) and
+  Matthijssen et al. (2021).
 - **Set counter**: "Set 3" next to the name at the top of the remote counts the sets started since the app
   opened. It isn't saved and starts again at zero next time.
 - **Presets** save the current settings. A fresh install comes with five starter
@@ -146,6 +145,24 @@ npm run dist         # result in dist/
 ```
 
 The version number comes from `package.json`.
+
+## References
+
+- Christman, S. D., Garvey, K. J., Propper, R. E., & Phaneuf, K. A. (2003). Bilateral eye movements
+  enhance the retrieval of episodic memories. *Neuropsychology, 17*(2), 221–229.
+  https://doi.org/10.1037/0894-4105.17.2.221
+- Littel, M., & van Schie, K. (2019). No evidence for the inverted U-curve: More demanding dual tasks cause
+  stronger aversive memory degradation. *Journal of Behavior Therapy and Experimental Psychiatry, 65*,
+  101484. https://doi.org/10.1016/j.jbtep.2019.101484
+- Matthijssen, S. J. M. A., Brouwers, T. C., van Roozendaal, C., Vuister, T. C. M., & de Jongh, A. (2021).
+  The effect of EMDR versus EMDR 2.0 on emotionality and vividness of aversive memories in a non-clinical
+  sample. *European Journal of Psychotraumatology, 12*(1), 1956793.
+  https://doi.org/10.1080/20008198.2021.1956793
+- Shapiro, F. (1989). Efficacy of the eye movement desensitization procedure in the treatment of traumatic
+  memories. *Journal of Traumatic Stress, 2*(2), 199–223. https://doi.org/10.1002/jts.2490020207
+- van Veen, S. C., et al. (2015). Speed matters: Relationship between speed of eye movements and
+  modification of aversive autobiographical memories. *Frontiers in Psychiatry, 6*, 45.
+  https://doi.org/10.3389/fpsyt.2015.00045
 
 ## Disclaimer
 

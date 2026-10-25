@@ -152,6 +152,9 @@
   /* research + disclaimer */
   .refs li { margin-bottom: 10px; color: var(--muted); }
   .refs b { color: var(--text); font-weight: 650; }
+  .refs-list { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 0 0 24px; padding-left: 22px; }
+  .refs-list li { margin-bottom: 8px; }
+  .refs-list a { word-break: break-all; }
   .note { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 18px 20px; color: var(--muted); }
   .note b { color: var(--text); }
 
@@ -344,16 +347,31 @@
 
   <section id="research">
     <div class="wrap">
-      <h2>Research behind the settings</h2>
+      <h2>Where the features come from</h2>
       <ul class="refs">
-        <li><b>Speed.</b> The default is 1 Hz (two sweeps a second). In lab studies, 1.2 Hz eye movements
-          worked better than 0.8 Hz (van Veen et al., 2015).</li>
-        <li><b>Jump movement.</b> Horizontal saccades (quick jumps) improved memory retrieval in lab studies
-          by Christman and colleagues.</li>
-        <li><b>Dual attention.</b> Extra working-memory load can strengthen the effect of the eye movements,
-          with harder tasks working better (Littel &amp; van Schie, 2019). EMDR 2.0, which adds such tasks, did
-          as well as standard EMDR with fewer sets in a non-clinical trial (Matthijssen et al., 2021).</li>
+        <li><b>The moving light (eye movements, as in EMDR):</b> Shapiro (1989).</li>
+        <li><b>Fast · 1.2 Hz preset:</b> van Veen et al. (2015).</li>
+        <li><b>Jump movement:</b> Christman et al. (2003).</li>
+        <li><b>Dual attention:</b> Littel &amp; van Schie (2019); Matthijssen et al. (2021).</li>
       </ul>
+      <ol class="refs-list">
+        <li>Christman, S. D., Garvey, K. J., Propper, R. E., &amp; Phaneuf, K. A. (2003). Bilateral eye movements
+          enhance the retrieval of episodic memories. <i>Neuropsychology, 17</i>(2), 221–229.
+          <a href="https://doi.org/10.1037/0894-4105.17.2.221">doi:10.1037/0894-4105.17.2.221</a></li>
+        <li>Littel, M., &amp; van Schie, K. (2019). No evidence for the inverted U-curve: More demanding dual tasks
+          cause stronger aversive memory degradation. <i>Journal of Behavior Therapy and Experimental Psychiatry,
+          65</i>, 101484. <a href="https://doi.org/10.1016/j.jbtep.2019.101484">doi:10.1016/j.jbtep.2019.101484</a></li>
+        <li>Matthijssen, S. J. M. A., Brouwers, T. C., van Roozendaal, C., Vuister, T. C. M., &amp; de Jongh, A. (2021).
+          The effect of EMDR versus EMDR 2.0 on emotionality and vividness of aversive memories in a non-clinical
+          sample. <i>European Journal of Psychotraumatology, 12</i>(1), 1956793.
+          <a href="https://doi.org/10.1080/20008198.2021.1956793">doi:10.1080/20008198.2021.1956793</a></li>
+        <li>Shapiro, F. (1989). Efficacy of the eye movement desensitization procedure in the treatment of
+          traumatic memories. <i>Journal of Traumatic Stress, 2</i>(2), 199–223.
+          <a href="https://doi.org/10.1002/jts.2490020207">doi:10.1002/jts.2490020207</a></li>
+        <li>van Veen, S. C., et al. (2015). Speed matters: Relationship between speed of eye movements and
+          modification of aversive autobiographical memories. <i>Frontiers in Psychiatry, 6</i>, 45.
+          <a href="https://doi.org/10.3389/fpsyt.2015.00045">doi:10.3389/fpsyt.2015.00045</a></li>
+      </ol>
       <div class="note"><b>For trained clinicians.</b> EyePath is a tool for trained clinicians, not a treatment
         in itself. It doesn't diagnose or treat anything on its own and is meant to be used only as part of
         therapy with a qualified, EMDR-trained therapist. It is provided as is, without any warranty.</div>
