@@ -183,6 +183,8 @@ MIT. See [LICENSE](LICENSE). The QR code generator credits Project Nayuki's
 MIT-licensed library; see the note at the top of `qr.js`. The fun-shape pictures are
 Google's [Noto Emoji](https://github.com/googlefonts/noto-emoji) (Apache License 2.0); see `static/emoji/`.
 
+EyePath was built with help from an AI coding assistant.
+
 ## Files
 
 - `main.js`: the Electron app (window, keep-awake, one copy at a time, quit)
