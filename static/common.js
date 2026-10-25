@@ -184,7 +184,7 @@ const Motion = (() => {
     return { ...restPoint(params.pattern), opacity: rest ? 1 : 0, running: false, touches: 0, target: null, ending: false };
   }
 
-  return { ease, clamp01, phaseAt, timeAtPhase, sweepAt, point, touchSide, frame };
+  return { ease, clamp01, phaseAt, timeAtPhase, sweepAt, point, touchSide, frame, END_FADE, STOP_NOW };
 })();
 
 // ------------------------------------------------------------------ dual attention

@@ -31,9 +31,9 @@ const DEFAULT_PARAMS = {
   // motion
   pattern: "horizontal",  // the track; see CHOICES. Changes apply from the next set.
   track: false,           // draw the track faintly behind the ball
-  speed: 2.0,             // sweeps per second (one sweep = one side to the other); 2 sweeps/s = 1 Hz
-                          // (Hz = full back-and-forths per second)
-  pause: 80,              // ms the light rests at each edge
+  speed: 2.0,             // sweeps per second, pause included (one sweep = one side to the other);
+                          // 2 sweeps/s = 1 Hz (Hz = full back-and-forths per second)
+  pause: 80,              // ms the light rests at each edge, taken from the sweep's time (see timing())
   easing: "sine",         // "sine" (slows at the edges), "linear" (steady) or "jump" (snaps side to side)
   travel: 90,             // % of screen width the light travels
   height: 0,              // track centre, % of screen height above (+) or below (-) the middle
@@ -114,10 +114,15 @@ const invEase = (name, p) => {
 };
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
+// Speed sets the rhythm: one sweep, including its pause at the edge, takes 1/speed
+// seconds, so 2 sweeps/s is exactly 1 Hz (one left-right-left cycle per second) whatever
+// the pause. The pause comes out of the sweep's time, up to half of it, so the light
+// always has time to move.
+const MAX_PAUSE_SHARE = 0.5;
 function timing(params) {
-  const move = 1 / params.speed;
-  const period = move + params.pause / 1000;
-  return { rate: 1 / period, moveFrac: move / period };
+  const period = 1 / params.speed;
+  const pause = Math.min(params.pause / 1000, period * MAX_PAUSE_SHARE);
+  return { rate: params.speed, moveFrac: (period - pause) / period };
 }
 
 const phaseAt = (run, t) =>
@@ -829,7 +834,12 @@ async function createServer({ dataDir, port = 8765, portTries = 20, verbose = fa
   return app;
 }
 
-module.exports = { createServer, lanAddresses };
+module.exports = {
+  createServer, lanAddresses,
+  // For the tests in test/ only.
+  internals: { timing, ease, phaseAt, timeAtPhase, remapPhase, cleanParams, starterPresets, Session,
+               DEFAULT_PARAMS, END_FADE_MS, STOP_NOW_MS },
+};
 
 // ---------------------------------------------------------------- run on its own
 if (require.main === module) {

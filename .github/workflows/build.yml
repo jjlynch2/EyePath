@@ -28,6 +28,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm test                 # no installers if the timing and motion tests fail
       - run: npx electron-builder ${{ matrix.target }} --publish never
       - uses: actions/upload-artifact@v7
         with:

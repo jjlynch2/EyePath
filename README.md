@@ -80,8 +80,9 @@ running just reopens the screen.
   **Fun shapes** for children: dog, cat, butterfly, fish, turtle, unicorn, rocket, gold star, rainbow
   and ball. Animals turn to face the way they're moving.
 - **Speed** is shown in sweeps per second (one side to the other) and in Hz (full back-and-forths per
-  second). The default is 1 Hz. The Fast · 1.2 Hz preset is based on van Veen et al. (2015). Speed and
-  edge pause can change during a set without the ball jumping.
+  second). The default is 1 Hz. The Fast · 1.2 Hz preset is based on van Veen et al. (2015). The edge
+  pause is part of each sweep's time, so the speed shown is the real rhythm. Speed and edge pause can
+  change during a set without the ball jumping.
 - **Movement**: Smooth (slows at each side), Steady, or Jump (snaps from side to side; based on the
   horizontal saccades in Christman et al., 2003).
 - **Sound**: click or tone on each side, or a sweep that pans with the ball. Use headphones. For Bluetooth
@@ -123,6 +124,7 @@ The app is built with [Electron](https://www.electronjs.org/). You need
 npm install          # once
 npm start            # run the app (Electron window, full screen)
 npm run server       # just the server, no window: open http://localhost:8765/client in a browser
+npm test             # timing, motion, settings and dual-attention tests (also run before every build)
 ```
 
 Settings and presets are saved in `data/` when run from
@@ -160,7 +162,8 @@ The version number comes from `package.json`.
   https://doi.org/10.1080/20008198.2021.1956793
 - Shapiro, F. (1989). Efficacy of the eye movement desensitization procedure in the treatment of traumatic
   memories. *Journal of Traumatic Stress, 2*(2), 199–223. https://doi.org/10.1002/jts.2490020207
-- van Veen, S. C., et al. (2015). Speed matters: Relationship between speed of eye movements and
+- van Veen, S. C., van Schie, K., Wijngaards-de Meij, L. D. N. V., Littel, M., Engelhard, I. M., &
+  van den Hout, M. A. (2015). Speed matters: Relationship between speed of eye movements and
   modification of aversive autobiographical memories. *Frontiers in Psychiatry, 6*, 45.
   https://doi.org/10.3389/fpsyt.2015.00045
 
@@ -190,3 +193,4 @@ Google's [Noto Emoji](https://github.com/googlefonts/noto-emoji) (Apache License
 - `static/audio.js`: bilateral sound
 - `static/client.*` (laptop screen, with the QR code), `static/therapist.*` (remote), `static/login.html`
 - `docs/`: the website (served by GitHub Pages from this folder) and the demo GIFs and screenshots in `docs/media/`
+- `test/`: automated tests (`npm test`)
