@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#16213a"/><stop offset="1" stop-color="#0a0f1c"/>
+  </linearGradient>
+  <radialGradient id="ball" cx="45%" cy="40%" r="60%">
+    <stop offset="0" stop-color="#ffffff"/><stop offset="0.35" stop-color="#bfe0ff"/><stop offset="1" stop-color="#4da3ff"/>
+  </radialGradient>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#4da3ff" stop-opacity="0.75"/><stop offset="1" stop-color="#4da3ff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="sclera" cx="50%" cy="45%" r="60%">
+    <stop offset="0" stop-color="#22324f"/><stop offset="1" stop-color="#121b2e"/>
+  </radialGradient>
+  <clipPath id="eyeClip"><path d="M215 512 Q512 222 809 512 Q512 802 215 512 Z"/></clipPath>
+</defs><rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/><path d="M215 512 Q512 222 809 512 Q512 802 215 512 Z" fill="url(#sclera)"/><circle cx="610" cy="512" r="259.6" fill="url(#glow)"/><circle cx="610" cy="512" r="118" fill="url(#ball)"/><path d="M215 512 Q512 222 809 512 Q512 802 215 512 Z" fill="none" stroke="#e6f2ff" stroke-width="30" stroke-linejoin="round"/></svg>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EyePath Connect</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body>
+<div class="center">
+  <div class="login">
+    <h1>Connect to EyePath</h1>
+    <p id="expired" class="err" hidden>That QR code is out of date. Scan the one on the client screen now.</p>
+    <p id="err" class="err" hidden>That code didn't match. Check the code on the client screen and try again.</p>
+    <p class="help">Enter the code shown on the client screen, or scan its QR code.</p>
+    <form method="post" action="/login">
+      <input name="code" placeholder="Code, e.g. K7P-4QD" autocomplete="off" autocapitalize="characters"
+             spellcheck="false" autofocus required>
+      <input type="hidden" name="next" id="next">
+      <button type="submit">Connect</button>
+    </form>
+  </div>
+</div>
+<script>
+  const q = new URLSearchParams(location.search);
+  document.getElementById("next").value = q.get("next") || "/therapist";
+  document.getElementById("err").hidden = !q.has("bad");
+  document.getElementById("expired").hidden = !q.has("expired");
+</script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EyePath: a free, open-source EMDR light bar</title>
+<meta name="description" content="EyePath is a free, open-source EMDR light bar for Windows and Mac. The client's screen shows a smoothly moving light with bilateral sound; the therapist controls it from their phone. No accounts and no subscription.">
+<link rel="canonical" href="https://jjlynch2.github.io/EyePath/">
+<link rel="icon" href="media/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="media/apple-touch-icon.png">
+<meta name="theme-color" content="#0d1017">
+<meta property="og:type" content="website">
+<meta property="og:title" content="EyePath: a free, open-source EMDR light bar">
+<meta property="og:description" content="The client's screen shows the light with bilateral sound. Your phone is the remote. Free for Windows and Mac, no accounts.">
+<meta property="og:url" content="https://jjlynch2.github.io/EyePath/">
+<meta property="og:image" content="https://jjlynch2.github.io/EyePath/media/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "EyePath",
+  "description": "A free, open-source EMDR light bar. The client's screen shows a moving light with bilateral sound; the therapist controls it from their phone.",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "Windows, macOS",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "license": "https://opensource.org/licenses/MIT",
+  "url": "https://jjlynch2.github.io/EyePath/",
+  "downloadUrl": "https://github.com/jjlynch2/EyePath/releases/latest"
+}
+</script>
+<style>
+  :root {
+    --bg: #0d1017;
+    --surface: #151a23;
+    --surface-2: #1b212c;
+    --line: #262e3b;
+    --text: #e8ebef;
+    --muted: #9ba7b9;
+    --accent: #4da3ff;
+    --accent-ink: #06121f;
+    --go: #2fb36f;
+    --radius: 16px;
+    --wrap: 1080px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  img { max-width: 100%; height: auto; display: block; }
+  .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 20px; }
+
+  /* top bar */
+  .top { border-bottom: 1px solid var(--line); }
+  .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 700; font-size: 19px; }
+  .brand img { width: 30px; height: 30px; border-radius: 8px; }
+  .top nav { display: flex; gap: 22px; font-size: 15px; }
+  .top nav a { color: var(--muted); text-decoration: none; }
+  .top nav a:hover { color: var(--text); }
+  @media (max-width: 640px) { .top nav .opt { display: none; } }
+
+  /* hero */
+  .hero { text-align: center; padding-top: 64px; padding-bottom: 28px; }   /* keeps .wrap's side gutters */
+  .hero h1 { font-size: clamp(32px, 5.4vw, 54px); line-height: 1.12; margin: 0 auto 18px; max-width: 16em; letter-spacing: -0.02em; }
+  .hero .lede { font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); max-width: 36em; margin: 0 auto 30px; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 12px;
+    font-weight: 650; font-size: 16px; text-decoration: none; border: 1px solid var(--line);
+    background: var(--surface-2); color: var(--text);
+  }
+  .btn:hover { border-color: #3a4558; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn svg { width: 18px; height: 18px; flex: none; }
+  .fine { color: var(--muted); font-size: 14px; margin-top: 14px; }
+  .share {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; padding: 7px 14px; border-radius: 10px;
+    background: none; border: 1px solid transparent; color: var(--muted); font: inherit; font-size: 15px; cursor: pointer;
+  }
+  .share:hover { color: var(--text); border-color: var(--line); background: var(--surface); }
+  .share svg { width: 17px; height: 17px; }
+  footer .share { margin: 0 0 0 -14px; }
+  .demo { margin: 40px auto 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); }
+
+  /* sections */
+  section { padding: 64px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: clamp(26px, 3.6vw, 34px); line-height: 1.2; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .intro { color: var(--muted); max-width: 40em; margin: 0 0 36px; }
+  h3 { font-size: 20px; margin: 0 0 8px; }
+  p { margin: 0 0 14px; }
+
+  /* how it works */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: step; }
+  .step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+    background: var(--accent); color: var(--accent-ink); font-weight: 800; margin-bottom: 12px;
+  }
+  .step p { color: var(--muted); margin: 0; }
+  .shots { display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; margin-top: 28px; }
+  .shots img { border-radius: 12px; border: 1px solid var(--line); }
+  .shots .phone { width: 210px; border-radius: 22px; }
+  @media (max-width: 820px) {
+    .steps { grid-template-columns: 1fr; }
+    .shots { grid-template-columns: 1fr; justify-items: center; }
+  }
+
+  /* features */
+  .feature { display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: center; margin-bottom: 56px; }
+  .feature:last-child { margin-bottom: 0; }
+  .feature.flip .media { order: -1; }
+  .feature .media img { border-radius: var(--radius); border: 1px solid var(--line); }
+  .feature p { color: var(--muted); }
+  .tag { display: inline-block; font-size: 13px; font-weight: 650; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  @media (max-width: 820px) {
+    .feature { grid-template-columns: 1fr; gap: 18px; }
+    .feature.flip .media { order: 0; }
+  }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 8px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+  .card h3 { font-size: 17px; }
+  .card p { color: var(--muted); font-size: 15.5px; margin: 0; }
+  @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+
+  /* privacy */
+  .privacy { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .privacy .card { display: flex; gap: 14px; align-items: flex-start; }
+  .privacy svg { width: 24px; height: 24px; flex: none; color: var(--go); margin-top: 3px; }
+  @media (max-width: 820px) { .privacy { grid-template-columns: 1fr; } }
+
+  /* help */
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 0 18px; margin-bottom: 10px; }
+  summary { cursor: pointer; padding: 15px 0; font-weight: 650; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--muted); font-weight: 400; font-size: 22px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details > div { color: var(--muted); padding-bottom: 16px; }
+  details ol, details ul { margin: 0; padding-left: 22px; }
+
+  /* research + disclaimer */
+  .refs li { margin-bottom: 10px; color: var(--muted); }
+  .refs b { color: var(--text); font-weight: 650; }
+  .note { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 18px 20px; color: var(--muted); }
+  .note b { color: var(--text); }
+
+  footer { border-top: 1px solid var(--line); padding: 36px 0 48px; color: var(--muted); font-size: 14.5px; }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+  footer p { margin: 0 0 6px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="media/icon.svg" alt="" width="30" height="30">EyePath</a>
+    <nav>
+      <a class="opt" href="#how">How it works</a>
+      <a class="opt" href="#features">Features</a>
+      <a class="opt" href="#help">Help</a>
+      <a href="https://github.com/jjlynch2/EyePath">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero wrap">
+    <h1>A free EMDR light bar on the computer you already have</h1>
+    <p class="lede">The client watches a smoothly moving light, with bilateral sound in headphones.
+      You control it from your phone. No accounts and no subscription.</p>
+    <div class="buttons" id="download">
+      <a class="btn primary" id="dlWin" href="https://github.com/jjlynch2/EyePath/releases/latest">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10 4.5v7H3zM11 4.3 21 3v8.5H11zM3 12.5h7v7L3 18.5zM11 12.5h10V21l-10-1.4z"/></svg>
+        Download for Windows</a>
+      <a class="btn" id="dlMac" href="https://github.com/jjlynch2/EyePath/releases/latest">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.5 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.6-1-2.6-4zM13.9 5c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1 .1 2.1-.6 2.8-1.4z"/></svg>
+        Download for Mac</a>
+    </div>
+    <p class="fine"><span id="version">Free and open source (MIT)</span> · Windows and Mac (Apple Silicon and Intel)</p>
+    <button class="share" type="button" data-share>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
+      <span>Share EyePath</span></button>
+    <picture>
+      <source srcset="media/demo-still.png" media="(prefers-reduced-motion: reduce)">
+      <img class="demo" src="media/demo.gif" width="1240" height="700"
+           alt="The client screen shows a QR code. The therapist scans it with their phone and taps Start; a blue light sweeps side to side while the phone counts the passes.">
+    </picture>
+  </div>
+
+  <section id="how">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <p class="intro">Install EyePath on the computer the client will watch: a laptop, or a computer
+        connected to a TV or second screen. Your phone needs nothing installed; it's the remote.</p>
+      <div class="steps">
+        <div class="step"><h3>Open EyePath</h3><p>It fills the screen with a QR code and a short code. A new code is made every time it opens.</p></div>
+        <div class="step"><h3>Scan with your phone</h3><p>Or type the address and code into any browser on the same Wi-Fi. The screen turns into the light bar.</p></div>
+        <div class="step"><h3>Run your sets</h3><p>Start, stop, speed, track, colour and sound, all from the phone. Sets end cleanly with the light gliding home.</p></div>
+      </div>
+      <div class="shots">
+        <img src="media/qr-screen.png" width="1280" height="720" loading="lazy"
+             alt="The pairing screen: a QR code, the address to type and a six-character code, and the computer's keyboard shortcuts.">
+        <img class="phone" src="media/remote.png" width="390" height="760" loading="lazy"
+             alt="The phone remote during a set: a live preview of the light, 3 of 6 passes, a Stop button, and the speed and set length controls.">
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <h2>Made for the therapy room</h2>
+      <p class="intro">A light bar's essentials, plus things that are hard to get from hardware.</p>
+
+      <div class="feature">
+        <div>
+          <span class="tag">For children</span>
+          <h3>Fun shapes instead of the light</h3>
+          <p>Ten friendly pictures (a dog, cat, butterfly, fish, turtle, unicorn, rocket, gold star,
+            rainbow and ball) can follow the track in place of the light. Animals turn to face the
+            way they're moving, and the colour setting tints their glow.</p>
+          <p>Pick one with a tap on the phone, even mid-session.</p>
+        </div>
+        <div class="media">
+          <picture>
+            <source srcset="media/fun-shapes-still.png" media="(prefers-reduced-motion: reduce)">
+            <img src="media/fun-shapes.gif" width="800" height="450" loading="lazy"
+                 alt="A dog, unicorn, butterfly, rocket, turtle and fish taking turns moving across the screen.">
+          </picture>
+        </div>
+      </div>
+
+      <div class="feature flip">
+        <div>
+          <span class="tag">Movement</span>
+          <h3>Eight tracks, three ways to move</h3>
+          <p>Side to side, up and down, both diagonals, and a figure 8 or oval in either direction.
+            The light can glide (slowing at each side), move at a steady pace, or jump from side to side.
+            Raise or lower it on the screen, and change its size, colour and background.</p>
+        </div>
+        <div class="media">
+          <picture>
+            <source srcset="media/tracks-still.png" media="(prefers-reduced-motion: reduce)">
+            <img src="media/tracks.gif" width="800" height="450" loading="lazy"
+                 alt="The light following a figure 8, a reversed oval and a diagonal, then jumping from side to side.">
+          </picture>
+        </div>
+      </div>
+
+      <div class="feature">
+        <div>
+          <span class="tag">Optional</span>
+          <h3>Dual attention</h3>
+          <p>Colour flashes, numbers or letters appear on the light at random moments, at easy, medium
+            or hard. The client counts or says them aloud, and the answers show on your phone so you
+            can check.</p>
+        </div>
+        <div class="media">
+          <picture>
+            <source srcset="media/dual-attention-still.png" media="(prefers-reduced-motion: reduce)">
+            <img src="media/dual-attention.gif" width="800" height="450" loading="lazy"
+                 alt="Numbers appearing on the moving light.">
+          </picture>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card"><h3>Smooth and in sync</h3><p>Every screen works out the light's position from a shared clock, so a busy Wi-Fi doesn't make it stutter, and each tone plays as the light reaches the side.</p></div>
+        <div class="card"><h3>Bilateral sound</h3><p>A click or tone on each side, or a sweep that follows the light. A left/right test, a balance control, and a delay setting for Bluetooth headphones.</p></div>
+        <div class="card"><h3>Sets that end cleanly</h3><p>Choose a number of passes or a timer. Stop finishes the current sweep, then the light glides back to the centre.</p></div>
+        <div class="card"><h3>Speed in Hz</h3><p>Shown in sweeps per second and Hz. Change speed mid-set without the light jumping.</p></div>
+        <div class="card"><h3>Presets per client</h3><p>Save the settings that work for a client, including their sound delay and balance.</p></div>
+        <div class="card"><h3>Keys on the computer</h3><p>No phone nearby? Press Space to start or stop, the arrow keys to change speed, or S to move the light to another screen.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="privacy">
+    <div class="wrap">
+      <h2>EyePath runs entirely on your computer and your local Wi-Fi</h2>
+      <div class="privacy" style="margin-top: 28px">
+        <div class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          <div><h3>No accounts, no internet needed</h3><p>There's nothing to sign up for and no cloud service. It works on a Wi-Fi with no internet, or on your phone's hotspot.</p></div></div>
+        <div class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          <div><h3>Nothing about clients is stored</h3><p>Only your settings and the presets you save. No session logs, no recordings, no analytics.</p></div></div>
+        <div class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          <div><h3>A new code every session</h3><p>Only a phone that scans the QR code or types the code can control it, and nothing stays connected after the app closes.</p></div></div>
+        <div class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          <div><h3>Open source</h3><p>The code is public under the MIT licence, so anyone can check what it does. This website has no cookies or trackers either.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="help">
+    <div class="wrap">
+      <h2>First-time setup</h2>
+      <p class="intro">EyePath isn't signed by Apple or Microsoft yet, so both show a warning the first time.</p>
+      <details>
+        <summary>Windows says "Windows protected your PC"</summary>
+        <div>Choose <b>More info</b>, then <b>Run anyway</b>. When Windows asks whether to allow network
+          access, choose <b>Allow</b>, or the phone won't be able to connect.</div>
+      </details>
+      <details>
+        <summary>Mac says it can't check the app</summary>
+        <div>Open <b>System Settings → Privacy &amp; Security</b>, scroll down and choose <b>Open Anyway</b>
+          next to EyePath. You only need to do this once.</div>
+      </details>
+      <details>
+        <summary>My phone can't connect</summary>
+        <div><ol>
+          <li><b>iPhone with Chrome, Firefox, Edge or Brave:</b> open Settings → Privacy &amp; Security →
+            Local Network and turn it on for that browser. Safari doesn't need this.</li>
+          <li>Check the phone is on the <b>same Wi-Fi</b> as the computer, and turn off mobile data to be sure.</li>
+          <li>Turn off any <b>VPN or ad-blocking app</b> on the phone.</li>
+          <li>Make sure the computer's <b>firewall</b> allows EyePath. The app's QR screen has steps for your system.</li>
+          <li><b>Clinic or guest Wi-Fi</b> often stops devices reaching each other. Turn on your phone's
+            hotspot and join the computer to it.</li>
+        </ol></div>
+      </details>
+      <details>
+        <summary>Can I use it without the phone?</summary>
+        <div>Yes. The QR screen has "Control it from this computer instead", which opens the remote in its
+          own window, handy when the client watches a TV or second screen. There are also keys on the
+          computer for starting, stopping and speed.</div>
+      </details>
+      <details>
+        <summary>Which headphones?</summary>
+        <div>Any. Wired headphones need no adjustment. Bluetooth headphones add a delay; raise
+          <b>Sound delay</b> (usually 150–250 ms) until the sound matches the light, and save it in the
+          client's preset.</div>
+      </details>
+    </div>
+  </section>
+
+  <section id="research">
+    <div class="wrap">
+      <h2>Research behind the settings</h2>
+      <ul class="refs">
+        <li><b>Speed.</b> The default is 1 Hz (two sweeps a second). In lab studies, 1.2 Hz eye movements
+          worked better than 0.8 Hz (van Veen et al., 2015).</li>
+        <li><b>Jump movement.</b> Horizontal saccades (quick jumps) improved memory retrieval in lab studies
+          by Christman and colleagues.</li>
+        <li><b>Dual attention.</b> Extra working-memory load can strengthen the effect of the eye movements,
+          with harder tasks working better (Littel &amp; van Schie, 2019). EMDR 2.0, which adds such tasks, did
+          as well as standard EMDR with fewer sets in a non-clinical trial (Matthijssen et al., 2021).</li>
+      </ul>
+      <div class="note"><b>For trained clinicians.</b> EyePath is a tool for trained clinicians, not a treatment
+        in itself. It doesn't diagnose or treat anything on its own and is meant to be used only as part of
+        therapy with a qualified, EMDR-trained therapist. It is provided as is, without any warranty.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><b>EyePath</b>, free and open source under the <a href="https://github.com/jjlynch2/EyePath/blob/main/LICENSE">MIT licence</a>.</p>
+      <p>Source code, issues and releases on <a href="https://github.com/jjlynch2/EyePath">GitHub</a>.</p>
+      <button class="share" type="button" data-share>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>
+        <span>Know a therapist who'd find it useful? Share EyePath</span></button>
+    </div>
+    <div>
+      <p>Fun-shape pictures: <a href="https://github.com/googlefonts/noto-emoji">Noto Emoji</a> (Apache 2.0).</p>
+      <p>QR code generator based on Project Nayuki's (MIT).</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Share: the phone's (or Mac's) own share menu where there is one, otherwise copy
+  // the link. Sharing the link is enough: Reddit, Facebook, Slack and messages show
+  // the social preview picture from it. No third-party share buttons (they track).
+  (function () {
+    var url = "https://jjlynch2.github.io/EyePath/";
+    var data = { title: "EyePath", text: "A free, open-source EMDR light bar. The client's screen shows the light; your phone is the remote.", url: url };
+    var native = !!navigator.share;
+    var buttons = document.querySelectorAll("[data-share]");
+    Array.prototype.forEach.call(buttons, function (btn) {
+      var label = btn.querySelector("span"), original = label.textContent;
+      if (!native && btn.closest(".hero")) label.textContent = original = "Copy link to share";
+      btn.addEventListener("click", function () {
+        if (native) { navigator.share(data).catch(function () {}); return; }
+        var done = function () { label.textContent = "Link copied"; setTimeout(function () { label.textContent = original; }, 2000); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(done, function () { window.prompt("Copy this link:", url); });
+        } else {
+          window.prompt("Copy this link:", url);
+        }
+      });
+    });
+  })();
+
+  // Put the visitor's system first, and point the buttons straight at the files in
+  // the latest release. If anything fails, the buttons still open the release page.
+  (function () {
+    var mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+    var win = document.getElementById("dlWin"), macBtn = document.getElementById("dlMac");
+    if (mac) {
+      macBtn.classList.add("primary"); win.classList.remove("primary");
+      macBtn.parentNode.insertBefore(macBtn, win);
+    }
+    if (!window.fetch) return;
+    fetch("https://api.github.com/repos/jjlynch2/EyePath/releases/latest")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (rel) {
+        if (!rel || !rel.assets) return;
+        rel.assets.forEach(function (a) {
+          if (/\.exe$/i.test(a.name)) win.href = a.browser_download_url;
+          if (/\.dmg$/i.test(a.name)) macBtn.href = a.browser_download_url;
+        });
+        if (rel.tag_name) document.getElementById("version").textContent = "Version " + rel.tag_name.replace(/^v/, "") + ", free and open source (MIT)";
+      })
+      .catch(function () {});
+  })();
+</script>
+</body>
+</html>

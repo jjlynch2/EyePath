@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>EyePath</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body class="client">
+<div id="stage"></div>
+
+<!-- Shown until the therapist's remote connects. -->
+<div id="codeScreen" class="code-screen"><div class="code-inner">
+  <div class="code-card">
+    <img id="qr" class="qr" alt="QR code to connect your phone">
+    <div class="code-text">
+      <h1>Scan with your phone to connect</h1>
+      <p class="help">Or, on any phone or computer on this Wi-Fi, go to</p>
+      <p class="big-mono" id="addr">…</p>
+      <p class="help">and enter the code</p>
+      <p class="big-mono code" id="code">…</p>
+      <p class="help">This screen turns into the light bar as soon as your phone connects.</p>
+      <div class="keys-box">
+        <p class="keys-title">Keys on this computer</p>
+        <dl class="keys-grid">
+          <dt><kbd>Space</kbd></dt><dd>Start / stop</dd>
+          <dt><kbd>Esc</kbd></dt><dd>Stop now</dd>
+          <dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Faster / slower</dd>
+          <dt><kbd>C</kbd></dt><dd>Show / hide code</dd>
+          <dt><kbd>F</kbd></dt><dd>Full screen on / off</dd>
+          <dt class="multi-screen" hidden><kbd>S</kbd></dt><dd class="multi-screen" hidden>Next screen</dd>
+          <dt><kbd id="quitKey">Ctrl+Q</kbd></dt><dd>Quit</dd>
+        </dl>
+      </div>
+      <div class="code-links">
+        <details>
+          <summary>Phone can't connect?</summary>
+          <ol class="fixes">
+            <li><b>iPhone with Chrome, Firefox, Edge or Brave:</b> open Settings → Privacy &amp; Security →
+              Local Network and turn it on for that browser. Safari doesn't need this.</li>
+            <li><b>Check the phone is on the same Wi-Fi.</b> In its Wi-Fi details, its IP address should start
+              with <b id="prefix">the same numbers</b>. Turn off mobile data to be sure.</li>
+            <li><b>Turn off any VPN or ad-blocking app on the phone</b> (work VPN, 1.1.1.1/WARP, NordVPN, AdGuard and similar).</li>
+            <li id="fwFix"><b>Allow the app through this computer's firewall.</b></li>
+            <li><b>Clinic or guest Wi-Fi</b> often stops devices reaching each other. Turn on the phone's hotspot
+              and join this computer to it; this screen updates with the new address.</li>
+          </ol>
+          <div class="setup-row" id="netRow" hidden>
+            <label for="net">Network address to show:</label>
+            <select id="net"></select>
+          </div>
+        </details>
+        <a href="/therapist" target="_blank" rel="noopener">Control it from this computer instead</a>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<div id="lost" class="code-screen" hidden>
+  <div class="code-card narrow">
+    <h1>EyePath isn't running</h1>
+    <p class="help">Open the app again to start a session. This screen reconnects by itself if it comes back.</p>
+  </div>
+</div>
+
+<div id="checkLeft" class="check-label left">Left</div>
+<div id="checkRight" class="check-label right">Right</div>
+
+<div id="status" class="status-dot" title="Connection"></div>
+
+<script src="/static/common.js"></script>
+<script src="/static/audio.js"></script>
+<script src="/static/client.js"></script>
+</body>
+</html>

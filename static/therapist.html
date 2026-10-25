@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111418">
+<title>EyePath Remote</title>
+<link rel="stylesheet" href="/static/style.css">
+<link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+</head>
+<body class="therapist">
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="brand">EyePath</span>
+    <span id="setCount" class="set-count" title="Sets started since EyePath opened" hidden></span>
+  </div>
+  <div class="topbar-right">
+    <span id="conn" class="chip">Connecting…</span>
+    <button id="quitBtn" class="btn-quit" title="Close EyePath on the computer" hidden>Quit</button>
+  </div>
+</header>
+
+<main class="panel">
+  <section class="live">
+    <div id="preview" class="preview"></div>
+    <div class="counter">
+      <div id="count" class="count">0</div>
+      <div id="countSub" class="count-sub">Ready</div>
+    </div>
+    <div id="dualInfo" class="dual-info" hidden></div>
+    <div class="go">
+      <button id="startBtn" class="btn-go">Start</button>
+      <button id="stopNowBtn" class="btn-stopnow" hidden>Stop now</button>
+    </div>
+    <!-- Only shown on a computer with a keyboard (hidden on phones and tablets). -->
+    <div class="keys-hint">
+      <span><kbd>Space</kbd> Start / stop</span>
+      <span><kbd>Esc</kbd> Stop now</span>
+      <span><kbd>↑</kbd> <kbd>↓</kbd> Faster / slower</span>
+      <span><kbd>1</kbd>–<kbd>0</kbd> Presets</span>
+    </div>
+    <div id="codeBanner" class="code-banner" hidden>
+      <span>The client screen is showing the connection code.</span>
+      <button id="hideCodeBtn">Show the light</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row-head"><h2>Speed</h2><span id="speedVal" class="val"></span></div>
+    <div class="stepper">
+      <button data-step="speed" data-delta="-0.1" aria-label="Slower">−</button>
+      <input id="speed" type="range" min="0.2" max="4" step="0.05" data-param="speed" data-num>
+      <button data-step="speed" data-delta="0.1" aria-label="Faster">+</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row-head"><h2>Set length</h2><span id="setVal" class="val"></span></div>
+    <div class="seg" data-param="setMode">
+      <button data-value="passes">Passes</button>
+      <button data-value="timer">Timer</button>
+      <button data-value="open">No limit</button>
+    </div>
+    <div id="passesRow" class="stepper">
+      <button data-step="passes" data-delta="-2" aria-label="Fewer">−</button>
+      <div class="chips">
+        <button data-set="passes" data-value="12">12</button>
+        <button data-set="passes" data-value="24">24</button>
+        <button data-set="passes" data-value="36">36</button>
+        <button data-set="passes" data-value="48">48</button>
+      </div>
+      <button data-step="passes" data-delta="2" aria-label="More">+</button>
+    </div>
+    <div id="timerRow" class="stepper">
+      <button data-step="seconds" data-delta="-5" aria-label="Shorter">−</button>
+      <div class="chips">
+        <button data-set="seconds" data-value="20">20s</button>
+        <button data-set="seconds" data-value="30">30s</button>
+        <button data-set="seconds" data-value="45">45s</button>
+        <button data-set="seconds" data-value="60">60s</button>
+      </div>
+      <button data-step="seconds" data-delta="5" aria-label="Longer">+</button>
+    </div>
+  </section>
+
+  <details class="card" open>
+    <summary><h2>Track</h2><span id="patternNote" class="note"></span></summary>
+    <div class="patterns" data-param="pattern">
+      <button data-value="horizontal" title="Side to side"><svg viewBox="0 0 40 24"><path d="M5 12H35"/><circle cx="30" cy="12" r="3"/></svg><span>Side to side</span></button>
+      <button data-value="vertical" title="Up and down"><svg viewBox="0 0 40 24"><path d="M20 3V21"/><circle cx="20" cy="7" r="3"/></svg><span>Up &amp; down</span></button>
+      <button data-value="diagUp" title="Diagonal, rising"><svg viewBox="0 0 40 24"><path d="M7 21L33 3"/><circle cx="27" cy="7" r="3"/></svg><span>Diagonal ↗</span></button>
+      <button data-value="diagDown" title="Diagonal, falling"><svg viewBox="0 0 40 24"><path d="M7 3L33 21"/><circle cx="27" cy="17" r="3"/></svg><span>Diagonal ↘</span></button>
+      <button data-value="figure8" title="Figure 8"><svg viewBox="0 0 40 24"><path d="M20 12C14 3 5 3 5 12S14 21 20 12 35 3 35 12 26 21 20 12Z"/><path class="dir" d="M23 18.5H27V14.5"/><circle cx="20" cy="12" r="3"/></svg><span>Figure 8</span></button>
+      <button data-value="figure8r" title="Figure 8, reversed direction"><svg viewBox="0 0 40 24"><path d="M20 12C14 3 5 3 5 12S14 21 20 12 35 3 35 12 26 21 20 12Z"/><path class="dir" d="M17 18.5H13V14.5"/><circle cx="20" cy="12" r="3"/></svg><span>Figure 8 ↺</span></button>
+      <button data-value="oval" title="Oval"><svg viewBox="0 0 40 24"><ellipse cx="20" cy="12" rx="15" ry="9"/><path class="dir" d="M25 0.8L28 3L25 5.2"/><circle cx="20" cy="3" r="3"/></svg><span>Oval</span></button>
+      <button data-value="ovalr" title="Oval, reversed direction"><svg viewBox="0 0 40 24"><ellipse cx="20" cy="12" rx="15" ry="9"/><path class="dir" d="M15 0.8L12 3L15 5.2"/><circle cx="20" cy="3" r="3"/></svg><span>Oval ↺</span></button>
+    </div>
+    <label class="toggle"><input type="checkbox" data-param="track"> Show the track faintly</label>
+    <div class="field">
+      <span>Height on screen <b id="heightVal"></b></span>
+      <div class="slider-row">
+        <input type="range" min="-40" max="40" step="1" data-param="height" data-num aria-label="Height on screen">
+        <button id="heightReset" class="btn-small" hidden>Centre</button>
+      </div>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary><h2>Light</h2></summary>
+    <div class="field" id="screenRow" hidden>
+      <span>Show on</span>
+      <div class="seg screens" id="screenChoice"></div>
+    </div>
+    <div class="field">
+      <span>Shape</span>
+      <div class="shapes" data-param="shape">
+        <button data-value="circle" title="Circle" aria-label="Circle"></button>
+        <button data-value="star" title="Star" aria-label="Star"></button>
+        <button data-value="heart" title="Heart" aria-label="Heart"></button>
+        <button data-value="diamond" title="Diamond" aria-label="Diamond"></button>
+        <button data-value="square" title="Square" aria-label="Square"></button>
+      </div>
+    </div>
+    <div class="field">
+      <span>Fun shapes</span>
+      <div class="shapes fun" data-param="shape">
+        <button data-value="dog" title="Dog" aria-label="Dog"></button>
+        <button data-value="cat" title="Cat" aria-label="Cat"></button>
+        <button data-value="butterfly" title="Butterfly" aria-label="Butterfly"></button>
+        <button data-value="fish" title="Fish" aria-label="Fish"></button>
+        <button data-value="turtle" title="Turtle" aria-label="Turtle"></button>
+        <button data-value="unicorn" title="Unicorn" aria-label="Unicorn"></button>
+        <button data-value="rocket" title="Rocket" aria-label="Rocket"></button>
+        <button data-value="goldstar" title="Gold star" aria-label="Gold star"></button>
+        <button data-value="rainbow" title="Rainbow" aria-label="Rainbow"></button>
+        <button data-value="ball" title="Ball" aria-label="Ball"></button>
+      </div>
+      <p class="help">These keep their own colours; the colour setting changes their glow. Animals turn to face the way they move.</p>
+    </div>
+    <div class="field">
+      <span>Colour</span>
+      <div class="swatches" data-param="color">
+        <button data-value="#4da3ff" style="--c:#4da3ff" aria-label="Blue"></button>
+        <button data-value="#3ddc84" style="--c:#3ddc84" aria-label="Green"></button>
+        <button data-value="#ffffff" style="--c:#ffffff" aria-label="White"></button>
+        <button data-value="#ffd23f" style="--c:#ffd23f" aria-label="Yellow"></button>
+        <button data-value="#ff8a3d" style="--c:#ff8a3d" aria-label="Orange"></button>
+        <button data-value="#ff4d6d" style="--c:#ff4d6d" aria-label="Red"></button>
+        <button data-value="#b388ff" style="--c:#b388ff" aria-label="Purple"></button>
+        <input type="color" data-param="color" aria-label="Custom colour">
+      </div>
+    </div>
+    <div class="field">
+      <span>Background</span>
+      <div class="swatches" data-param="background">
+        <button data-value="#000000" style="--c:#000000" aria-label="Black"></button>
+        <button data-value="#1b1f24" style="--c:#1b1f24" aria-label="Charcoal"></button>
+        <button data-value="#0b1a33" style="--c:#0b1a33" aria-label="Navy"></button>
+        <button data-value="#13261b" style="--c:#13261b" aria-label="Forest"></button>
+        <button data-value="#e9e6df" style="--c:#e9e6df" aria-label="Light"></button>
+        <input type="color" data-param="background" aria-label="Custom background">
+      </div>
+    </div>
+    <label class="field"><span>Size <b id="sizeVal"></b></span>
+      <input type="range" min="1" max="30" step="0.5" data-param="size" data-num></label>
+    <label class="toggle"><input type="checkbox" data-param="glow"> Glow</label>
+    <label class="toggle"><input type="checkbox" data-param="rest"> Show the light at rest between sets</label>
+    <label class="toggle"><input type="checkbox" data-param="visual"> Light on (turn off for sound only)</label>
+  </details>
+
+  <details class="card">
+    <summary><h2>Motion</h2></summary>
+    <div class="field"><span>Movement</span>
+      <div class="seg" data-param="easing">
+        <button data-value="sine">Smooth</button>
+        <button data-value="linear">Steady</button>
+        <button data-value="jump">Jump</button>
+      </div>
+      <p class="help">Smooth slows down at each side; Steady keeps one speed; Jump snaps from side to side
+        (quick "saccade" eye movements, used in some memory research).</p>
+    </div>
+    <label class="field"><span>Pause at each edge <b id="pauseVal"></b></span>
+      <input type="range" min="0" max="1000" step="10" data-param="pause" data-num></label>
+    <label class="field"><span>Track width <b id="travelVal"></b></span>
+      <input type="range" min="30" max="100" step="1" data-param="travel" data-num></label>
+  </details>
+
+  <details class="card">
+    <summary><h2>Sound</h2></summary>
+    <div class="seg" data-param="sound">
+      <button data-value="off">Off</button>
+      <button data-value="click">Click</button>
+      <button data-value="tone">Tone</button>
+      <button data-value="sweep">Sweep</button>
+    </div>
+    <div class="setup-row">
+      <button id="soundCheckBtn" class="btn-plain">Test sound: left, then right</button>
+    </div>
+    <p class="help">Plays a tone in the left ear, then the right, and shows "Left" / "Right" on that side of the
+      client screen, so the client can check the headphones are on the right way round.</p>
+    <label class="field"><span>Volume <b id="volumeVal"></b></span>
+      <input type="range" min="0" max="1" step="0.01" data-param="volume" data-num></label>
+    <label class="field"><span>Pitch <b id="pitchVal"></b></span>
+      <input type="range" min="100" max="1200" step="10" data-param="pitch" data-num></label>
+    <div class="field">
+      <span>Left / right balance <b id="balanceVal"></b></span>
+      <div class="slider-row">
+        <input type="range" min="-100" max="100" step="5" data-param="balance" data-num aria-label="Left / right balance">
+        <button id="balanceReset" class="btn-small" hidden>Centre</button>
+      </div>
+    </div>
+    <p class="help">For a client who hears less on one side: move it toward the weaker ear to turn the other ear down.</p>
+    <label class="field"><span>Sound delay <b id="audioOffsetVal"></b></span>
+      <input type="range" min="-300" max="600" step="5" data-param="audioOffset" data-num></label>
+    <p class="help">Leave the delay at 0 for wired headphones. Bluetooth headphones often need 150–250 ms so the sound lines up with the light.
+      Tap the number to type a value, such as 0.</p>
+  </details>
+
+  <details class="card">
+    <summary><h2>Dual attention</h2><span id="dualNote" class="note"></span></summary>
+    <div class="seg" data-param="dualTask">
+      <button data-value="off">Off</button>
+      <button data-value="flash">Flashes</button>
+      <button data-value="numbers">Numbers</button>
+      <button data-value="letters">Letters</button>
+    </div>
+    <div class="field"><span>How often</span>
+      <div class="seg" data-param="dualLevel">
+        <button data-value="easy">Easy</button>
+        <button data-value="medium">Medium</button>
+        <button data-value="hard">Hard</button>
+      </div>
+    </div>
+    <p class="help">Gives the client something to watch for while following the light: count the colour
+      flashes, or say each number or letter aloud. The answers show under the counter. Changes apply
+      from the next set.</p>
+  </details>
+
+  <details class="card">
+    <summary><h2>Presets</h2></summary>
+    <div id="presets" class="presets"></div>
+    <form id="presetForm" class="preset-form">
+      <input id="presetName" maxlength="40" placeholder="Name for current settings" autocomplete="off">
+      <button type="submit">Save</button>
+    </form>
+    <p class="help">A saved preset includes everything, even the sound delay and balance, so you can keep
+      one per client. Use initials rather than names.</p>
+  </details>
+
+</main>
+
+<script src="/static/common.js"></script>
+<script src="/static/therapist.js"></script>
+</body>
+</html>

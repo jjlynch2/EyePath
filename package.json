@@ -1,0 +1,61 @@
+{
+  "name": "eyepath",
+  "productName": "EyePath",
+  "version": "0.1.0",
+  "description": "An open-source light bar for EMDR: the laptop shows the light, the therapist's phone is the remote.",
+  "license": "MIT",
+  "author": "jjlynch2",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server.js",
+    "dist": "electron-builder --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.9.3",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "org.eyepath.app",
+    "productName": "EyePath",
+    "files": [
+      "main.js",
+      "server.js",
+      "qr.js",
+      "static/**/*",
+      "package.json",
+      "LICENSE"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "category": "public.app-category.medical",
+      "identity": "-",
+      "hardenedRuntime": false
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "MedicalSoftware"
+    }
+  }
+}
