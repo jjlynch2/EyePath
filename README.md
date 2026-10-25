@@ -1,11 +1,11 @@
 # EyePath
 
-A free, open-source light bar for EMDR therapists, running on the therapist's laptop. A ball moves along a
-track on the client's screen, with bilateral sound in headphones, and the
-therapist controls it from their phone. The moving light is for the eye movements used in EMDR
+A free, open-source light bar for EMDR therapists that runs on a Windows or Mac computer. A ball moves
+along a track on the client's screen, with bilateral sound in headphones, and the therapist controls
+it from their phone. The moving light is for the eye movements used in EMDR
 (Shapiro, 1989; see [References](#references)).
 
-Everything runs on the laptop and the local Wi-Fi. No internet, accounts or
+Everything runs on the computer and the local Wi-Fi. No internet, accounts or
 cloud service. The app stores nothing about clients beyond what a therapist chooses to put in a
 preset's name (initials are a good idea).
 
@@ -32,10 +32,10 @@ to say aloud.
 
 ## Using it
 
-1. Open **EyePath** on the laptop. The screen goes full screen and shows a QR code.
+1. Open **EyePath** on the computer. The screen goes full screen and shows a QR code.
 2. Scan the QR code with the phone, or type the address shown into the phone's
    browser and enter the 6-character code.
-3. The laptop screen turns into the light bar. Everything else is done from the phone.
+3. The computer's screen turns into the light bar. Everything else is done from the phone.
 
 The light opens full screen with sound ready, no clicks needed. Closing the
 window quits the app.
@@ -45,13 +45,13 @@ session stays connected, so scan it at the start of each session. During a
 session the phone stays connected, even if its screen locks. **Quit** is at the
 top of the phone remote.
 
-If the phone dies mid-session, press **C** on the laptop to bring the QR code
+If the phone dies mid-session, press **C** on the computer to bring the QR code
 back (and C again to hide it).
 
-The laptop never dims, locks or sleeps while the app is running (closing the
+The computer never dims, locks or sleeps while the app is running (closing a laptop's
 lid still sleeps it). It goes back to normal when the app quits.
 
-The laptop itself never needs the code, so the remote can also run there
+The computer itself never needs the code, so the remote can also run there
 ("Control it from this computer instead" on the QR screen), for example when the
 client watches a TV or second monitor. Opening the app again while it's
 running just reopens the screen.
@@ -66,7 +66,7 @@ running just reopens the screen.
 - **iPhone with Chrome, Firefox, Edge or Brave**: the browser needs Local Network permission
   (Settings → Privacy & Security → Local Network) or it silently can't connect. Safari doesn't need it.
 - **Guest or clinic Wi-Fi** sometimes blocks devices from reaching each other. If the phone can't connect,
-  turn on the phone's hotspot and join the laptop to it.
+  turn on the phone's hotspot and join the computer to it.
 
 ### Remote controls
 
@@ -101,16 +101,16 @@ running just reopens the screen.
 - **Presets** save the current settings. A fresh install comes with five starter
   presets (Standard, Fast · 1.2 Hz, Slow & short, Sound only, Gentle star);
   delete or replace them as you like.
-- **Keyboard** (when the remote is open on a laptop): Space start/stop, Esc stop now, ↑/↓ speed, 1–9 and 0 load presets.
-- **Keys on the laptop's light screen**, for when your phone isn't nearby: Space start/stop, Esc stop now,
+- **Keyboard** (when the remote is open on a computer): Space start/stop, Esc stop now, ↑/↓ speed, 1–9 and 0 load presets.
+- **Keys on the client screen**, for when your phone isn't nearby: Space start/stop, Esc stop now,
   ↑/↓ speed, C show/hide the QR code, F full screen on/off, S next screen (with more than one),
   Ctrl+Q (⌘Q on a Mac) quit.
   The QR screen lists them too.
 
 ## How it stays smooth
 
-The laptop sends only settings and start/stop times, a few bytes per change.
-Each screen syncs its clock with the laptop and works out the ball's position
+The computer sends only settings and start/stop times, a few bytes per change.
+Each screen syncs its clock with the computer and works out the ball's position
 from the time on every frame, so a slow network or a dropped frame can't make
 the ball stutter or drift. Sounds are scheduled on the browser's audio clock
 for the moment the ball reaches each side.
@@ -186,11 +186,11 @@ Google's [Noto Emoji](https://github.com/googlefonts/noto-emoji) (Apache License
 ## Files
 
 - `main.js`: the Electron app (window, keep-awake, one copy at a time, quit)
-- `server.js`: the server (session state, motion timing, pairing, laptop settings)
+- `server.js`: the server (session state, motion timing, pairing, computer settings)
 - `qr.js`: QR code generator
 - `build/icon.svg`: the app icon (master drawing); `build/icon.png` and the icons in `static/` are made from it
 - `static/common.js`: clock sync, motion maths and drawing, shared by the pages
 - `static/audio.js`: bilateral sound
-- `static/client.*` (laptop screen, with the QR code), `static/therapist.*` (remote), `static/login.html`
+- `static/client.*` (client screen, with the QR code), `static/therapist.*` (remote), `static/login.html`
 - `docs/`: the website (served by GitHub Pages from this folder) and the demo GIFs and screenshots in `docs/media/`
 - `test/`: automated tests (`npm test`)
