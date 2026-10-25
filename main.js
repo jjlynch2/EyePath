@@ -125,10 +125,16 @@ if (!app.requestSingleInstanceLock()) {
     // anything outside the app opens in the normal browser.
     win.webContents.setWindowOpenHandler(({ url }) => {
       if (url.startsWith(`http://127.0.0.1:${server.port}/`)) {
-        return { action: "allow", overrideBrowserWindowOptions: {
-          width: 480, height: 900, autoHideMenuBar: true, title: "EyePath remote",
-          icon: path.join(__dirname, "static", "icon-512.png"),   // window and taskbar icon (Windows, Linux)
-        } };
+        return {
+          action: "allow",
+          // Keep the remote open when its opener closes: moving the light to another
+          // screen replaces the light window, and the remote must survive that.
+          outlivesOpener: true,
+          overrideBrowserWindowOptions: {
+            width: 480, height: 900, autoHideMenuBar: true, title: "EyePath remote",
+            icon: path.join(__dirname, "static", "icon-512.png"),   // window and taskbar icon (Windows, Linux)
+          },
+        };
       }
       shell.openExternal(url);
       return { action: "deny" };
