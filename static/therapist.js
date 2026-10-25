@@ -354,7 +354,7 @@ addEventListener("pagehide", (e) => {
   }
 });
 
-connectState("therapist", (s) => {
+const stream = connectState("therapist", (s) => {
   state = s;
   renderControls();
   renderStatus();
@@ -378,6 +378,7 @@ $("#soundCheckBtn").addEventListener("click", () => {
 $("#quitBtn").addEventListener("click", async () => {
   if (!confirm("Quit EyePath")) return;
   if (!(await sendCommand({ type: "quit" }).catch(() => false))) return;
+  stream.close();                      // don't keep trying to reach the app that just quit
   $("#closedScreen").hidden = false;
   // Browsers only let a page close its own tab in some cases (e.g. a tab opened
   // just for the remote by scanning the QR code); otherwise the message stays.

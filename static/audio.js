@@ -9,7 +9,9 @@ class BilateralAudio {
     this.ctx = null;
     this.runId = null;
     this.nextTouch = 0;
-    this.pending = [];        // scheduled sounds not yet played: { k, at, nodes }
+    // Touch sounds not yet finished: { run, k, t, at, end, osc, gain }: the set's id,
+    // touch number, server time of the touch, audio start and end times, and its nodes.
+    this.pending = [];
     this.lastRamp = 0;
   }
 
@@ -84,7 +86,7 @@ class BilateralAudio {
     osc.connect(gain).connect(pan).connect(this.master);
     osc.start(at);
     osc.stop(end);
-    const entry = { run: this.runId, k, t, at, osc };
+    const entry = { run: this.runId, k, t, at, end, osc, gain };
     this.pending.push(entry);
     osc.onended = () => { this.pending = this.pending.filter((e) => e !== entry); };
   }
@@ -111,11 +113,24 @@ class BilateralAudio {
     return { toneLen, gap };
   }
 
-  // Stop queued sounds that haven't started yet and match `which`.
-  cancelWhere(which) {
+  // Cancel the queued sounds that match `which`. Ones not started yet just don't play;
+  // with `playing`, ones already sounding (possible with a negative sound delay) fade out
+  // quickly, since stopping a tone dead makes a click.
+  cancelWhere(which, { playing = false } = {}) {
     const now = this.ctx.currentTime;
     for (const e of this.pending) {
-      if (e.at > now && which(e)) { try { e.osc.stop(); } catch (err) { /* already stopped */ } }
+      if (!which(e)) continue;
+      try {
+        if (e.at > now) {
+          e.osc.stop();
+        } else if (playing && now < e.end) {
+          const g = e.gain.gain;
+          if (g.cancelAndHoldAtTime) g.cancelAndHoldAtTime(now);
+          else { g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); }
+          g.linearRampToValueAtTime(0, now + 0.015);
+          e.osc.stop(now + 0.02);
+        }
+      } catch (err) { /* already stopped */ }
     }
   }
 
@@ -144,12 +159,17 @@ class BilateralAudio {
     const touchSounds = params.sound === "click" || params.sound === "tone";
     if (run.status !== "running" || silent) {
       if (silent) {
-        this.cancelWhere(() => true);                    // code screen or app unreachable: nothing plays
+        this.cancelWhere(() => true, { playing: true });   // code screen or app unreachable: nothing plays
       } else if (this.runId) {
         // The set ended. Touches that happened keep their sound (with a sound delay it can
         // still be waiting to play); touches that now never happen (after Stop now) don't.
-        const cutoff = run.status === "stopping" ? run.stopT : now;
-        this.cancelWhere((e) => e.t > cutoff);
+        // If this page missed the short "stopping" state, the server's record of the
+        // finished set still has the Stop now time.
+        const last = state.lastRun;
+        const cutoff = run.status === "stopping" ? run.stopT
+          : last && last.id === this.runId && last.status === "stopping" ? last.stopT
+          : now;
+        this.cancelWhere((e) => e.t > cutoff, { playing: true });
       }
       this.runId = null;
     } else {
@@ -160,7 +180,7 @@ class BilateralAudio {
         const sameSet = run.id === this.runId;
         if (!sameSet && this.runId) {                     // a new set straight after another
           const old = this.runId;
-          this.cancelWhere((e) => e.run === old && e.t > now);
+          this.cancelWhere((e) => e.run === old && e.t > now, { playing: true });
         }
         this.runId = run.id;
         this.timing = timing;

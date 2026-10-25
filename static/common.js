@@ -86,6 +86,7 @@ function connectState(role, onState, onStatus, pageId = "") {
     };
   };
   open();
+  return { close: () => es.close() };   // stop listening (and retrying), e.g. after Quit
 }
 
 async function sendCommand(cmd) {
@@ -211,15 +212,17 @@ const Dual = (() => {
   function events(dual, upto) {
     const key = `${dual.seed}|${dual.task}|${dual.level}`;
     const [lo, hi, show] = LEVELS[dual.level] || LEVELS.medium;
+    // Keep the two most recently used (the current set and the last one, which the
+    // remote's summary may still use); a page left open all day doesn't keep every set.
     let s = sequences.get(key);
-    if (!s) {
+    if (s) {
+      sequences.delete(key);                 // move to the end: most recently used
+    } else {
       const random = seeded(dual.seed);
       s = { random, list: [], nextAt: 1200 + random() * (hi - lo) };
-      // Keep just the newest two (the current set and the last one, which the remote's
-      // summary may still use); a page left open all day doesn't keep every set.
-      if (sequences.size >= 2) sequences.delete(sequences.keys().next().value);
-      sequences.set(key, s);
+      if (sequences.size >= 2) sequences.delete(sequences.keys().next().value);   // least recently used
     }
+    sequences.set(key, s);
     while (s.nextAt <= upto) {
       const r = s.random, prev = s.list.length ? s.list[s.list.length - 1].value : null;
       let value = "flash";

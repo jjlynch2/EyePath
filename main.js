@@ -140,10 +140,10 @@ if (!app.requestSingleInstanceLock()) {
     for (const ev of ["enter-full-screen", "leave-full-screen"]) {
       win.on(ev, () => { if (win === lightWindow) refreshDisplays(); });
     }
-    // Dragging the window (after F) sends many "moved" events on a Mac: only
-    // update the remote when it ends up on a different screen.
+    // Dragging the window (after F) sends many "move" events ("moved" doesn't exist
+    // on Linux): only update the remote when it ends up on a different screen.
     let shownOn = display.id;
-    win.on("moved", () => {
+    win.on("move", () => {
       if (win !== lightWindow) return;
       const id = screen.getDisplayMatching(win.getBounds()).id;
       if (id !== shownOn) { shownOn = id; refreshDisplays(); }

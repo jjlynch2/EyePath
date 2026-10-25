@@ -171,6 +171,9 @@ diagnose or treat anything on its own and is meant to be used only as part of
 therapy with a qualified, EMDR-trained therapist. It is provided as is, without
 any warranty (see [LICENSE](LICENSE)).
 
+The colour flashes in dual attention may not be suitable for people with photosensitive epilepsy or
+sensitivity to flashing light.
+
 ## License
 
 MIT. See [LICENSE](LICENSE). The QR code generator credits Project Nayuki's
