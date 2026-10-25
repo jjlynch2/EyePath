@@ -99,6 +99,7 @@ $("#presetForm").addEventListener("submit", async (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.target.matches("input:not([type=range]):not([type=checkbox]), textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if ($("#quitDialog").open) return;     // Space and Esc belong to the Quit dialog while it's open
   if (e.code === "Space") { e.preventDefault(); primary(); }
   else if (e.key === "Escape") sendCommand({ type: "stopNow" });
   else if (e.key === "ArrowUp") { e.preventDefault(); step("speed", 0.1); }
@@ -376,8 +377,15 @@ $("#soundCheckBtn").addEventListener("click", () => {
   b.textContent = "Playing: left… right…";
   setTimeout(() => { b.textContent = "Test sound: left, then right"; }, 1800);
 });
-$("#quitBtn").addEventListener("click", async () => {
-  if (!confirm("Quit EyePath")) return;
+$("#quitBtn").addEventListener("click", () => {
+  $("#quitDialog").returnValue = "";
+  $("#quitDialog").showModal();
+});
+$("#quitDialog").addEventListener("click", (e) => {
+  if (e.target === e.currentTarget) e.currentTarget.close("cancel");   // tapped outside the box
+});
+$("#quitDialog").addEventListener("close", async () => {
+  if ($("#quitDialog").returnValue !== "quit") return;    // Cancel, Esc or a tap outside
   if (!(await sendCommand({ type: "quit" }).catch(() => false))) return;
   stream.close();                      // don't keep trying to reach the app that just quit
   $("#closedScreen").hidden = false;

@@ -303,6 +303,16 @@ kbd { font: .8rem ui-monospace, monospace; padding: 1px 6px; border: 1px solid v
 .btn-plain { min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--card-2); }
 .btn-plain:disabled { opacity: .45; cursor: default; }
 .btn-plain.danger { border-color: var(--bad); color: #ff8f88; background: transparent; }
+.btn-plain.quit { border-color: var(--bad); background: var(--bad); color: #fff; font-weight: 600; }
+dialog.confirm {
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 0; width: min(20rem, calc(100vw - 32px));
+  background: var(--card); color: var(--text); text-align: center;
+}
+dialog.confirm form { padding: 20px; }    /* fills the box, so a click on the dialog itself is outside it */
+dialog.confirm::backdrop { background: rgba(0, 0, 0, .6); }
+dialog.confirm h2 { font-size: 1.15rem; margin: 0 0 18px; font-weight: 600; }
+.confirm-buttons { display: flex; gap: 10px; }
+.confirm-buttons button { flex: 1; }
 .fixes { margin: 14px 0 0; padding-left: 1.3em; display: grid; gap: 10px; color: var(--muted); font-size: .93rem; }
 .fixes b { color: var(--text); font-weight: 600; }
 

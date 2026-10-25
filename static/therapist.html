@@ -262,6 +262,17 @@
   <p id="appVersion" class="app-version"></p>
 </main>
 
+<!-- Asks before quitting (in the page's own style, not the browser's or system's dialog). -->
+<dialog id="quitDialog" class="confirm">
+  <form method="dialog">
+    <h2>Quit EyePath?</h2>
+    <div class="confirm-buttons">
+      <button value="cancel" class="btn-plain" autofocus>Cancel</button>
+      <button value="quit" class="btn-plain quit">Quit</button>
+    </div>
+  </form>
+</dialog>
+
 <!-- Shown after Quit, in case the browser won't let the page close its own tab. -->
 <div id="closedScreen" class="closed-screen" hidden>
   <div class="card">
