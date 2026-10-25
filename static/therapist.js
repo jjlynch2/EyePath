@@ -10,27 +10,45 @@ let connected = false;
 // ---- "Are you sure?" questions (Quit, Delete preset) in the page's own style; the
 // browser's and system's dialogs show the page address or the wrong icon.
 // Resolves true if the OK button was chosen; Cancel, Esc or a tap outside is false.
+// `kind` names the question so it can be withdrawn when it no longer applies.
 const confirmBox = $("#confirmDialog");
-let confirmDone = null;
+let asking = null;                       // the question on screen: { kind, answer }
 function askConfirm(question, okLabel, kind = "") {
   if (!confirmBox.showModal) return Promise.resolve(confirm(question));   // browsers too old for <dialog>
-  if (confirmBox.open) return Promise.resolve(false);                    // one question at a time
   $("#confirmTitle").textContent = question;
   $("#confirmOk").textContent = okLabel;
-  confirmBox.dataset.kind = kind;
   confirmBox.returnValue = "";
   confirmBox.showModal();
-  return new Promise((resolve) => { confirmDone = resolve; });
+  return new Promise((resolve) => { asking = { kind, answer: resolve }; });
 }
-function cancelConfirm(kind) {
-  if (confirmBox.open && (!kind || confirmBox.dataset.kind === kind)) confirmBox.close("cancel");
+function answerConfirm(yes) {
+  const q = asking;
+  asking = null;
+  if (q) q.answer(yes);
+}
+// Withdraw the open question (all of them, or only one kind): answered "no" straight away.
+function cancelConfirm(which = () => true) {
+  if (!asking || !which(asking.kind)) return;
+  answerConfirm(false);
+  confirmBox.close("cancel");
 }
 confirmBox.addEventListener("click", (e) => { if (e.target === confirmBox) confirmBox.close("cancel"); });
 confirmBox.addEventListener("close", () => {
-  const done = confirmDone;
-  confirmDone = null;
-  if (done) done(confirmBox.returnValue === "ok");
+  if (confirmBox.open) return;           // a late "closed" from an earlier question, already answered
+  answerConfirm(confirmBox.returnValue === "ok");
 });
+
+// If the connection to the app stays down for a while, withdraw the question (its answer
+// couldn't be sent). Brief blips, e.g. a reconnect, leave it alone.
+let offlineTimer = null;
+function connectionChanged(ok) {
+  if (ok) {
+    clearTimeout(offlineTimer);
+    offlineTimer = null;
+  } else if (!offlineTimer) {
+    offlineTimer = setTimeout(() => { offlineTimer = null; if (!connected) cancelConfirm(); }, 5000);
+  }
+}
 
 // Values changed here but not yet confirmed by the server. They win over
 // incoming state for a moment so controls don't flicker while dragging.
@@ -238,11 +256,7 @@ function renderControls() {
 
 function renderStatus() {
   const chip = $("#conn");
-  if (!connected) {
-    chip.textContent = "Offline, reconnecting…"; chip.className = "chip bad";
-    cancelConfirm();                   // whatever was being asked can't be sent now
-    return;
-  }
+  if (!connected) { chip.textContent = "Offline, reconnecting…"; chip.className = "chip bad"; return; }
   if (!state) return;
   if (state.clients > 0) { chip.textContent = state.clients > 1 ? `${state.clients} client screens` : "Client screen connected"; chip.className = "chip ok"; }
   else { chip.textContent = "No client screen open"; chip.className = "chip warn"; }
@@ -267,7 +281,9 @@ function renderPresets() {
     del.setAttribute("aria-label", `Delete ${preset.name}`);
     del.textContent = "×";
     del.addEventListener("click", async () => {
-      if (await askConfirm(`Delete preset "${preset.name}"?`, "Delete")) sendCommand({ type: "deletePreset", name: preset.name });
+      if (await askConfirm(`Delete preset "${preset.name}"?`, "Delete", `delete:${preset.name}`)) {
+        sendCommand({ type: "deletePreset", name: preset.name });
+      }
     });
     // Up and down arrows: reorder, e.g. to give a favourite one of the number keys.
     const move = (label, by, disabled) => {
@@ -403,8 +419,13 @@ const stream = connectState("therapist", (s) => {
   $("#setCount").hidden = !s.sets;
   $("#appVersion").textContent = s.appVersion ? `EyePath ${s.appVersion}` : "";
   const key = JSON.stringify(s.presets.map((x) => x.name));
-  if (key !== presetsKey) { presetsKey = key; renderPresets(); }
-}, (ok) => { connected = ok; renderStatus(); }, pageId);
+  if (key !== presetsKey) {
+    presetsKey = key;
+    renderPresets();
+    // A "Delete preset?" question for a preset that has gone (e.g. deleted from another remote).
+    cancelConfirm((kind) => kind.startsWith("delete:") && !s.presets.some((p) => kind === `delete:${p.name}`));
+  }
+}, (ok) => { connected = ok; connectionChanged(ok); renderStatus(); }, pageId);
 
 Clock.start();
 
@@ -431,7 +452,7 @@ function renderLaptop() {
   const codeShowing = state.screen === "code";
   $("#codeBanner").hidden = !codeShowing;
   $("#quitBtn").hidden = !state.laptop.canQuit;
-  if (!state.laptop.canQuit) cancelConfirm("quit");
+  if (!state.laptop.canQuit) cancelConfirm((kind) => kind === "quit");
   $("#soundCheckBtn").disabled = state.run.status === "running";
   // "Show on": which screen the light is on, when more than one is connected.
   const displays = state.laptop.displays || [];
