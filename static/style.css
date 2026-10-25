@@ -262,6 +262,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 32px; }
 }
 .preset-load.on { border-color: var(--accent); background: rgba(77, 163, 255, .14); color: var(--text); }
 .preset-del { width: 44px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 1.2rem; }
+.preset-move { flex: none; width: 36px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 1rem; }
+.preset-move:disabled { opacity: .3; cursor: default; }
 .preset-form { display: flex; gap: 6px; }
 .preset-form input, .login input {
   flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: 10px;

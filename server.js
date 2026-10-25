@@ -459,6 +459,16 @@ class Session {
     this.presets = this.presets.filter((x) => x.name !== name);
     this.changed(true);
   }
+
+  // Move a preset one place up (by = -1) or down (1); the first ten load with keys 1-9 and 0.
+  movePreset(name, by) {
+    if (by !== -1 && by !== 1) return;
+    const i = this.presets.findIndex((x) => x.name === name);
+    const j = i + by;
+    if (i < 0 || j < 0 || j >= this.presets.length) return;
+    [this.presets[i], this.presets[j]] = [this.presets[j], this.presets[i]];
+    this.changed(true);
+  }
 }
 
 // ---------------------------------------------------------------- pairing
@@ -774,6 +784,7 @@ function makeHandler(app) {
       case "params": session.updateParams(cmd.params); break;
       case "savePreset": session.savePreset(cmd.name); break;
       case "deletePreset": session.deletePreset(cmd.name); break;
+      case "movePreset": session.movePreset(String(cmd.name ?? ""), Number(cmd.by)); break;
       case "loadPreset": {
         const match = session.presets.find((x) => x.name === cmd.name);
         if (match) session.updateParams(match.params);

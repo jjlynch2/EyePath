@@ -100,7 +100,8 @@ running just reopens the screen.
   opened. It isn't saved and starts again at zero next time.
 - **Presets** save the current settings. A fresh install comes with five starter
   presets (Standard, Fast · 1.2 Hz, Slow & short, Sound only, Gentle star);
-  delete or replace them as you like.
+  delete or replace them as you like. The arrows next to each preset move it up or down; the first
+  ten load with keys 1–9 and 0.
 - **Keyboard** (when the remote is open on a computer): Space start/stop, Esc stop now, ↑/↓ speed, 1–9 and 0 load presets.
 - **Keys on the client screen**, for when your phone isn't nearby: Space start/stop, Esc stop now,
   ↑/↓ speed, C show/hide the QR code, F full screen on/off, S next screen (with more than one),

@@ -269,7 +269,17 @@ function renderPresets() {
     del.addEventListener("click", async () => {
       if (await askConfirm(`Delete preset "${preset.name}"?`, "Delete")) sendCommand({ type: "deletePreset", name: preset.name });
     });
-    row.append(load, del);
+    // Up and down arrows: reorder, e.g. to give a favourite one of the number keys.
+    const move = (label, by, disabled) => {
+      const b = document.createElement("button");
+      b.className = "preset-move";
+      b.textContent = label;
+      b.disabled = disabled;
+      b.setAttribute("aria-label", `Move ${preset.name} ${by < 0 ? "up" : "down"}`);
+      b.addEventListener("click", () => sendCommand({ type: "movePreset", name: preset.name, by }));
+      return b;
+    };
+    row.append(load, move("↑", -1, i === 0), move("↓", 1, i === state.presets.length - 1), del);
     box.append(row);
   });
   renderPresetMatch();
