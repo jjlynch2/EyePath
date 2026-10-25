@@ -125,7 +125,10 @@ if (!app.requestSingleInstanceLock()) {
     // anything outside the app opens in the normal browser.
     win.webContents.setWindowOpenHandler(({ url }) => {
       if (url.startsWith(`http://127.0.0.1:${server.port}/`)) {
-        return { action: "allow", overrideBrowserWindowOptions: { width: 480, height: 900, autoHideMenuBar: true, title: "EyePath remote" } };
+        return { action: "allow", overrideBrowserWindowOptions: {
+          width: 480, height: 900, autoHideMenuBar: true, title: "EyePath remote",
+          icon: path.join(__dirname, "static", "icon-512.png"),   // its dialogs (e.g. Quit) show this too
+        } };
       }
       shell.openExternal(url);
       return { action: "deny" };
