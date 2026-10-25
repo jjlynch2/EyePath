@@ -262,13 +262,14 @@
   <p id="appVersion" class="app-version"></p>
 </main>
 
-<!-- Asks before quitting (in the page's own style, not the browser's or system's dialog). -->
-<dialog id="quitDialog" class="confirm">
+<!-- "Are you sure?" questions (Quit, Delete preset), in the page's own style rather than the
+     browser's or system's dialog. Filled in by askConfirm() in therapist.js. -->
+<dialog id="confirmDialog" class="confirm" aria-labelledby="confirmTitle">
   <form method="dialog">
-    <h2>Quit EyePath?</h2>
+    <h2 id="confirmTitle"></h2>
     <div class="confirm-buttons">
       <button value="cancel" class="btn-plain" autofocus>Cancel</button>
-      <button value="quit" class="btn-plain quit">Quit</button>
+      <button value="ok" id="confirmOk" class="btn-plain confirm-ok"></button>
     </div>
   </form>
 </dialog>

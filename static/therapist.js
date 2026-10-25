@@ -7,6 +7,31 @@ const preview = new Stage($("#preview"));
 let state = null;
 let connected = false;
 
+// ---- "Are you sure?" questions (Quit, Delete preset) in the page's own style; the
+// browser's and system's dialogs show the page address or the wrong icon.
+// Resolves true if the OK button was chosen; Cancel, Esc or a tap outside is false.
+const confirmBox = $("#confirmDialog");
+let confirmDone = null;
+function askConfirm(question, okLabel, kind = "") {
+  if (!confirmBox.showModal) return Promise.resolve(confirm(question));   // browsers too old for <dialog>
+  if (confirmBox.open) return Promise.resolve(false);                    // one question at a time
+  $("#confirmTitle").textContent = question;
+  $("#confirmOk").textContent = okLabel;
+  confirmBox.dataset.kind = kind;
+  confirmBox.returnValue = "";
+  confirmBox.showModal();
+  return new Promise((resolve) => { confirmDone = resolve; });
+}
+function cancelConfirm(kind) {
+  if (confirmBox.open && (!kind || confirmBox.dataset.kind === kind)) confirmBox.close("cancel");
+}
+confirmBox.addEventListener("click", (e) => { if (e.target === confirmBox) confirmBox.close("cancel"); });
+confirmBox.addEventListener("close", () => {
+  const done = confirmDone;
+  confirmDone = null;
+  if (done) done(confirmBox.returnValue === "ok");
+});
+
 // Values changed here but not yet confirmed by the server. They win over
 // incoming state for a moment so controls don't flicker while dragging.
 const pending = new Map();    // key -> { value, until }
@@ -99,7 +124,7 @@ $("#presetForm").addEventListener("submit", async (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.target.matches("input:not([type=range]):not([type=checkbox]), textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
-  if ($("#quitDialog").open) return;     // Space and Esc belong to the Quit dialog while it's open
+  if (confirmBox.open) return;           // Space and Esc belong to the open question
   if (e.code === "Space") { e.preventDefault(); primary(); }
   else if (e.key === "Escape") sendCommand({ type: "stopNow" });
   else if (e.key === "ArrowUp") { e.preventDefault(); step("speed", 0.1); }
@@ -213,7 +238,11 @@ function renderControls() {
 
 function renderStatus() {
   const chip = $("#conn");
-  if (!connected) { chip.textContent = "Offline, reconnecting…"; chip.className = "chip bad"; return; }
+  if (!connected) {
+    chip.textContent = "Offline, reconnecting…"; chip.className = "chip bad";
+    cancelConfirm();                   // whatever was being asked can't be sent now
+    return;
+  }
   if (!state) return;
   if (state.clients > 0) { chip.textContent = state.clients > 1 ? `${state.clients} client screens` : "Client screen connected"; chip.className = "chip ok"; }
   else { chip.textContent = "No client screen open"; chip.className = "chip warn"; }
@@ -237,8 +266,8 @@ function renderPresets() {
     del.className = "preset-del";
     del.setAttribute("aria-label", `Delete ${preset.name}`);
     del.textContent = "×";
-    del.addEventListener("click", () => {
-      if (confirm(`Delete preset "${preset.name}"?`)) sendCommand({ type: "deletePreset", name: preset.name });
+    del.addEventListener("click", async () => {
+      if (await askConfirm(`Delete preset "${preset.name}"?`, "Delete")) sendCommand({ type: "deletePreset", name: preset.name });
     });
     row.append(load, del);
     box.append(row);
@@ -377,15 +406,8 @@ $("#soundCheckBtn").addEventListener("click", () => {
   b.textContent = "Playing: left… right…";
   setTimeout(() => { b.textContent = "Test sound: left, then right"; }, 1800);
 });
-$("#quitBtn").addEventListener("click", () => {
-  $("#quitDialog").returnValue = "";
-  $("#quitDialog").showModal();
-});
-$("#quitDialog").addEventListener("click", (e) => {
-  if (e.target === e.currentTarget) e.currentTarget.close("cancel");   // tapped outside the box
-});
-$("#quitDialog").addEventListener("close", async () => {
-  if ($("#quitDialog").returnValue !== "quit") return;    // Cancel, Esc or a tap outside
+$("#quitBtn").addEventListener("click", async () => {
+  if (!(await askConfirm("Quit EyePath?", "Quit", "quit"))) return;
   if (!(await sendCommand({ type: "quit" }).catch(() => false))) return;
   stream.close();                      // don't keep trying to reach the app that just quit
   $("#closedScreen").hidden = false;
@@ -399,6 +421,7 @@ function renderLaptop() {
   const codeShowing = state.screen === "code";
   $("#codeBanner").hidden = !codeShowing;
   $("#quitBtn").hidden = !state.laptop.canQuit;
+  if (!state.laptop.canQuit) cancelConfirm("quit");
   $("#soundCheckBtn").disabled = state.run.status === "running";
   // "Show on": which screen the light is on, when more than one is connected.
   const displays = state.laptop.displays || [];

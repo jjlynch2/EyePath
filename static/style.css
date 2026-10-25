@@ -303,7 +303,7 @@ kbd { font: .8rem ui-monospace, monospace; padding: 1px 6px; border: 1px solid v
 .btn-plain { min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--card-2); }
 .btn-plain:disabled { opacity: .45; cursor: default; }
 .btn-plain.danger { border-color: var(--bad); color: #ff8f88; background: transparent; }
-.btn-plain.quit { border-color: var(--bad); background: var(--bad); color: #fff; font-weight: 600; }
+.btn-plain.confirm-ok { border-color: var(--bad); background: var(--bad); color: #fff; font-weight: 600; }
 dialog.confirm {
   border: 1px solid var(--line); border-radius: var(--radius); padding: 0; width: min(20rem, calc(100vw - 32px));
   background: var(--card); color: var(--text); text-align: center;

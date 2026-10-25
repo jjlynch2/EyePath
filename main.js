@@ -127,7 +127,7 @@ if (!app.requestSingleInstanceLock()) {
       if (url.startsWith(`http://127.0.0.1:${server.port}/`)) {
         return { action: "allow", overrideBrowserWindowOptions: {
           width: 480, height: 900, autoHideMenuBar: true, title: "EyePath remote",
-          icon: path.join(__dirname, "static", "icon-512.png"),   // its dialogs (e.g. Quit) show this too
+          icon: path.join(__dirname, "static", "icon-512.png"),   // window and taskbar icon (Windows, Linux)
         } };
       }
       shell.openExternal(url);
