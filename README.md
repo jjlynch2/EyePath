@@ -7,7 +7,7 @@ it from their phone. The moving light is for the eye movements used in EMDR
 
 Everything runs on the computer and the local Wi-Fi. No internet, accounts or
 cloud service. The app stores nothing about clients beyond what a therapist chooses to put in a
-preset's name (initials are a good idea).
+preset's name.
 
 EyePath is a tool for trained EMDR clinicians, not a treatment in itself (see the [disclaimer](#disclaimer)).
 
