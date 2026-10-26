@@ -6,8 +6,7 @@ it from their phone. The moving light is for the eye movements used in EMDR
 (Shapiro, 1989; see [References](#references)).
 
 Everything runs on the computer and the local Wi-Fi. No internet, accounts or
-cloud service. The app stores nothing about clients beyond what a therapist chooses to put in a
-preset's name.
+cloud service.
 
 EyePath is a tool for trained EMDR clinicians, not a treatment in itself (see the [disclaimer](#disclaimer)).
 
@@ -37,7 +36,7 @@ to say aloud.
    browser and enter the 6-character code.
 3. The computer's screen turns into the light bar. Everything else is done from the phone.
 
-The light opens full screen with sound ready, no clicks needed. Closing the
+The light opens full screen with sound ready. Closing the
 window quits the app.
 
 Every time the app opens it shows a new code, and nothing from an earlier
@@ -47,14 +46,6 @@ top of the phone remote.
 
 If the phone dies mid-session, press **C** on the computer to bring the QR code
 back (and C again to hide it).
-
-The computer never dims, locks or sleeps while the app is running (closing a laptop's
-lid still sleeps it). It goes back to normal when the app quits.
-
-The computer itself never needs the code, so the remote can also run there
-("Control it from this computer instead" on the QR screen), for example when the
-client watches a TV or second monitor. Opening the app again while it's
-running just reopens the screen.
 
 ### First run
 
@@ -71,14 +62,14 @@ running just reopens the screen.
 ### Remote controls
 
 - **Start / Stop**: Stop finishes the current sweep, then the ball glides to the centre. **Stop now** glides home straight away.
-- **Set length**: a number of passes, a timer, or no limit. A pass is the ball reaching one side.
-- **Tracks**: side to side, up and down, both diagonals, and figure 8 and oval in either direction (↺ is reversed). A new track starts with the next set.
+- **Set length**: a number of passes, a timer, or no limit.
+- **Tracks**: side to side, up and down, both diagonals, and figure 8 and oval in either direction (↺ is reversed).
   **Height on screen** moves the light up or down (tap **Centre** to reset).
 - **Show on**: with more than one screen connected, pick which one shows the light (or press S on the
-  computer). It remembers the choice, and a running set carries on while it moves.
+  computer).
 - **Light**: shape (circle, star, heart, diamond or square), colour, background, size and glow.
   **Fun shapes** for children: dog, cat, butterfly, fish, turtle, unicorn, rocket, gold star, rainbow
-  and ball. Animals turn to face the way they're moving.
+  and ball.
 - **Speed** is shown in sweeps per second (one side to the other) and in Hz (full back-and-forths per
   second). The default is 1 Hz. The Fast · 1.2 Hz preset is based on van Veen et al. (2015). The edge
   pause is part of each sweep's time, so the speed shown is the real rhythm. Speed and edge pause can
@@ -90,14 +81,12 @@ running just reopens the screen.
   **Test sound** plays a tone in the left ear, then the right, with "Left" / "Right" shown on that side of
   the client screen, so the client can check the headphones are the right way round.
   **Left / right balance** turns one ear down for a client who hears less on the other side.
-  Saved presets include the sound delay and balance, so a therapist can keep one per client; the
-  starter presets leave them as they are.
 - **Dual attention** (optional): colour flashes, numbers or letters appear on the light at random
   moments, easy, medium or hard. The client counts the flashes or says each number or letter aloud;
   the answers show under the counter on the remote. Based on Littel & van Schie (2019) and
   Matthijssen et al. (2021).
 - **Set counter**: "Set 3" next to the name at the top of the remote counts the sets started since the app
-  opened. It isn't saved and starts again at zero next time.
+  opened.
 - **Presets** save the current settings. A fresh install comes with five starter
   presets (Standard, Fast · 1.2 Hz, Slow & short, Sound only, Gentle star);
   delete or replace them as you like. The arrows next to each preset move it up or down; the first
