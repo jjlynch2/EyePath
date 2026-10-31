@@ -29,6 +29,14 @@ to say aloud.
 
 ![Numbers appearing on the moving light](docs/media/dual-attention.gif)
 
+**The remote, light or dark.** It follows the phone's own setting, and a button at the top switches.
+
+<p>
+  <img src="docs/media/remote.png" width="300" alt="The phone remote in light mode during a set: a preview of the light, 4 of 24 passes, Stop and Stop now, speed and set length">
+  &nbsp;
+  <img src="docs/media/remote-dark.png" width="300" alt="The same remote in dark mode">
+</p>
+
 ## Using it
 
 1. Open **EyePath** on the computer. The screen goes full screen and shows a QR code.
@@ -62,6 +70,8 @@ back (and C again to hide it).
 ### Remote controls
 
 - **Start / Stop**: Stop finishes the current sweep, then the ball glides to the centre. **Stop now** glides home straight away.
+- **Light or dark**: the sun/moon button at the top of the remote switches between the two. It starts as the
+  phone's own setting, and the choice is remembered on that phone.
 - **Set length**: a number of passes, a timer, or no limit.
 - **Tracks**: side to side, up and down, both diagonals, and figure 8 and oval in either direction (↺ is reversed).
   **Height on screen** moves the light up or down (tap **Centre** to reset).
@@ -89,7 +99,8 @@ back (and C again to hide it).
   opened.
 - **Presets** save the current settings. A fresh install comes with five starter
   presets (Standard, Fast · 1.2 Hz, Slow & short, Sound only, Gentle star);
-  delete or replace them as you like. The arrows next to each preset move it up or down; the first
+  delete or replace them as you like. The first three are also buttons under Start, so a client's
+  preset is one tap away. The arrows next to each preset move it up or down; the first
   ten load with keys 1–9 and 0.
 - **Keyboard** (when the remote is open on a computer): Space start/stop, Esc stop now, ↑/↓ speed, 1–9 and 0 load presets.
 - **Keys on the client screen**, for when your phone isn't nearby: Space start/stop, Esc stop now,

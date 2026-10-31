@@ -594,7 +594,7 @@ class Laptop {
       }
     });
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges">` +
-      `<rect width="${n}" height="${n}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+      `<rect width="${n}" height="${n}" fill="#e6f0f0"/><path d="${d}" fill="#0f2a2e"/></svg>`;   // tinted to match the screen; still high contrast for scanners
   }
 
   setAddress(addr) {
@@ -638,7 +638,7 @@ async function lanAddresses() {
 const PAGES = { "/client": "client.html", "/therapist": "therapist.html" };
 const TYPES = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8",
-  ".svg": "image/svg+xml", ".json": "application/json", ".png": "image/png", ".ico": "image/x-icon",
+  ".svg": "image/svg+xml", ".json": "application/json", ".png": "image/png", ".ico": "image/x-icon", ".woff2": "font/woff2",
 };
 const LOCAL_ADDRESSES = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
 
@@ -701,7 +701,7 @@ function makeHandler(app) {
       }
       // Answered before pairing so clock sync is as quick as possible; it reveals nothing.
       if (urlPath === "/api/time") return json({ t: nowMs() });
-      if (urlPath.startsWith("/static/") && /\.(css|svg|png)$/.test(urlPath)) return serveFile(urlPath.slice(8));   // styles and icons
+      if (urlPath.startsWith("/static/") && /\.(css|svg|png|woff2)$/.test(urlPath)) return serveFile(urlPath.slice(8));   // styles, icons and fonts
 
       if (!authed()) {
         if (urlPath.startsWith("/api/")) return json({ error: "login required" }, 401);

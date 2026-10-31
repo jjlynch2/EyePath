@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#0F1F23">
 <title>EyePath</title>
 <link rel="stylesheet" href="/static/style.css">
 <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
@@ -13,7 +13,10 @@
 <div id="stage"></div>
 
 <!-- Shown until the therapist's remote connects. -->
-<div id="codeScreen" class="code-screen"><div class="code-inner">
+<div id="codeScreen" class="code-screen">
+  <div class="code-eye" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12C5 7 8.5 5 12 5s7 2 10 7c-3 5-6.5 7-10 7S5 17 2 12Z"/></svg></div>
+  <div class="code-brand"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12C5 7 8.5 5 12 5s7 2 10 7c-3 5-6.5 7-10 7S5 17 2 12Z"/><circle cx="14" cy="12" r="3" fill="currentColor" stroke="none"/></svg><span>EyePath</span></div>
+  <div class="code-inner">
   <div class="code-card">
     <img id="qr" class="qr" alt="QR code to connect your phone">
     <div class="code-text">
@@ -22,7 +25,6 @@
       <p class="big-mono" id="addr">…</p>
       <p class="help">and enter the code</p>
       <p class="big-mono code" id="code">…</p>
-      <p class="help">This screen turns into the light bar as soon as your phone connects.</p>
       <div class="keys-box">
         <p class="keys-title">Keys on this computer</p>
         <dl class="keys-grid">

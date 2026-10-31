@@ -247,6 +247,8 @@ function renderControls() {
     : p.setMode === "timer" ? fmtTime(p.seconds) : "Until you stop";
   $("#passesRow").hidden = p.setMode !== "passes";
   $("#timerRow").hidden = p.setMode !== "timer";
+  renderSummaries(p);
+  for (const el of $$("[data-show-easing]")) el.hidden = el.dataset.showEasing !== p.easing;   // one line about the chosen movement
   const running = state.run.status === "running";
   $("#patternNote").textContent = running && p.pattern !== state.run.pattern ? "Changes at the next set" : "";
   const setDual = running && state.run.dual ? `${state.run.dual.task}|${state.run.dual.level}` : "off";
@@ -254,12 +256,59 @@ function renderControls() {
   $("#dualNote").textContent = running && setDual !== wantDual ? "Changes at the next set" : "";
 }
 
+// One line about each closed section, so its settings can be seen without opening it.
+const SHAPE_NAMES = {
+  circle: "Circle", star: "Star", heart: "Heart", diamond: "Diamond", square: "Square",
+  dog: "Dog", cat: "Cat", butterfly: "Butterfly", fish: "Fish", turtle: "Turtle",
+  unicorn: "Unicorn", rocket: "Rocket", goldstar: "Gold star", rainbow: "Rainbow", ball: "Ball",
+};
+const COLOUR_NAMES = {
+  "#4da3ff": "Blue", "#3ddc84": "Green", "#ffffff": "White", "#ffd23f": "Yellow",
+  "#ff8a3d": "Orange", "#ff4d6d": "Red", "#b388ff": "Purple",
+};
+const EASING_NAMES = { sine: "Smooth", linear: "Steady", jump: "Jump" };
+const SOUND_NAMES = { off: "Off", click: "Click", tone: "Tone", sweep: "Sweep" };
+const DUAL_NAMES = { off: "Off", flash: "Flashes", numbers: "Numbers", letters: "Letters" };
+const LEVEL_NAMES = { easy: "easy", medium: "medium", hard: "hard" };
+function renderSummaries(p) {
+  const shape = SHAPE_NAMES[p.shape] || "";
+  const colour = p.shape in EMOJI ? "" : COLOUR_NAMES[String(p.color).toLowerCase()] || "Custom colour";
+  $("#lightVal").textContent = p.visual === false ? "Off (sound only)" : [shape, colour].filter(Boolean).join(" · ");
+  $("#motionVal").textContent = `${EASING_NAMES[p.easing] || ""}${p.pause ? ` · ${p.pause} ms pause` : ""}`;
+  $("#soundVal").textContent = p.sound === "off" ? "Off" : `${SOUND_NAMES[p.sound] || ""} · ${Math.round(p.volume * 100)}%`;
+  $("#dualVal").textContent = p.dualTask === "off" ? "Off" : `${DUAL_NAMES[p.dualTask]} · ${LEVEL_NAMES[p.dualLevel] || ""}`;
+  const n = state.presets.length;
+  $("#presetsVal").textContent = n ? `${n} saved` : "";
+}
+
+// ---- light or dark. Starts as the phone's own setting; the button switches, and the
+// choice is kept on this phone.
+const THEME_KEY = "eyepath-theme";
+const darkByDefault = matchMedia("(prefers-color-scheme: dark)");
+const currentTheme = () => document.documentElement.dataset.theme || (darkByDefault.matches ? "dark" : "light");
+function applyTheme(choice) {
+  document.documentElement.dataset.theme = choice;
+  $("#themeBtn").setAttribute("aria-label", choice === "dark" ? "Switch to light" : "Switch to dark");
+  // The browser's own bar matches the page.
+  requestAnimationFrame(() => {
+    $('meta[name="theme-color"]').content = getComputedStyle(document.body).backgroundColor;
+  });
+}
+$("#themeBtn").addEventListener("click", () => {
+  const next = currentTheme() === "dark" ? "light" : "dark";
+  try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* private mode */ }
+  applyTheme(next);
+});
+applyTheme(currentTheme());
+
 function renderStatus() {
   const chip = $("#conn");
-  if (!connected) { chip.textContent = "Offline, reconnecting…"; chip.className = "chip bad"; return; }
+  const show = (text, cls, title) => { chip.textContent = text; chip.className = `chip ${cls}`; chip.title = title; };
+  if (!connected) return show("Disconnected", "bad", "Can't reach EyePath on the computer. Reconnecting…");
   if (!state) return;
-  if (state.clients > 0) { chip.textContent = state.clients > 1 ? `${state.clients} client screens` : "Client screen connected"; chip.className = "chip ok"; }
-  else { chip.textContent = "No client screen open"; chip.className = "chip warn"; }
+  if (state.clients > 1) show(`Connected · ${state.clients} screens`, "ok", `${state.clients} client screens are showing the light`);
+  else if (state.clients > 0) show("Connected", "ok", "The client screen is showing the light");
+  else show("No light screen", "warn", "EyePath is running, but no client screen is open to show the light");
 }
 
 function renderPresets() {
@@ -298,6 +347,17 @@ function renderPresets() {
     row.append(load, move("↑", -1, i === 0), move("↓", 1, i === state.presets.length - 1), del);
     box.append(row);
   });
+  // The first three, under Start.
+  const quick = $("#quickPresets");
+  quick.replaceChildren(...state.presets.slice(0, 3).map((preset, i) => {
+    const b = document.createElement("button");
+    b.innerHTML = `<b>${i + 1}</b>`;
+    b.append(preset.name);
+    b.title = `Load preset: ${preset.name}`;
+    b.addEventListener("click", () => sendCommand({ type: "loadPreset", name: preset.name }));
+    return b;
+  }));
+  quick.hidden = !state.presets.length;
   renderPresetMatch();
 }
 
@@ -309,12 +369,14 @@ function presetMatches(preset, p) {
 function renderPresetMatch() {
   if (!state) return;
   const p = params();
-  $$(".preset-load").forEach((btn, i) => {
-    const preset = state.presets[i];
-    const on = !!preset && presetMatches(preset, p);
-    btn.classList.toggle("on", on);
-    btn.setAttribute("aria-pressed", on);
-  });
+  for (const sel of [".preset-load", "#quickPresets button"]) {
+    $$(sel).forEach((btn, i) => {
+      const preset = state.presets[i];
+      const on = !!preset && presetMatches(preset, p);
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", on);
+    });
+  }
 }
 
 function fmtTime(sec) {
