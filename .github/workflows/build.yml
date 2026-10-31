@@ -1,6 +1,7 @@
 # Builds the Windows installer and the Mac app (Apple Silicon and Intel).
 # Run it by hand from the Actions tab, or push a tag like v0.1.0 to also
-# attach the downloads to a GitHub Release.
+# attach the downloads to a draft GitHub Release. The draft is not visible
+# to anyone else until you review it and press Publish on the Releases page.
 name: Build apps
 
 on:
@@ -48,6 +49,7 @@ jobs:
           merge-multiple: true
       - uses: softprops/action-gh-release@v3
         with:
+          draft: true
           files: |
             *.exe
             *.dmg

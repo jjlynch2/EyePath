@@ -138,7 +138,8 @@ After changing `server.js` or `main.js`, quit and start again.
 ### Building the Windows and Mac apps
 
 `.github/workflows/build.yml` builds both on GitHub: run it from the Actions
-tab, or push a tag such as `v0.1.0` to attach the downloads to a release.
+tab, or push a tag such as `v0.1.0` to attach the downloads to a draft
+release, which stays private until you publish it from the Releases page.
 It makes a Windows installer (`.exe`) and a Mac disk image (`.dmg`) that runs
 on both Apple Silicon and Intel Macs. To build by hand on Windows or a Mac:
 
