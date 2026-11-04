@@ -57,7 +57,7 @@ function connectionChanged(ok) {
 // incoming state for a moment so controls don't flicker while dragging.
 const pending = new Map();    // key -> { value, until }
 
-const LIMITS = { speed: [0.2, 4], passes: [1, 500], seconds: [3, 3600] };
+const LIMITS = { speed: [0.2, 4], passes: [1, 500], seconds: [3, 3600], size: [1, 30], pause: [0, 1000], travel: [30, 100], pitch: [100, 1200], audioOffset: [-300, 600] };
 
 function params() {
   const p = { ...state.params };
@@ -92,7 +92,7 @@ function flush() {
 for (const btn of $$(".shapes button")) {
   const v = btn.dataset.value;
   btn.innerHTML = v in EMOJI
-    ? `<img src="/static/emoji/${v}.svg" alt="">`
+    ? `<img src="/static/emoji/${v}.svg" alt=""><span>${btn.title}</span>`
     : `<svg viewBox="0 0 100 100">${SHAPES[v] || '<circle cx="50" cy="50" r="46"/>'}</svg>`;
 }
 
@@ -242,6 +242,12 @@ function renderControls() {
     const v = p[input.dataset.param];
     if (input.type === "checkbox") input.checked = !!v;
     else if (String(input.value) !== String(v)) input.value = v;
+    if (input.type === "range") {   // the filled part of the track, from the left or from the centre
+      const pct = ((v - input.min) / (input.max - input.min)) * 100;
+      const centre = "centre" in input.dataset;
+      input.style.setProperty("--lo", `${centre ? Math.min(50, pct) : 0}%`);
+      input.style.setProperty("--hi", `${centre ? Math.max(50, pct) : pct}%`);
+    }
   }
   for (const group of $$("[data-param]:not(input)")) {
     const v = p[group.dataset.param];
@@ -267,6 +273,7 @@ function renderControls() {
   $("#timerRow").hidden = p.setMode !== "timer";
   renderSummaries(p);
   for (const el of $$("[data-show-easing]")) el.hidden = el.dataset.showEasing !== p.easing;   // one line about the chosen movement
+  for (const el of $$("[data-show-sound]")) el.hidden = el.dataset.showSound !== p.sound;
   const running = state.run.status === "running";
   $("#setNote").hidden = !running;
   $("#patternNote").textContent = running && p.pattern !== state.run.pattern ? "Changes at the next set" : "";
@@ -286,19 +293,28 @@ const COLOUR_NAMES = {
   "#ff8a3d": "Orange", "#ff4d6d": "Red", "#b388ff": "Purple",
 };
 const PATTERN_NAMES = Object.fromEntries($$(".patterns button").map((b) => [b.dataset.value, b.title]));
+const BACKGROUND_NAMES = Object.fromEntries($$('[data-param="background"] button').map((b) => [b.dataset.value, b.getAttribute("aria-label")]));
 const EASING_NAMES = { sine: "Smooth", linear: "Steady", jump: "Jump" };
 const SOUND_NAMES = { off: "Off", click: "Click", tone: "Tone", sweep: "Sweep" };
 const DUAL_NAMES = { off: "Off", flash: "Flashes", numbers: "Numbers", letters: "Letters" };
 const LEVEL_NAMES = { easy: "easy", medium: "medium", hard: "hard" };
 function renderSummaries(p) {
   const shape = SHAPE_NAMES[p.shape] || "";
-  const colour = p.shape in EMOJI ? "" : COLOUR_NAMES[String(p.color).toLowerCase()] || "Custom colour";
-  $("#lightVal").textContent = p.visual === false ? "Off (sound only)" : [shape, colour].filter(Boolean).join(" · ");
-  $("#motionVal").textContent = `${EASING_NAMES[p.easing] || ""}${p.pause ? ` · ${p.pause} ms pause` : ""}`;
-  $("#soundVal").textContent = p.sound === "off" ? "Off" : `${SOUND_NAMES[p.sound] || ""} · ${Math.round(p.volume * 100)}%`;
+  const picture = p.shape in EMOJI;
+  const colour = COLOUR_NAMES[String(p.color).toLowerCase()] || "Custom";
+  const background = BACKGROUND_NAMES[String(p.background).toLowerCase()] || "Custom";
+  $("#shapeVal").textContent = shape;
+  $("#colourVal").textContent = colour;
+  $("#backgroundVal").textContent = background;
+  $("#lightVal").textContent = p.visual === false ? "Off (sound only)"
+    : [shape, picture ? "" : colour.toLowerCase(), `${p.size}%`].filter(Boolean).join(", ");
+  $("#trackVal").textContent = PATTERN_NAMES[p.pattern] || "";
+  $("#movementVal").textContent = EASING_NAMES[p.easing] || "";
+  $("#motionVal").textContent = [PATTERN_NAMES[p.pattern], (EASING_NAMES[p.easing] || "").toLowerCase(), p.pause ? `${p.pause} ms pause` : ""].filter(Boolean).join(", ");
+  $("#soundVal").textContent = p.sound === "off" ? "Off" : `${SOUND_NAMES[p.sound] || ""}, ${Math.round(p.volume * 100)}%`;
   $("#dualVal").textContent = p.dualTask === "off" ? "Off" : `${DUAL_NAMES[p.dualTask]} · ${LEVEL_NAMES[p.dualLevel] || ""}`;
   const n = state.presets.length;
-  $("#presetsVal").textContent = n ? `${n} saved` : "";
+  $("#presetsVal").textContent = n ? `${n} saved` : "No presets yet";
 }
 
 // ---- light or dark. "System" follows the phone's own setting (no data-theme on the page
@@ -384,60 +400,126 @@ function renderOfflineToast() {
   }
 }
 
+function presetRow(preset, i, { handle = false, menu = false, closes = null } = {}) {
+  const row = document.createElement("div");
+  row.className = "preset-row";
+  row.dataset.name = preset.name;
+  if (handle) {
+    const h = document.createElement("button");
+    h.type = "button";
+    h.className = "preset-handle";
+    h.setAttribute("aria-label", `Drag to reorder ${preset.name}`);
+    h.append(ico("dots-six-vertical--regular"));
+    row.append(h);
+  }
+  const load = document.createElement("button");
+  load.type = "button";
+  load.className = "preset-load";
+  const name = Object.assign(document.createElement("b"), { textContent: preset.name });
+  name.append(Object.assign(document.createElement("span"), { className: "tag", textContent: "In use" }));
+  const text = Object.assign(document.createElement("span"), { className: "row-text" });
+  text.append(name, Object.assign(document.createElement("span"), { textContent: presetSummary(preset) }));
+  load.append(Object.assign(document.createElement("span"), { className: "preset-num", textContent: String(i + 1) }), text);
+  if (!menu) load.append(ico("check--fill", "ico check"));
+  load.addEventListener("click", () => { sendCommand({ type: "loadPreset", name: preset.name }); if (closes) closes.close(); });
+  row.append(load);
+  if (menu) {
+    const m = document.createElement("button");
+    m.type = "button";
+    m.className = "preset-menu";
+    m.setAttribute("aria-label", `More for ${preset.name}`);
+    m.setAttribute("aria-haspopup", "dialog");
+    m.append(ico("dots-three--regular"));
+    m.addEventListener("click", () => openPresetMenu(preset, i));
+    row.append(m);
+  }
+  return row;
+}
+
 function renderPresets() {
   const box = $("#presets");
-  box.replaceChildren();
   if (!state.presets.length) {
     box.innerHTML = '<p class="help">No presets yet. Set things up, then save them here.</p>';
-    return;
+  } else {
+    box.replaceChildren(...state.presets.map((preset, i) => presetRow(preset, i, { handle: true, menu: true })));
   }
-  state.presets.forEach((preset, i) => {
-    const row = document.createElement("div");
-    row.className = "preset";
-    const load = document.createElement("button");
-    load.className = "preset-load";
-    load.textContent = (i < 10 ? `${(i + 1) % 10}  ` : "") + preset.name;
-    load.addEventListener("click", () => sendCommand({ type: "loadPreset", name: preset.name }));
-    const del = document.createElement("button");
-    del.className = "preset-del";
-    del.setAttribute("aria-label", `Delete ${preset.name}`);
-    del.textContent = "×";
-    del.addEventListener("click", async () => {
-      const ok = await askConfirm(`Delete preset "${preset.name}"?`, "Delete", `delete:${preset.name}`,
-        { body: "This removes it for every remote.", icon: "trash--fill" });
-      if (ok) {
-        sendCommand({ type: "deletePreset", name: preset.name });
-      }
-    });
-    // Up and down arrows: reorder, e.g. to give a favourite one of the number keys.
-    const move = (label, by, disabled) => {
-      const b = document.createElement("button");
-      b.className = "preset-move";
-      b.textContent = label;
-      b.disabled = disabled;
-      b.setAttribute("aria-label", `Move ${preset.name} ${by < 0 ? "up" : "down"}`);
-      b.addEventListener("click", () => sendCommand({ type: "movePreset", name: preset.name, by }));
-      return b;
-    };
-    row.append(load, move("↑", -1, i === 0), move("↓", 1, i === state.presets.length - 1), del);
-    box.append(row);
-  });
   // The same presets in the sheet off the Session tab: tap to load, and the sheet closes.
-  $("#sheetPresets").replaceChildren(...state.presets.map((preset, i) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "preset-row";
-    b.dataset.name = preset.name;
-    const text = Object.assign(document.createElement("span"), { className: "row-text" });
-    text.append(Object.assign(document.createElement("b"), { textContent: preset.name }),
-                Object.assign(document.createElement("span"), { textContent: presetSummary(preset) }));
-    b.append(Object.assign(document.createElement("span"), { className: "preset-num", textContent: String(i + 1) }), text, ico("check--fill", "ico check"));
-    b.addEventListener("click", () => { sendCommand({ type: "loadPreset", name: preset.name }); $("#presetSheet").close(); });
-    return b;
-  }));
+  $("#sheetPresets").replaceChildren(...state.presets.map((preset, i) => presetRow(preset, i, { closes: $("#presetSheet") })));
   $("#sheetPresets").hidden = !state.presets.length;
   renderPresetMatch();
 }
+
+// The menu on a row: Move up, Move down, Delete, as a small sheet.
+let menuPreset = null;
+function openPresetMenu(preset, i) {
+  const sheet = $("#presetMenuSheet");
+  if (!sheet.showModal) return;
+  menuPreset = preset;
+  $("#presetMenuTitle").textContent = preset.name;
+  $('[data-menu="up"]', sheet).disabled = i === 0;
+  $('[data-menu="down"]', sheet).disabled = i === state.presets.length - 1;
+  sheet.showModal();
+}
+for (const btn of $$("#presetMenuSheet [data-menu]")) {
+  btn.addEventListener("click", async () => {
+    const preset = menuPreset;
+    $("#presetMenuSheet").close();
+    if (!preset) return;
+    const what = btn.dataset.menu;
+    if (what === "delete") {
+      const ok = await askConfirm(`Delete preset "${preset.name}"?`, "Delete", `delete:${preset.name}`,
+        { body: "This removes it for every remote.", icon: "trash--fill" });
+      if (ok) sendCommand({ type: "deletePreset", name: preset.name });
+    } else {
+      sendCommand({ type: "movePreset", name: preset.name, by: what === "up" ? -1 : 1 });
+    }
+  });
+}
+
+// Drag a row by its handle to reorder. The server moves one place at a time, so a longer
+// drag becomes a few moves in a row.
+(function enableDrag(list) {
+  let drag = null;
+  list.addEventListener("pointerdown", (e) => {
+    const handle = e.target.closest(".preset-handle");
+    if (!handle || e.button !== 0) return;
+    const row = handle.closest(".preset-row");
+    const rows = [...list.querySelectorAll(".preset-row")];
+    drag = { row, rows, from: rows.indexOf(row), to: null, y0: e.clientY, h: row.offsetHeight };
+    try { handle.setPointerCapture(e.pointerId); } catch (err) { /* a pointer the browser doesn't know (synthetic) */ }
+    row.classList.add("dragging");
+    e.preventDefault();
+  });
+  list.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    const dy = e.clientY - drag.y0;
+    drag.row.style.transform = `translateY(${dy}px)`;
+    const to = Math.max(0, Math.min(drag.rows.length - 1, drag.from + Math.round(dy / drag.h)));
+    if (to === drag.to) return;
+    drag.to = to;
+    drag.rows.forEach((r, i) => {
+      if (r === drag.row) return;
+      let shift = 0;
+      if (drag.from < to && i > drag.from && i <= to) shift = -drag.h;
+      else if (drag.from > to && i >= to && i < drag.from) shift = drag.h;
+      r.style.transform = shift ? `translateY(${shift}px)` : "";
+    });
+  });
+  const release = async () => {
+    if (!drag) return;
+    const d = drag;
+    drag = null;
+    d.row.classList.remove("dragging");
+    for (const r of d.rows) r.style.transform = "";
+    const to = d.to ?? d.from;
+    const by = to > d.from ? 1 : -1;
+    for (let i = 0; i < Math.abs(to - d.from); i++) {
+      await sendCommand({ type: "movePreset", name: d.row.dataset.name, by }).catch(() => {});
+    }
+  };
+  list.addEventListener("pointerup", release);
+  list.addEventListener("pointercancel", release);
+})($("#presets"));
 
 // One line about a preset: speed, set length, the light when it isn't the usual blue circle, sound.
 function presetSummary(preset) {
@@ -461,15 +543,10 @@ function renderPresetMatch() {
   const p = params();
   const match = state.presets.find((preset) => presetMatches(preset, p)) || null;
   $("#presetBarName").textContent = match ? match.name : "Custom settings";
-  $$(".preset-load").forEach((btn, i) => {
-    const on = !!state.presets[i] && state.presets[i] === match;
-    btn.classList.toggle("on", on);
-    btn.setAttribute("aria-pressed", on);
-  });
   for (const row of $$(".preset-row")) {
     const on = !!match && row.dataset.name === match.name;
     row.classList.toggle("on", on);
-    row.setAttribute("aria-pressed", on);
+    $(".preset-load", row).setAttribute("aria-pressed", on);
   }
 }
 
@@ -628,9 +705,9 @@ Clock.start();
 $("#hideCodeBtn").addEventListener("click", () => sendCommand({ type: "hideCode" }));
 $("#soundCheckBtn").addEventListener("click", () => {
   sendCommand({ type: "soundCheck" });
-  const b = $("#soundCheckBtn");
-  b.textContent = "Playing: left… right…";
-  setTimeout(() => { b.textContent = "Test sound: left, then right"; }, 1800);
+  const label = $("#soundCheckBtn span");
+  label.textContent = "Playing: left… right…";
+  setTimeout(() => { label.textContent = "Test left, then right"; }, 1800);
 });
 $("#quitBtn").addEventListener("click", async () => {
   $("#roomSheet").close();             // the question stands on its own
@@ -655,6 +732,8 @@ function renderLaptop() {
   // "Show on": which screen the light is on, when more than one is connected.
   const displays = state.laptop.displays || [];
   $("#screenRow").hidden = displays.length < 2;
+  $("#showOnRow").hidden = displays.length < 2;
+  $("#showOnVal").textContent = (displays.find((d) => d.current) || {}).name || "";
   const key = JSON.stringify(displays);
   if (key !== screensKey) {
     screensKey = key;
@@ -735,6 +814,9 @@ for (const sheet of $$("dialog.sheet")) {
   grip.addEventListener("pointercancel", release);
 }
 $("#roomBtn").addEventListener("click", () => { const sheet = $("#roomSheet"); if (sheet.showModal) sheet.showModal(); });
+$("#picturesBtn").addEventListener("click", () => { const sheet = $("#picturesSheet"); if (sheet.showModal) sheet.showModal(); });
+$("#useShapeBtn").addEventListener("click", () => { setParam("shape", "circle", true); $("#picturesSheet").close(); });
+$("#showOnRow").addEventListener("click", () => { const sheet = $("#roomSheet"); if (sheet.showModal) sheet.showModal(); });
 $("#presetBar").addEventListener("click", () => {
   const sheet = $("#presetSheet");
   if (!sheet.showModal) return;

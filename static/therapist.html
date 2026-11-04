@@ -99,177 +99,215 @@
   </section>
 
   <section class="tab-panel" data-tab="light" aria-label="Light" hidden>
+    <header class="tab-head"><h1>Light</h1><p id="lightVal" class="tab-summary"></p></header>
     <section class="card">
-      <div class="row-head"><h2>Light</h2><span id="lightVal" class="val"></span></div>
-      <div class="field">
-        <span>Shape</span>
-        <div class="shapes" data-param="shape">
-          <button data-value="circle" title="Circle" aria-label="Circle"></button>
-          <button data-value="star" title="Star" aria-label="Star"></button>
-          <button data-value="heart" title="Heart" aria-label="Heart"></button>
-          <button data-value="diamond" title="Diamond" aria-label="Diamond"></button>
-          <button data-value="square" title="Square" aria-label="Square"></button>
-        </div>
+      <div class="row-head"><h2>Shape</h2><span id="shapeVal" class="val"></span></div>
+      <div class="shapes" data-param="shape">
+        <button data-value="circle" title="Circle" aria-label="Circle"></button>
+        <button data-value="star" title="Star" aria-label="Star"></button>
+        <button data-value="heart" title="Heart" aria-label="Heart"></button>
+        <button data-value="diamond" title="Diamond" aria-label="Diamond"></button>
+        <button data-value="square" title="Square" aria-label="Square"></button>
       </div>
-      <div class="field">
-        <span>Fun shapes</span>
-        <div class="shapes fun" data-param="shape">
-          <button data-value="dog" title="Dog" aria-label="Dog"></button>
-          <button data-value="cat" title="Cat" aria-label="Cat"></button>
-          <button data-value="butterfly" title="Butterfly" aria-label="Butterfly"></button>
-          <button data-value="fish" title="Fish" aria-label="Fish"></button>
-          <button data-value="turtle" title="Turtle" aria-label="Turtle"></button>
-          <button data-value="unicorn" title="Unicorn" aria-label="Unicorn"></button>
-          <button data-value="rocket" title="Rocket" aria-label="Rocket"></button>
-          <button data-value="goldstar" title="Gold star" aria-label="Gold star"></button>
-          <button data-value="rainbow" title="Rainbow" aria-label="Rainbow"></button>
-          <button data-value="ball" title="Ball" aria-label="Ball"></button>
-        </div>
+      <hr class="divider">
+      <button id="picturesBtn" type="button" class="link-row" aria-haspopup="dialog">
+        <span class="row-icon"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#image--regular"/></svg></span>
+        <span class="row-text"><b>Pictures</b><span>Dog, cat, rocket and 7 more</span></span>
+        <svg class="ico chev" aria-hidden="true"><use href="/static/icons/sprite.svg#caret-right--regular"/></svg>
+      </button>
+    </section>
+
+    <section class="card">
+      <div class="row-head"><h2>Light colour</h2><span id="colourVal" class="val"></span></div>
+      <div class="swatches" data-param="color">
+        <button data-value="#4da3ff" style="--c:#4da3ff" aria-label="Blue"></button>
+        <button data-value="#3ddc84" style="--c:#3ddc84" aria-label="Green"></button>
+        <button data-value="#ffffff" style="--c:#ffffff" aria-label="White"></button>
+        <button data-value="#ffd23f" style="--c:#ffd23f" aria-label="Yellow"></button>
+        <button data-value="#ff8a3d" style="--c:#ff8a3d" aria-label="Orange"></button>
+        <button data-value="#ff4d6d" style="--c:#ff4d6d" aria-label="Red"></button>
+        <button data-value="#b388ff" style="--c:#b388ff" aria-label="Purple"></button>
+        <label class="swatch-custom" title="Custom colour"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg><input type="color" data-param="color" aria-label="Custom colour"></label>
       </div>
-      <div class="field">
-        <span>Colour</span>
-        <div class="swatches" data-param="color">
-          <button data-value="#4da3ff" style="--c:#4da3ff" aria-label="Blue"></button>
-          <button data-value="#3ddc84" style="--c:#3ddc84" aria-label="Green"></button>
-          <button data-value="#ffffff" style="--c:#ffffff" aria-label="White"></button>
-          <button data-value="#ffd23f" style="--c:#ffd23f" aria-label="Yellow"></button>
-          <button data-value="#ff8a3d" style="--c:#ff8a3d" aria-label="Orange"></button>
-          <button data-value="#ff4d6d" style="--c:#ff4d6d" aria-label="Red"></button>
-          <button data-value="#b388ff" style="--c:#b388ff" aria-label="Purple"></button>
-          <input type="color" data-param="color" aria-label="Custom colour">
-        </div>
+      <div class="row-head"><h2>Background</h2><span id="backgroundVal" class="val"></span></div>
+      <div class="swatches" data-param="background">
+        <button data-value="#000000" style="--c:#000000" aria-label="Black"></button>
+        <button data-value="#1b1f24" style="--c:#1b1f24" aria-label="Charcoal"></button>
+        <button data-value="#0f1f23" style="--c:#0f1f23" aria-label="Deep teal"></button>
+        <button data-value="#0b1a33" style="--c:#0b1a33" aria-label="Navy"></button>
+        <button data-value="#13261b" style="--c:#13261b" aria-label="Forest"></button>
+        <button data-value="#2a1f33" style="--c:#2a1f33" aria-label="Plum"></button>
+        <button data-value="#20353b" style="--c:#20353b" aria-label="Teal grey"></button>
+        <button data-value="#2e3a44" style="--c:#2e3a44" aria-label="Slate"></button>
+        <button data-value="#3b3a36" style="--c:#3b3a36" aria-label="Stone"></button>
+        <button data-value="#3a4a40" style="--c:#3a4a40" aria-label="Sage"></button>
+        <button data-value="#6b7680" style="--c:#6b7680" aria-label="Fog"></button>
+        <button data-value="#e9e6df" style="--c:#e9e6df" aria-label="Light"></button>
+        <label class="swatch-custom" title="Custom background"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg><input type="color" data-param="background" aria-label="Custom background"></label>
       </div>
-      <div class="field">
-        <span>Background</span>
-        <div class="swatches" data-param="background">
-          <button data-value="#000000" style="--c:#000000" aria-label="Black"></button>
-          <button data-value="#1b1f24" style="--c:#1b1f24" aria-label="Charcoal"></button>
-          <button data-value="#0f1f23" style="--c:#0f1f23" aria-label="Deep teal"></button>
-          <button data-value="#0b1a33" style="--c:#0b1a33" aria-label="Navy"></button>
-          <button data-value="#13261b" style="--c:#13261b" aria-label="Forest"></button>
-          <button data-value="#2a1f33" style="--c:#2a1f33" aria-label="Plum"></button>
-          <button data-value="#20353b" style="--c:#20353b" aria-label="Teal grey"></button>
-          <button data-value="#2e3a44" style="--c:#2e3a44" aria-label="Slate"></button>
-          <button data-value="#3b3a36" style="--c:#3b3a36" aria-label="Stone"></button>
-          <button data-value="#3a4a40" style="--c:#3a4a40" aria-label="Sage"></button>
-          <button data-value="#6b7680" style="--c:#6b7680" aria-label="Fog"></button>
-          <button data-value="#e9e6df" style="--c:#e9e6df" aria-label="Light"></button>
-          <input type="color" data-param="background" aria-label="Custom background">
-        </div>
+    </section>
+
+    <section class="card rows">
+      <div class="setting-row">
+        <span class="row-text"><b>Size</b><span>Share of screen height</span></span>
+        <div class="stepper">
+            <button data-step="size" data-delta="-1" aria-label="Smaller"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
+            <span class="stepper-value"><b id="sizeVal"></b></span>
+            <button data-step="size" data-delta="1" aria-label="Larger"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
+          </div>
+          <input type="range" min="1" max="30" step="0.5" data-param="size" data-num hidden>
       </div>
-      <label class="field"><span>Size <b id="sizeVal"></b></span>
-        <input type="range" min="1" max="30" step="0.5" data-param="size" data-num></label>
-      <label class="toggle"><input type="checkbox" data-param="glow"> Glow</label>
-      <label class="toggle"><input type="checkbox" data-param="rest"> Show the light at rest between sets</label>
-      <label class="toggle"><input type="checkbox" data-param="visual"> Light on (turn off for sound only)</label>
+      <label class="setting-row"><span class="row-text"><b>Glow</b></span><input type="checkbox" role="switch" class="switch" data-param="glow"></label>
+      <label class="setting-row"><span class="row-text"><b>Light at rest between sets</b></span><input type="checkbox" role="switch" class="switch" data-param="rest"></label>
+      <label class="setting-row"><span class="row-text"><b>Light on</b><span>Off for sound-only sets</span></span><input type="checkbox" role="switch" class="switch" data-param="visual"></label>
+      <button id="showOnRow" type="button" class="setting-row link-row" aria-haspopup="dialog" hidden>
+        <svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#monitor--regular"/></svg><span class="row-text"><b>Show on</b></span><span id="showOnVal" class="val"></span><svg class="ico chev" aria-hidden="true"><use href="/static/icons/sprite.svg#caret-right--regular"/></svg>
+      </button>
     </section>
   </section>
 
   <section class="tab-panel" data-tab="motion" aria-label="Motion" hidden>
+    <header class="tab-head"><h1>Motion</h1><p id="motionVal" class="tab-summary"></p></header>
     <section class="card">
-      <div class="row-head"><h2>Track</h2><span id="patternNote" class="note"></span></div>
+      <div class="row-head"><h2>Track</h2><span id="patternNote" class="note"></span><span id="trackVal" class="val"></span></div>
       <div class="patterns" data-param="pattern">
-        <button data-value="horizontal" title="Side to side"><svg viewBox="0 0 40 24"><path d="M5 12H35"/><circle cx="30" cy="12" r="3"/></svg><span>Side to side</span></button>
-        <button data-value="vertical" title="Up and down"><svg viewBox="0 0 40 24"><path d="M20 3V21"/><circle cx="20" cy="7" r="3"/></svg><span>Up &amp; down</span></button>
-        <button data-value="diagUp" title="Diagonal, rising"><svg viewBox="0 0 40 24"><path d="M7 21L33 3"/><circle cx="27" cy="7" r="3"/></svg><span>Diagonal ↗</span></button>
-        <button data-value="diagDown" title="Diagonal, falling"><svg viewBox="0 0 40 24"><path d="M7 3L33 21"/><circle cx="27" cy="17" r="3"/></svg><span>Diagonal ↘</span></button>
-        <button data-value="figure8" title="Figure 8"><svg viewBox="0 0 40 24"><path d="M20 12C14 3 5 3 5 12S14 21 20 12 35 3 35 12 26 21 20 12Z"/><path class="dir" d="M23 18.5H27V14.5"/><circle cx="20" cy="12" r="3"/></svg><span>Figure 8</span></button>
-        <button data-value="figure8r" title="Figure 8, reversed direction"><svg viewBox="0 0 40 24"><path d="M20 12C14 3 5 3 5 12S14 21 20 12 35 3 35 12 26 21 20 12Z"/><path class="dir" d="M17 18.5H13V14.5"/><circle cx="20" cy="12" r="3"/></svg><span>Figure 8 ↺</span></button>
-        <button data-value="oval" title="Oval"><svg viewBox="0 0 40 24"><ellipse cx="20" cy="12" rx="15" ry="9"/><path class="dir" d="M25 0.8L28 3L25 5.2"/><circle cx="20" cy="3" r="3"/></svg><span>Oval</span></button>
-        <button data-value="ovalr" title="Oval, reversed direction"><svg viewBox="0 0 40 24"><ellipse cx="20" cy="12" rx="15" ry="9"/><path class="dir" d="M15 0.8L12 3L15 5.2"/><circle cx="20" cy="3" r="3"/></svg><span>Oval ↺</span></button>
+        <button data-value="horizontal" title="Side to side"><svg class="track-icon" aria-hidden="true" viewBox="0 0 48 28" fill="none"><path class="track-line" d="M8 14H40" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/><path class="track-trail" d="M23.5 16C24.6046 16 25.5 15.1046 25.5 14C25.5 12.8954 24.6046 12 23.5 12C22.3954 12 21.5 12.8954 21.5 14C21.5 15.1046 22.3954 16 23.5 16Z" fill="currentColor" opacity="0.5"/><path class="track-dot" d="M31 17.5C32.933 17.5 34.5 15.933 34.5 14C34.5 12.067 32.933 10.5 31 10.5C29.067 10.5 27.5 12.067 27.5 14C27.5 15.933 29.067 17.5 31 17.5Z" fill="currentColor"/></svg><span>Side to side</span></button>
+        <button data-value="vertical" title="Up and down"><svg class="track-icon" aria-hidden="true" viewBox="0 0 48 28" fill="none"><path class="track-line" d="M24 4V24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/><path class="track-trail" d="M24 18.5C25.1046 18.5 26 17.6046 26 16.5C26 15.3954 25.1046 14.5 24 14.5C22.8954 14.5 22 15.3954 22 16.5C22 17.6046 22.8954 18.5 24 18.5Z" fill="currentColor" opacity="0.5"/><path class="track-dot" d="M24 13.5C25.933 13.5 27.5 11.933 27.5 10C27.5 8.067 25.933 6.5 24 6.5C22.067 6.5 20.5 8.067 20.5 10C20.5 11.933 22.067 13.5 24 13.5Z" fill="currentColor"/></svg><span>Up and down</span></button>
+        <button data-value="diagUp" title="Diagonal up"><svg class="track-icon" aria-hidden="true" viewBox="0 0 48 28" fill="none"><path class="track-line" d="M11 22L37 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/><path class="track-trail" d="M25 15.4C26.1046 15.4 27 14.5046 27 13.4C27 12.2955 26.1046 11.4 25 11.4C23.8954 11.4 23 12.2955 23 13.4C23 14.5046 23.8954 15.4 25 15.4Z" fill="currentColor" opacity="0.5"/><path class="track-dot" d="M31 13.2C32.933 13.2 34.5 11.6329 34.5 9.7C34.5 7.767 32.933 6.2 31 6.2C29.067 6.2 27.5 7.767 27.5 9.7C27.5 11.6329 29.067 13.2 31 13.2Z" fill="currentColor"/></svg><span>Diagonal up</span></button>
+        <button data-value="diagDown" title="Diagonal down"><svg class="track-icon" aria-hidden="true" viewBox="0 0 48 28" fill="none"><path class="track-line" d="M11 6L37 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/><path class="track-trail" d="M25 16.6C26.1046 16.6 27 15.7045 27 14.6C27 13.4954 26.1046 12.6 25 12.6C23.8954 12.6 23 13.4954 23 14.6C23 15.7045 23.8954 16.6 25 16.6Z" fill="currentColor" opacity="0.5"/><path class="track-dot" d="M31 21.8C32.933 21.8 34.5 20.233 34.5 18.3C34.5 16.3671 32.933 14.8 31 14.8C29.067 14.8 27.5 16.3671 27.5 18.3C27.5 20.233 29.067 21.8 31 21.8Z" fill="currentColor"/></svg><span>Diagonal down</span></button>
+        <button data-value="figure8" title="Figure 8"><svg class="track-icon" aria-hidden="true" viewBox="0 0 48 28" fill="none"><path class="track-line" d="M24 14C21.2 9.2 18 6.5 14.5 6.5C10.4 6.5 7.5 9.8 7.5 14C7.5 18.2 10.4 21.5 14.5 21.5C18 21.5 21.2 18.8 24 14ZM24 14C26.8 9.2 30 6.5 33.5 6.5C37.6 6.5 40.5 9.8 40.5 14C40.5 18.2 37.6 21.5 33.5 21.5C30 21.5 26.8 18.8 24 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/><path class="track-trail" d="M28.3 10.9C29.4044 10.9 30.3 10.0046 30.3 8.9C30.3 7.7955 29.4044 6.9 28.3 6.9C27.1952 6.9 26.3 7.7955 26.3 8.9C26.3 10.0046 27.1952 10.9 28.3 10.9Z" fill="currentColor" opacity="0.5"/><path class="track-dot" d="M33.5 10C35.433 10 37 8.433 37 6.5C37 4.567 35.433 3 33.5 3C31.567 3 30 4.567 30 6.5C30 8.433 31.567 10 33.5 10Z" fill="currentColor"/></svg><span>Figure 8</span></button>
+        <button data-value="figure8r" title="Figure 8 reverse"><svg class="track-icon" aria-hidden="true" viewBox="0 0 48 28" fill="none"><path class="track-line" d="M24 14C21.2 9.2 18 6.5 14.5 6.5C10.4 6.5 7.5 9.8 7.5 14C7.5 18.2 10.4 21.5 14.5 21.5C18 21.5 21.2 18.8 24 14ZM24 14C26.8 9.2 30 6.5 33.5 6.5C37.6 6.5 40.5 9.8 40.5 14C40.5 18.2 37.6 21.5 33.5 21.5C30 21.5 26.8 18.8 24 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/><path class="track-trail" d="M38.4 10.6C39.5045 10.6 40.4 9.7045 40.4 8.6C40.4 7.4954 39.5045 6.6 38.4 6.6C37.2953 6.6 36.4 7.4954 36.4 8.6C36.4 9.7045 37.2953 10.6 38.4 10.6Z" fill="currentColor" opacity="0.5"/><path class="track-dot" d="M33.5 10C35.433 10 37 8.433 37 6.5C37 4.567 35.433 3 33.5 3C31.567 3 30 4.567 30 6.5C30 8.433 31.567 10 33.5 10Z" fill="currentColor"/></svg><span>Figure 8 reverse</span></button>
+        <button data-value="oval" title="Oval"><svg class="track-icon" aria-hidden="true" viewBox="0 0 48 28" fill="none"><path class="track-line" d="M24 23C31.732 23 38 18.9706 38 14C38 9.02944 31.732 5 24 5C16.268 5 10 9.02944 10 14C10 18.9706 16.268 23 24 23Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/><path class="track-trail" d="M17.6 8.3C18.7047 8.3 19.6 7.4046 19.6 6.3C19.6 5.1955 18.7047 4.3 17.6 4.3C16.4955 4.3 15.6 5.1955 15.6 6.3C15.6 7.4046 16.4955 8.3 17.6 8.3Z" fill="currentColor" opacity="0.5"/><path class="track-dot" d="M24 8.5C25.933 8.5 27.5 6.933 27.5 5C27.5 3.067 25.933 1.5 24 1.5C22.067 1.5 20.5 3.067 20.5 5C20.5 6.933 22.067 8.5 24 8.5Z" fill="currentColor"/></svg><span>Oval</span></button>
+        <button data-value="ovalr" title="Oval reverse"><svg class="track-icon" aria-hidden="true" viewBox="0 0 48 28" fill="none"><path class="track-line" d="M24 23C31.732 23 38 18.9706 38 14C38 9.02944 31.732 5 24 5C16.268 5 10 9.02944 10 14C10 18.9706 16.268 23 24 23Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/><path class="track-trail" d="M30.4 8.3C31.5045 8.3 32.4 7.4046 32.4 6.3C32.4 5.1955 31.5045 4.3 30.4 4.3C29.2953 4.3 28.4 5.1955 28.4 6.3C28.4 7.4046 29.2953 8.3 30.4 8.3Z" fill="currentColor" opacity="0.5"/><path class="track-dot" d="M24 8.5C25.933 8.5 27.5 6.933 27.5 5C27.5 3.067 25.933 1.5 24 1.5C22.067 1.5 20.5 3.067 20.5 5C20.5 6.933 22.067 8.5 24 8.5Z" fill="currentColor"/></svg><span>Oval reverse</span></button>
       </div>
-      <label class="toggle"><input type="checkbox" data-param="track"> Show the track faintly</label>
-      <div class="field">
-        <span>Height on screen <b id="heightVal"></b></span>
-        <div class="slider-row">
-          <input type="range" min="-40" max="40" step="1" data-param="height" data-num aria-label="Height on screen">
-          <button id="heightReset" class="btn-small" hidden>Centre</button>
+      <div class="rows">
+        <label class="setting-row"><span class="row-text"><b>Show the track faintly</b></span><input type="checkbox" role="switch" class="switch" data-param="track"></label>
+        <div class="setting-row column">
+          <div class="row-line"><b>Height on screen</b><span class="row-value"><button id="heightReset" type="button" class="link-btn" hidden>Centre</button><b id="heightVal"></b></span></div>
+          <input type="range" min="-40" max="40" step="1" data-param="height" data-num data-centre aria-label="Height on screen">
+          <div class="slider-ends"><span>Lower</span><span>Higher</span></div>
         </div>
       </div>
     </section>
 
     <section class="card">
-      <div class="row-head"><h2>Motion</h2><span id="motionVal" class="val"></span></div>
-      <div class="field"><span>Movement</span>
-        <div class="seg" data-param="easing">
-          <button data-value="sine">Smooth</button>
-          <button data-value="linear">Steady</button>
-          <button data-value="jump">Jump</button>
-        </div>
-        <p class="help" data-show-easing="sine">Slows down at each side.</p>
-        <p class="help" data-show-easing="linear">Keeps one speed all the way across.</p>
-        <p class="help" data-show-easing="jump">Snaps from side to side.</p>
+      <div class="row-head"><h2>Movement</h2><span id="movementVal" class="val"></span></div>
+      <div class="seg" data-param="easing">
+        <button data-value="sine">Smooth</button>
+        <button data-value="linear">Steady</button>
+        <button data-value="jump">Jump</button>
       </div>
-      <label class="field"><span>Pause at each edge <b id="pauseVal"></b></span>
-        <input type="range" min="0" max="1000" step="10" data-param="pause" data-num></label>
-      <label class="field"><span>Track width <b id="travelVal"></b></span>
-        <input type="range" min="30" max="100" step="1" data-param="travel" data-num></label>
+      <p class="help" data-show-easing="sine">Slows down at each side.</p>
+      <p class="help" data-show-easing="linear">Keeps one speed all the way across.</p>
+      <p class="help" data-show-easing="jump">Snaps from side to side.</p>
+      <div class="rows">
+        <div class="setting-row">
+          <span class="row-text"><b>Edge pause</b></span>
+          <div class="stepper">
+            <button data-step="pause" data-delta="-10" aria-label="Shorter pause"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
+            <span class="stepper-value"><b id="pauseVal"></b></span>
+            <button data-step="pause" data-delta="10" aria-label="Longer pause"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
+          </div>
+          <input type="range" min="0" max="1000" step="10" data-param="pause" data-num hidden>
+        </div>
+        <div class="setting-row">
+          <span class="row-text"><b>Track width</b><span>Share of screen width</span></span>
+          <div class="stepper">
+            <button data-step="travel" data-delta="-5" aria-label="Narrower"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
+            <span class="stepper-value"><b id="travelVal"></b></span>
+            <button data-step="travel" data-delta="5" aria-label="Wider"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
+          </div>
+          <input type="range" min="30" max="100" step="1" data-param="travel" data-num hidden>
+        </div>
+      </div>
     </section>
 
     <section class="card">
-      <div class="row-head"><h2>Dual attention</h2><span id="dualNote" class="note"></span><span id="dualVal" class="val"></span></div>
+      <div class="row-head"><h2 class="with-icon"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#brain--regular"/></svg>Dual attention</h2><span id="dualNote" class="note"></span><span id="dualVal" class="val"></span></div>
       <div class="seg" data-param="dualTask">
         <button data-value="off">Off</button>
         <button data-value="flash">Flashes</button>
         <button data-value="numbers">Numbers</button>
         <button data-value="letters">Letters</button>
       </div>
-      <div class="field"><span>How often</span>
-        <div class="seg" data-param="dualLevel">
-          <button data-value="easy">Easy</button>
-          <button data-value="medium">Medium</button>
-          <button data-value="hard">Hard</button>
-        </div>
+      <p class="help">Something for the client to watch for while following the light: count the colour flashes, or say each number or letter aloud.</p>
+      <div class="callout"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#warning--fill"/></svg><span>Colour flashes may not suit people with photosensitive epilepsy or sensitivity to flashing light.</span></div>
+      <div class="row-head"><h2>How often</h2></div>
+      <div class="seg" data-param="dualLevel">
+        <button data-value="easy">Easy</button>
+        <button data-value="medium">Medium</button>
+        <button data-value="hard">Hard</button>
       </div>
-      <p class="help">Gives the client something to watch for while following the light: count the colour
-        flashes, or say each number or letter aloud. The answers show under the counter. Changes apply
-        from the next set.</p>
-      <p class="help">Colour flashes may not be suitable for people with photosensitive epilepsy or
-        sensitivity to flashing light.</p>
+      <p class="help">Answers show under the counter. Applies from the next set.</p>
     </section>
   </section>
 
   <section class="tab-panel" data-tab="sound" aria-label="Sound" hidden>
+    <header class="tab-head"><h1>Sound</h1><p id="soundVal" class="tab-summary"></p></header>
     <section class="card">
-      <div class="row-head"><h2>Sound</h2><span id="soundVal" class="val"></span></div>
       <div class="seg" data-param="sound">
         <button data-value="off">Off</button>
         <button data-value="click">Click</button>
         <button data-value="tone">Tone</button>
         <button data-value="sweep">Sweep</button>
       </div>
-      <div class="setup-row">
-        <button id="soundCheckBtn" class="btn-plain">Test sound: left, then right</button>
+      <p class="help" data-show-sound="off">No sound with the light.</p>
+      <p class="help" data-show-sound="click">A short click in each ear as the light reaches that side.</p>
+      <p class="help" data-show-sound="tone">A soft tone in each ear as the light reaches that side.</p>
+      <p class="help" data-show-sound="sweep">A tone that moves from ear to ear with the light.</p>
+      <button id="soundCheckBtn" type="button" class="btn-secondary wide"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#headphones--regular"/></svg><span>Test left, then right</span></button>
+    </section>
+
+    <section class="card rows">
+      <div class="setting-row column">
+        <div class="row-line"><b>Volume</b><span class="row-value"><b id="volumeVal"></b></span></div>
+        <input type="range" min="0" max="1" step="0.01" data-param="volume" data-num aria-label="Volume">
       </div>
-      <label class="field"><span>Volume <b id="volumeVal"></b></span>
-        <input type="range" min="0" max="1" step="0.01" data-param="volume" data-num></label>
-      <label class="field"><span>Pitch <b id="pitchVal"></b></span>
-        <input type="range" min="100" max="1200" step="10" data-param="pitch" data-num></label>
-      <div class="field">
-        <span>Left / right balance <b id="balanceVal"></b></span>
-        <div class="slider-row">
-          <input type="range" min="-100" max="100" step="5" data-param="balance" data-num aria-label="Left / right balance">
-          <button id="balanceReset" class="btn-small" hidden>Centre</button>
-        </div>
+      <div class="setting-row">
+        <span class="row-text"><b>Pitch</b></span>
+        <div class="stepper">
+            <button data-step="pitch" data-delta="-10" aria-label="Lower pitch"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
+            <span class="stepper-value"><b id="pitchVal"></b></span>
+            <button data-step="pitch" data-delta="10" aria-label="Higher pitch"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
+          </div>
+          <input type="range" min="100" max="1200" step="10" data-param="pitch" data-num hidden>
       </div>
-      <p class="help">For a client who hears less on one side: move it toward the weaker ear to turn the other ear down.</p>
-      <label class="field"><span>Sound delay <b id="audioOffsetVal"></b></span>
-        <input type="range" min="-300" max="600" step="5" data-param="audioOffset" data-num></label>
-      <p class="help">Leave the delay at 0 for wired headphones. Bluetooth headphones often need 150–250 ms so the sound lines up with the light.</p>
+    </section>
+
+    <section class="card">
+      <div class="setting-row column">
+        <div class="row-line"><b>Left / right balance</b><span class="row-value"><button id="balanceReset" type="button" class="link-btn" hidden>Centre</button><b id="balanceVal"></b></span></div>
+        <input type="range" min="-100" max="100" step="5" data-param="balance" data-num data-centre aria-label="Left / right balance">
+        <div class="slider-ends"><span>Left</span><span>Right</span></div>
+      </div>
+      <p class="help">Move toward the weaker ear to turn the other ear down.</p>
+    </section>
+
+    <section class="card">
+      <div class="setting-row">
+        <span class="row-text"><b>Sound delay</b><span>Wired: 0 ms. Bluetooth usually 150–250 ms.</span></span>
+        <div class="stepper">
+            <button data-step="audioOffset" data-delta="-5" aria-label="Less delay"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
+            <span class="stepper-value"><b id="audioOffsetVal"></b></span>
+            <button data-step="audioOffset" data-delta="5" aria-label="More delay"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
+          </div>
+          <input type="range" min="-300" max="600" step="5" data-param="audioOffset" data-num hidden>
+      </div>
     </section>
   </section>
 
   <section class="tab-panel" data-tab="presets" aria-label="Presets" hidden>
+    <header class="tab-head"><h1>Presets</h1><p id="presetsVal" class="tab-summary"></p></header>
+    <p class="intro">Presets are starting points for each client, not clinical recommendations. A preset keeps every setting, including sound delay and balance.</p>
+    <div id="presets" class="card list preset-rows" role="group" aria-label="Saved presets"></div>
     <section class="card">
-      <div class="row-head"><h2>Presets</h2><span id="presetsVal" class="val"></span></div>
-      <div id="presets" class="presets"></div>
+      <div class="row-head"><h2>Save current settings</h2></div>
       <form id="presetForm" class="preset-form">
-        <input id="presetName" maxlength="40" placeholder="Name for current settings" autocomplete="off">
-        <button type="submit">Save</button>
+        <input id="presetName" maxlength="40" placeholder="Name, e.g. a client's initials" autocomplete="off" aria-label="Preset name">
+        <button type="submit"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#floppy-disk--regular"/></svg>Save</button>
       </form>
-      <p class="help">A saved preset includes everything, even the sound delay and balance, so you can keep
-        one per client. The arrows change the order; on a computer, the first ten load with keys 1–9 and 0.</p>
     </section>
+    <p class="keys-line"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#keyboard--regular"/></svg><span><span class="keys-only">On a computer, keys 1–9 and 0 load the first ten. </span>Drag the handle to reorder.</span></p>
   </section>
 </main>
 
@@ -348,6 +386,45 @@
       <input maxlength="40" placeholder="Name for current settings" autocomplete="off" aria-label="Preset name">
       <button type="submit">Save</button>
     </form>
+  </div>
+</dialog>
+
+<!-- Pictures: an animal or object in place of the light. -->
+<dialog id="picturesSheet" class="sheet" aria-labelledby="picturesTitle">
+  <div class="sheet-grip">
+    <div class="sheet-grabber"></div>
+    <div class="sheet-head"><h2 id="picturesTitle">Pictures</h2><button type="button" class="sheet-done">Done</button></div>
+  </div>
+  <div class="sheet-body">
+    <p class="help">A picture in place of the light. Animals turn to face the way they move; the light colour tints their glow.</p>
+    <div class="shapes fun" data-param="shape">
+      <button data-value="dog" title="Dog"></button>
+      <button data-value="cat" title="Cat"></button>
+      <button data-value="butterfly" title="Butterfly"></button>
+      <button data-value="fish" title="Fish"></button>
+      <button data-value="turtle" title="Turtle"></button>
+      <button data-value="unicorn" title="Unicorn"></button>
+      <button data-value="rocket" title="Rocket"></button>
+      <button data-value="goldstar" title="Gold star"></button>
+      <button data-value="rainbow" title="Rainbow"></button>
+      <button data-value="ball" title="Ball"></button>
+    </div>
+    <button id="useShapeBtn" type="button" class="btn-secondary wide">Use a shape instead</button>
+  </div>
+</dialog>
+
+<!-- The menu on a preset row: move it, or delete it. -->
+<dialog id="presetMenuSheet" class="sheet" aria-labelledby="presetMenuTitle">
+  <div class="sheet-grip">
+    <div class="sheet-grabber"></div>
+    <div class="sheet-head"><h2 id="presetMenuTitle">Preset</h2><button type="button" class="sheet-done">Done</button></div>
+  </div>
+  <div class="sheet-body">
+    <div class="card list menu-rows">
+      <button type="button" class="menu-row" data-menu="up"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#arrow-up--regular"/></svg>Move up</button>
+      <button type="button" class="menu-row" data-menu="down"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#arrow-down--regular"/></svg>Move down</button>
+      <button type="button" class="menu-row danger" data-menu="delete"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#trash--regular"/></svg>Delete</button>
+    </div>
   </div>
 </dialog>
 
