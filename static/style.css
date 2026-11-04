@@ -219,7 +219,7 @@ body.therapist::before {
 /* The page: one column at phone width, centred on a computer, with room under the content
    for the floating tab bar. One section (tab panel) shows at a time. */
 .panel {
-  max-width: 430px; margin: 0 auto; padding: 4px 16px calc(112px + env(safe-area-inset-bottom));
+  max-width: 430px; margin: 0 auto; padding: 4px 16px calc(96px + env(safe-area-inset-bottom));
   display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr);
 }
 .tab-panel { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); min-width: 0; }
@@ -227,34 +227,107 @@ body.therapist::before {
 .tab-panel .card > .row-head { margin-bottom: 0; }
 .tab-panel .card > .stepper, .tab-panel .card > .setup-row, .tab-panel .card > .help { margin-top: 0; }
 
-/* The live area: preview, counter and Start, as one panel. */
-.live { display: grid; gap: 0; grid-template-columns: minmax(0, 1fr); }
-.preview { aspect-ratio: 16 / 9; border-radius: var(--radius) var(--radius) 0 0; max-height: 28vh; width: 100%; }
+/* ---- the Session tab (designed not to scroll on a phone: tighter gaps than the setup tabs) */
+.tab-panel[data-tab="session"] { gap: 8px; }
+/* The preset in use: one button that opens the Presets sheet. */
+.preset-bar {
+  display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 16px; border: 0; text-align: left;
+  border-radius: var(--radius); background: var(--surf); color: var(--text); box-shadow: var(--shadow);
+}
+.preset-tile { width: 40px; height: 40px; border-radius: var(--radius-s); background: var(--acc-soft); color: var(--acc-ink); display: grid; place-items: center; flex: none; }
+.preset-tile .ico { width: 22px; height: 22px; }
+.preset-text { flex: 1; min-width: 0; display: grid; }
+.preset-caption { color: var(--muted); font: var(--ep-type-caption); line-height: 16px; }
+.preset-text b { font: var(--ep-type-body-strong); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.preset-bar .caret { width: 20px; height: 20px; color: var(--muted); }
+.preset-bar:active { transform: scale(.99); }
 
-.counter {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  background: var(--surf); padding: 12px 16px 6px;
+/* The live preview: the same light as the client, as a strip, with chips over it. */
+.preview-card { position: relative; }
+.preview { height: 112px; width: 100%; border-radius: var(--radius); }
+/* Shorter when the dual attention answers need the room, and in Safari with its toolbars. */
+.tab-panel:has(.dual-info:not([hidden])) .preview { height: 96px; }
+@media (max-height: 760px) { .preview { height: 96px; } }
+.stage-chip {
+  position: absolute; top: 10px; height: 24px; padding: 0 10px; border-radius: var(--ep-radius-full);
+  display: inline-flex; align-items: center; background: rgba(255, 255, 255, .12); color: #fff;   /* on the stage, which is content, not themed */
+  font: var(--ep-type-caption); line-height: 24px; font-variant-numeric: tabular-nums; pointer-events: none;
 }
-.count { font-size: 2.75rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -.02em; }
-.count-sub { color: var(--muted); font-size: .9rem; font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; }
+.stage-chip.left { left: 12px; }
+.stage-chip.right { right: 12px; }
+
+/* The counter: the pass count large, the state beside it, the passes as a rail below. */
+.tab-panel .counter-card { gap: 6px; padding: 10px 16px; }
+.counter-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.counter-main { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; min-width: 0; }
+.count { font: var(--ep-type-hero); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.count-sub { color: var(--muted); font: var(--ep-type-body); font-variant-numeric: tabular-nums; }
+.counter-side { display: grid; justify-items: end; gap: 4px; flex: none; padding-top: 4px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 8px; border-radius: var(--ep-radius-full);
+  background: var(--surf2); color: var(--muted); font: var(--ep-type-label-strong);
+}
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.badge.live { background: var(--acc-soft); color: var(--acc-ink); }
+.badge.live::before { background: var(--acc); }
+.elapsed { color: var(--muted); font: var(--ep-type-caption); font-variant-numeric: tabular-nums; min-height: 14px; }
+.rail { display: flex; align-items: center; gap: 8px; min-height: 14px; color: var(--muted); font: var(--ep-type-caption); }
+.rail-ticks { flex: 1; display: flex; align-items: center; gap: 3px; height: 14px; }
+.rail-ticks i { flex: 1 1 0; min-width: 2px; height: 10px; border-radius: 1px; background: var(--ep-border-strong); }
+.rail-ticks i.done { background: var(--acc); }
+.rail-ticks i.now { flex-grow: 1.5; height: 14px; background: var(--text); }
+.rail-bar { flex: 1; height: 6px; border-radius: 3px; background: var(--ep-border-strong); overflow: hidden; }
+.rail-bar i { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--acc); transition: width .2s linear; }
 .dual-info {
-  padding: 6px 16px 2px; background: var(--surf); color: var(--note);
-  font-variant-numeric: tabular-nums; letter-spacing: .02em; text-align: center; font-size: .92rem; font-weight: 500;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 6px 12px; border-radius: var(--radius-s); background: var(--surf2);
 }
-.go { display: flex; gap: 8px; background: var(--surf); padding: 10px 14px 14px; border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--shadow); }
+.dual-label { color: var(--muted); font: var(--ep-type-label); }
+.dual-values { font: var(--ep-type-value); letter-spacing: .3em; font-variant-numeric: tabular-nums; text-align: right; }
+
+/* Speed and set length share a card. */
+.tab-panel .speed-card { gap: 10px; }
+.readout { flex: 1; display: flex; align-items: baseline; justify-content: center; gap: 6px; min-width: 0; }
+.readout-value { font: var(--ep-type-readout); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.readout-value.editable { text-decoration: none; }
+.readout-unit { color: var(--muted); font: var(--ep-type-label-strong); }
+.readout .num-edit { font: var(--ep-type-value); width: 5em; }
+.divider { border: 0; border-top: 1px solid var(--line); margin: 2px 0; width: 100%; }
+.row-head .note { margin-left: auto; }
+.row-head .note ~ .val { margin-left: 0; }
+
+/* Start, then Stop after this pass + Stop now while a set runs. */
+.go { display: flex; gap: 10px; }
 .btn-go {
-  flex: 1; min-height: 60px; border: 0; border-radius: 12px;
-  background: var(--acc); color: var(--on-acc); font-size: 1.2rem; font-weight: 700;
+  flex: 1; min-height: 60px; border: 0; border-radius: var(--ep-radius-full); padding: 0 16px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  background: var(--acc); color: var(--on-acc); font: var(--ep-type-body-strong); box-shadow: var(--ep-shadow-glow);
   touch-action: manipulation;
 }
+.btn-go .ico { width: 20px; height: 20px; }
 .btn-go.stop { background: var(--warm); color: var(--on-warm); }
-.btn-go.finishing { background: var(--surf2); color: var(--muted); }
-.btn-go:active { transform: scale(.98); }
+.btn-go.finishing { background: var(--surf2); color: var(--muted); box-shadow: none; cursor: default; }
+.btn-go:not(.stop):not(.finishing):active { background: var(--ep-accent-strong); }
+.btn-go:active:not(:disabled) { transform: scale(.98); }
 .btn-stopnow {
-  min-height: 60px; padding: 0 16px; border-radius: 12px;
-  border: 1px solid var(--line); background: transparent; color: var(--bad); font-weight: 600;
-  touch-action: manipulation;
+  flex: none; min-width: 120px; min-height: 60px; padding: 0 20px; border: 0; border-radius: var(--ep-radius-full);
+  background: var(--ep-danger-default); color: var(--ep-text-on-danger); font: var(--ep-type-body-strong); touch-action: manipulation;
 }
+.btn-stopnow:active { transform: scale(.98); }
+
+/* Rows in the Presets sheet: number, name and a one-line summary; a tick on the one in use. */
+.preset-rows { display: grid; }
+.preset-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 10px 0; border: 0; border-radius: 0;
+  background: none; color: var(--text); text-align: left;
+}
+.preset-row + .preset-row { border-top: 1px solid var(--line); }
+.preset-num { width: 32px; height: 32px; border-radius: var(--radius-s); display: grid; place-items: center; background: var(--surf2); color: var(--muted); font: var(--ep-type-label-strong); flex: none; }
+.preset-row.on .preset-num { background: var(--acc); color: var(--on-acc); }
+.preset-row .check { margin-left: auto; color: var(--acc); visibility: hidden; }
+.preset-row.on .check { visibility: visible; }
+.btn-secondary.wide { width: 100%; min-height: 52px; border-radius: var(--ep-radius-full); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-secondary .ico { width: 20px; height: 20px; }
 
 .card { background: var(--surf); border-radius: var(--radius); padding: 14px 16px; min-width: 0; box-shadow: var(--shadow); }
 .closed-screen {
@@ -288,19 +361,25 @@ details.card:not([open]) > summary .val { color: var(--muted); font-weight: 500;
 
 .stepper { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
 .stepper > button {
-  flex: none; width: 40px; height: 40px; border-radius: var(--radius-s); border: 0;
-  background: var(--surf2); font-size: 1.35rem; line-height: 1; touch-action: manipulation;
+  flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center;
+  background: var(--surf); color: var(--text); box-shadow: var(--shadow);
+  touch-action: manipulation; -webkit-touch-callout: none; user-select: none;   /* hold to repeat, without the long-press menu */
 }
+.stepper > button .ico { width: 22px; height: 22px; }
+.stepper > button:disabled { opacity: .4; cursor: default; }
+.stepper > button:active:not(:disabled) { transform: scale(.96); }
+.stepper.big > button { width: 56px; height: 56px; }
+.stepper.big > button .ico { width: 24px; height: 24px; }
 .stepper input[type=range] { flex: 1; }
-.chips { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.chips { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
 .seg { display: flex; gap: 2px; padding: 4px; background: var(--surf2); border-radius: var(--ep-radius-lg); }
 .seg button { flex: 1; min-width: 0; min-height: 44px; border: 0; border-radius: var(--radius-s); background: transparent; color: var(--muted); padding: 0 6px; font: var(--ep-type-label); }
 .seg button.on { background: var(--seg-on-bg); color: var(--seg-on-fg); box-shadow: var(--seg-on-shadow); font: var(--ep-type-label-strong); }
 
 .chips button {
-  min-height: 40px; border-radius: var(--radius-s); border: 0; background: var(--surf2); color: var(--muted);
-  font-variant-numeric: tabular-nums; font-weight: 600;
+  min-height: 44px; border-radius: var(--radius-s); border: 0; background: var(--surf2); color: var(--text);
+  font: var(--ep-type-value); font-variant-numeric: tabular-nums;
 }
 .chips button.on { color: var(--acc-ink); background: var(--acc-soft); box-shadow: inset 0 0 0 1.5px var(--acc); }
 

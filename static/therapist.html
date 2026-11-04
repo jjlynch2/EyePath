@@ -16,7 +16,6 @@
 <header class="topbar">
   <div class="topbar-left">
     <span class="brand"><svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M5 24C12 14.5 18 11 24 11C30 11 36 14.5 43 24C36 33.5 30 37 24 37C18 37 12 33.5 5 24Z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"/><circle cx="16.5" cy="24" r="2.4" fill="currentColor" opacity="0.35"/><circle cx="22.5" cy="24" r="3.3" fill="currentColor" opacity="0.6"/><circle cx="30" cy="24" r="5.6" fill="currentColor"/></svg><span>EyePath</span></span>
-    <span id="setCount" class="set-count" title="Sets started since EyePath opened" hidden></span>
   </div>
   <div class="topbar-right">
     <span id="conn" class="chip"><span class="dot"></span>Connecting…</span>
@@ -27,58 +26,76 @@
 </header>
 
 <main class="panel">
-  <!-- Session: the live area and the two settings that change during a session. -->
+  <!-- Session: the preset in use, the live preview, the pass counter, the two settings that
+       change during a session, and the Start / Stop buttons. Designed not to scroll on a phone. -->
   <section class="tab-panel" data-tab="session" aria-label="Session">
-    <section class="live">
+    <button id="presetBar" class="preset-bar" type="button" aria-haspopup="dialog" title="Presets">
+      <span class="preset-tile"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#bookmarks-simple--fill"/></svg></span>
+      <span class="preset-text"><span class="preset-caption">Preset</span><b id="presetBarName">Custom settings</b></span>
+      <svg class="ico caret" aria-hidden="true"><use href="/static/icons/sprite.svg#caret-down--regular"/></svg>
+    </button>
+
+    <div class="preview-card">
       <div id="preview" class="preview"></div>
-      <div class="counter">
-        <div id="count" class="count">0</div>
-        <div id="countSub" class="count-sub">Ready</div>
+      <span id="trackChip" class="stage-chip left"></span>
+      <span id="setCount" class="stage-chip right" title="Sets started since EyePath opened" hidden></span>
+    </div>
+
+    <section class="card counter-card" aria-live="off">
+      <div class="counter-top">
+        <div class="counter-main"><div id="count" class="count">0</div><div id="countSub" class="count-sub">passes</div></div>
+        <div class="counter-side"><span id="statusBadge" class="badge">Ready</span><span id="elapsed" class="elapsed"></span></div>
       </div>
-      <div id="dualInfo" class="dual-info" hidden></div>
-      <div class="go">
-        <button id="startBtn" class="btn-go">Start</button>
-        <button id="stopNowBtn" class="btn-stopnow" hidden>Stop now</button>
+      <div id="rail" class="rail" aria-hidden="true">
+        <span class="rail-end">L</span>
+        <div id="railTicks" class="rail-ticks"></div>
+        <div id="railBar" class="rail-bar" hidden><i></i></div>
+        <span class="rail-end">R</span>
       </div>
+      <div id="dualInfo" class="dual-info" hidden><span class="dual-label"></span><span class="dual-values"></span></div>
     </section>
 
-    <section class="card">
-      <div class="row-head"><h2>Speed</h2><span id="speedVal" class="val"></span></div>
-      <div class="stepper">
-        <button data-step="speed" data-delta="-0.1" aria-label="Slower">−</button>
-        <input id="speed" type="range" min="0.2" max="4" step="0.05" data-param="speed" data-num>
-        <button data-step="speed" data-delta="0.1" aria-label="Faster">+</button>
+    <section class="card speed-card">
+      <div class="row-head"><h2>Speed</h2></div>
+      <div class="stepper big">
+        <button data-step="speed" data-delta="-0.1" aria-label="Slower"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
+        <div class="readout" aria-live="polite"><span id="speedVal" class="readout-value">1.00</span><span class="readout-unit">Hz</span></div>
+        <input id="speed" type="range" min="0.2" max="4" step="0.05" data-param="speed" data-num hidden>
+        <button data-step="speed" data-delta="0.1" aria-label="Faster"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
       </div>
-    </section>
-
-    <section class="card">
-      <div class="row-head"><h2>Set length</h2><span id="setVal" class="val"></span></div>
+      <hr class="divider">
+      <div class="row-head"><h2>Set length</h2><span id="setNote" class="note" hidden>Applies to the next set</span><span id="setVal" class="val"></span></div>
       <div class="seg" data-param="setMode">
         <button data-value="passes">Passes</button>
         <button data-value="timer">Timer</button>
         <button data-value="open">No limit</button>
       </div>
       <div id="passesRow" class="stepper">
-        <button data-step="passes" data-delta="-2" aria-label="Fewer">−</button>
+        <button data-step="passes" data-delta="-2" aria-label="Fewer passes"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
         <div class="chips">
           <button data-set="passes" data-value="12">12</button>
           <button data-set="passes" data-value="24">24</button>
           <button data-set="passes" data-value="36">36</button>
           <button data-set="passes" data-value="48">48</button>
         </div>
-        <button data-step="passes" data-delta="2" aria-label="More">+</button>
+        <button data-step="passes" data-delta="2" aria-label="More passes"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
       </div>
       <div id="timerRow" class="stepper">
-        <button data-step="seconds" data-delta="-5" aria-label="Shorter">−</button>
+        <button data-step="seconds" data-delta="-5" aria-label="Shorter"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
         <div class="chips">
           <button data-set="seconds" data-value="20">20s</button>
           <button data-set="seconds" data-value="30">30s</button>
           <button data-set="seconds" data-value="45">45s</button>
           <button data-set="seconds" data-value="60">60s</button>
         </div>
-        <button data-step="seconds" data-delta="5" aria-label="Longer">+</button>
+        <button data-step="seconds" data-delta="5" aria-label="Longer"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
       </div>
     </section>
+
+    <div class="go">
+      <button id="startBtn" class="btn-go"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#play--fill"/></svg>Start set</button>
+      <button id="stopNowBtn" class="btn-stopnow" hidden>Stop now</button>
+    </div>
   </section>
 
   <section class="tab-panel" data-tab="light" aria-label="Light" hidden>
@@ -315,6 +332,22 @@
     </p>
     <button id="quitBtn" type="button" class="btn-action danger" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#sign-out--regular"/></svg>Quit EyePath on the computer</button>
     <p id="appVersion" class="app-version"></p>
+  </div>
+</dialog>
+
+<!-- Presets: tap one to load it; the tick marks the one the settings match. -->
+<dialog id="presetSheet" class="sheet" aria-labelledby="presetTitle">
+  <div class="sheet-grip">
+    <div class="sheet-grabber"></div>
+    <div class="sheet-head"><h2 id="presetTitle">Presets</h2><button type="button" class="sheet-done">Done</button></div>
+  </div>
+  <div class="sheet-body">
+    <div id="sheetPresets" class="card list preset-rows" role="group" aria-label="Saved presets"></div>
+    <button id="saveNewBtn" type="button" class="btn-secondary wide"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg>Save current settings as new</button>
+    <form id="sheetSaveForm" class="preset-form" hidden>
+      <input maxlength="40" placeholder="Name for current settings" autocomplete="off" aria-label="Preset name">
+      <button type="submit">Save</button>
+    </form>
   </div>
 </dialog>
 

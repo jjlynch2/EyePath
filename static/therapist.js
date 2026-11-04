@@ -113,7 +113,17 @@ for (const group of $$("[data-param]:not(input)")) {
   }
 }
 for (const btn of $$("[data-step]")) {
-  btn.addEventListener("click", () => step(btn.dataset.step, Number(btn.dataset.delta)));
+  const fire = () => step(btn.dataset.step, Number(btn.dataset.delta));
+  let hold = null, repeated = false;
+  btn.addEventListener("click", () => { if (repeated) repeated = false; else fire(); });
+  btn.addEventListener("pointerdown", () => {
+    repeated = false;
+    clearTimeout(hold);
+    hold = setTimeout(() => { repeated = true; fire(); hold = setInterval(fire, 80); }, 400);
+  });
+  const release = () => { clearTimeout(hold); clearInterval(hold); hold = null; };
+  for (const ev of ["pointerup", "pointercancel", "pointerleave"]) btn.addEventListener(ev, release);
+  btn.addEventListener("contextmenu", (e) => e.preventDefault());
 }
 for (const btn of $$("[data-set]")) {
   btn.addEventListener("click", () => setParam(btn.dataset.set, Number(btn.dataset.value), true));
@@ -134,14 +144,14 @@ function primary() {
   sendCommand({ type: state.run.status === "running" ? "stop" : "start" });
 }
 
-$("#presetForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const name = $("#presetName").value.trim();
+async function saveCurrentAs(input) {
+  const name = input.value.trim();
   if (!name) return;
-  $("#presetName").value = "";
+  input.value = "";
   await flush();           // the preset must include a change made just before saving
   sendCommand({ type: "savePreset", name });
-});
+}
+$("#presetForm").addEventListener("submit", (e) => { e.preventDefault(); saveCurrentAs($("#presetName")); });
 
 document.addEventListener("keydown", (e) => {
   if (e.target.matches("input:not([type=range]):not([type=checkbox]), textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -159,7 +169,7 @@ document.addEventListener("keydown", (e) => {
 // ---- rendering
 // ---- slider numbers: tap one to type an exact value (e.g. sound delay back to 0)
 const NUMBERS = {
-  speedVal:       { param: "speed", show: (v) => `${v.toFixed(2)} sweeps/s · ${(v / 2).toFixed(2)} Hz` },
+  speedVal:       { param: "speed", scale: 0.5, show: (v) => (v / 2).toFixed(2) },   // Hz: one sweep there and back
   sizeVal:        { param: "size", show: (v) => `${v}%` },
   pauseVal:       { param: "pause", show: (v) => `${v} ms` },
   travelVal:      { param: "travel", show: (v) => `${v}%` },
@@ -241,6 +251,11 @@ function renderControls() {
     }
   }
   for (const btn of $$("[data-set]")) btn.classList.toggle("on", Number(btn.dataset.value) === p[btn.dataset.set]);
+  for (const btn of $$("[data-step]")) {
+    const [lo, hi] = LIMITS[btn.dataset.step];
+    const v = p[btn.dataset.step];
+    btn.disabled = Number(btn.dataset.delta) < 0 ? v <= lo + 1e-9 : v >= hi - 1e-9;
+  }
 
   renderNumbers(p);
   renderPresetMatch();
@@ -253,6 +268,7 @@ function renderControls() {
   renderSummaries(p);
   for (const el of $$("[data-show-easing]")) el.hidden = el.dataset.showEasing !== p.easing;   // one line about the chosen movement
   const running = state.run.status === "running";
+  $("#setNote").hidden = !running;
   $("#patternNote").textContent = running && p.pattern !== state.run.pattern ? "Changes at the next set" : "";
   const setDual = running && state.run.dual ? `${state.run.dual.task}|${state.run.dual.level}` : "off";
   const wantDual = p.dualTask === "off" ? "off" : `${p.dualTask}|${p.dualLevel}`;
@@ -269,6 +285,7 @@ const COLOUR_NAMES = {
   "#4da3ff": "Blue", "#3ddc84": "Green", "#ffffff": "White", "#ffd23f": "Yellow",
   "#ff8a3d": "Orange", "#ff4d6d": "Red", "#b388ff": "Purple",
 };
+const PATTERN_NAMES = Object.fromEntries($$(".patterns button").map((b) => [b.dataset.value, b.title]));
 const EASING_NAMES = { sine: "Smooth", linear: "Steady", jump: "Jump" };
 const SOUND_NAMES = { off: "Off", click: "Click", tone: "Tone", sweep: "Sweep" };
 const DUAL_NAMES = { off: "Off", flash: "Flashes", numbers: "Numbers", letters: "Letters" };
@@ -405,10 +422,36 @@ function renderPresets() {
     row.append(load, move("↑", -1, i === 0), move("↓", 1, i === state.presets.length - 1), del);
     box.append(row);
   });
+  // The same presets in the sheet off the Session tab: tap to load, and the sheet closes.
+  $("#sheetPresets").replaceChildren(...state.presets.map((preset, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "preset-row";
+    b.dataset.name = preset.name;
+    const text = Object.assign(document.createElement("span"), { className: "row-text" });
+    text.append(Object.assign(document.createElement("b"), { textContent: preset.name }),
+                Object.assign(document.createElement("span"), { textContent: presetSummary(preset) }));
+    b.append(Object.assign(document.createElement("span"), { className: "preset-num", textContent: String(i + 1) }), text, ico("check--fill", "ico check"));
+    b.addEventListener("click", () => { sendCommand({ type: "loadPreset", name: preset.name }); $("#presetSheet").close(); });
+    return b;
+  }));
+  $("#sheetPresets").hidden = !state.presets.length;
   renderPresetMatch();
 }
 
-// Highlight the preset(s) matching the current settings, so a tap visibly registers.
+// One line about a preset: speed, set length, the light when it isn't the usual blue circle, sound.
+function presetSummary(preset) {
+  const p = preset.params;
+  const length = p.setMode === "passes" ? `${p.passes} passes` : p.setMode === "timer" ? fmtTime(p.seconds) : "no limit";
+  const plain = p.shape === "circle" && String(p.color).toLowerCase() === "#4da3ff";
+  const light = p.visual === false ? "light off"
+    : plain ? "" : [COLOUR_NAMES[String(p.color).toLowerCase()], SHAPE_NAMES[p.shape]].filter(Boolean).join(" ").toLowerCase();
+  const sound = p.sound === "off" ? "no sound" : (SOUND_NAMES[p.sound] || "").toLowerCase();
+  return [`${(p.speed / 2).toFixed(2)} Hz`, length, light, sound].filter(Boolean).join(", ");
+}
+
+// The preset the current settings match exactly, if any: named in the preset bar, ticked in
+// the sheet and highlighted in the list, so a tap visibly registers.
 function presetMatches(preset, p) {
   return Object.entries(preset.params).every(([k, v]) =>
     (typeof v === "number" ? Math.abs(v - p[k]) < 1e-6 : v === p[k]));
@@ -416,13 +459,17 @@ function presetMatches(preset, p) {
 function renderPresetMatch() {
   if (!state) return;
   const p = params();
-  for (const sel of [".preset-load"]) {
-    $$(sel).forEach((btn, i) => {
-      const preset = state.presets[i];
-      const on = !!preset && presetMatches(preset, p);
-      btn.classList.toggle("on", on);
-      btn.setAttribute("aria-pressed", on);
-    });
+  const match = state.presets.find((preset) => presetMatches(preset, p)) || null;
+  $("#presetBarName").textContent = match ? match.name : "Custom settings";
+  $$(".preset-load").forEach((btn, i) => {
+    const on = !!state.presets[i] && state.presets[i] === match;
+    btn.classList.toggle("on", on);
+    btn.setAttribute("aria-pressed", on);
+  });
+  for (const row of $$(".preset-row")) {
+    const on = !!match && row.dataset.name === match.name;
+    row.classList.toggle("on", on);
+    row.setAttribute("aria-pressed", on);
   }
 }
 
@@ -444,66 +491,105 @@ function lastSet() {
     const end = stopped ? run.stopT : (run.endT ?? run.endedAt);
     const start = stopped ? run.prev.setStartT : run.setStartT;
     const fr = Motion.frame({ params: state.params, run }, end);
-    lastSetSummary = { touches: fr.touches, seconds: (end - start) / 1000, dual: Dual.shown(run, end) };
+    lastSetSummary = { touches: fr.touches, target: (stopped ? run.prev : run).target ?? null,
+                       seconds: (end - start) / 1000, dual: Dual.shown(run, end) };
   }
   return lastSetSummary;
 }
 
-let shown = { count: null, sub: null, btn: null };
+let shown = {};
 function renderLive(fr, t) {
   const run = state.run;
   const p = state.params;
-  let count, sub, btn, btnClass, stopNow, dual;
-  if (run.status === "running") {
-    const elapsed = Math.max(0, (t - run.setStartT) / 1000);
-    if (p.setMode === "timer" && !run.cleanStop) {
-      count = fmtTime(elapsed);
-      sub = `of ${fmtTime(p.seconds)} · ${fr.touches} passes`;
-    } else {
-      count = String(fr.touches);
-      sub = fr.target != null ? `of ${fr.target} passes · ${fmtTime(elapsed)}` : `passes · ${fmtTime(elapsed)}`;
-    }
-    if (fr.ending || run.cleanStop) { btn = "Finishing…"; btnClass = "btn-go finishing"; sub += " · finishing"; }
-    else { btn = "Stop"; btnClass = "btn-go stop"; }
-    stopNow = true;
-    dual = Dual.shown(run, t);
+  const running = run.status === "running";
+  const timerMode = running && p.setMode === "timer" && !run.cleanStop;
+  const ofPasses = (target) => (target != null ? `of ${target} passes` : "passes");
+  let count, sub, badge, live, elapsed, btn, btnClass, stopNow, dual, done, target, now, progress = null;
+  if (running) {
+    const secs = Math.max(0, (t - run.setStartT) / 1000);
+    elapsed = fmtTime(secs);
+    if (timerMode) { count = fmtTime(secs); sub = `of ${fmtTime(p.seconds)} · ${fr.touches} passes`; progress = secs / p.seconds; }
+    else { count = String(fr.touches); sub = ofPasses(fr.target); }
+    const finishing = fr.ending || run.cleanStop;
+    badge = finishing ? "Finishing" : "Running"; live = true;
+    btn = finishing ? "Finishing this pass" : "Stop after this pass";
+    btnClass = finishing ? "btn-go finishing" : "btn-go stop";
+    stopNow = true; dual = Dual.shown(run, t);
+    done = fr.touches; target = fr.target; now = !finishing;
   } else if (run.status === "stopping") {
-    count = String(fr.touches); sub = "Stopping"; btn = "Start"; btnClass = "btn-go"; stopNow = false;
-    dual = Dual.shown(run, t);
+    count = String(fr.touches); sub = ofPasses(fr.target); badge = "Stopping"; live = true; elapsed = "";
+    btn = "Start set"; btnClass = "btn-go"; stopNow = false; dual = Dual.shown(run, t);
+    done = fr.touches; target = fr.target; now = false;
   } else {
     const last = lastSet();
     count = last ? String(last.touches) : "0";
-    sub = last ? `Set complete · ${fmtTime(last.seconds)}` : "Ready";
-    btn = "Start"; btnClass = "btn-go"; stopNow = false;
-    dual = last && last.dual;
+    target = last ? last.target : (p.setMode === "passes" ? p.passes : null);
+    sub = ofPasses(target);
+    badge = last ? "Set complete" : "Ready"; live = false; elapsed = last ? fmtTime(last.seconds) : "";
+    btn = "Start set"; btnClass = "btn-go"; stopNow = false; dual = last && last.dual;
+    done = last ? last.touches : 0; now = false;
   }
-  if (count !== shown.count) { $("#count").textContent = count; shown.count = count; }
-  if (sub !== shown.sub) { $("#countSub").textContent = sub; shown.sub = sub; }
-  if (btn + btnClass !== shown.btn) {
+  const set = (key, value, apply) => { if (shown[key] !== value) { shown[key] = value; apply(value); } };
+  set("count", count, (v) => { $("#count").textContent = v; });
+  set("sub", sub, (v) => { $("#countSub").textContent = v; });
+  set("badge", `${badge}|${live}`, () => { const b = $("#statusBadge"); b.textContent = badge; b.classList.toggle("live", live); });
+  set("elapsed", elapsed, (v) => { $("#elapsed").textContent = v; });
+  set("btn", `${btn}|${btnClass}`, () => {
     const b = $("#startBtn");
-    b.textContent = btn; b.className = btnClass; shown.btn = btn + btnClass;
+    b.className = btnClass;
+    b.disabled = btnClass.includes("finishing");
+    b.replaceChildren(ico(btnClass === "btn-go" ? "play--fill" : "stop--fill"), btn);
     $("#stopNowBtn").hidden = !stopNow;
-  }
-  const tabText = run.status === "running" ? (fr.target != null && !(p.setMode === "timer" && !run.cleanStop) ? `${fr.touches}/${fr.target}` : count) : "";
-  if (tabText !== tabLive.text) renderTabLive(tabText);
+  });
+  // The chips on the preview: the track, and which set this is.
+  const setChip = running || run.status === "stopping" ? `Set ${state.sets}` : state.sets ? `Set ${state.sets} done` : "";
+  set("setChip", setChip, (v) => { $("#setCount").textContent = v; $("#setCount").hidden = !v; });
+  set("trackChip", PATTERN_NAMES[running ? run.pattern : p.pattern] || "", (v) => { $("#trackChip").textContent = v; });
+  renderRail({ progress, done, target, now });
 
   // Dual attention answers, live during the set and kept after it.
-  let info = "";
+  let dualLabel = "", dualValues = "";
   if (dual) {
-    const done = run.status === "idle" ? "Last set · " : "";
-    if (dual.task === "flash") {
-      info = `${done}Colour flashes: ${dual.values.length}`;
-    } else {
+    dualLabel = (DUAL_NAMES[dual.task] || "") + (run.status === "idle" ? " · last set" : "");
+    if (dual.task === "flash") dualValues = String(dual.values.length);
+    else {
       const n = dual.values.length;
-      const list = dual.values.slice(-12).join(" ");
-      info = n ? `${done}Shown (${n}): ${n > 12 ? "… " : ""}${list}` : `${done}Nothing shown yet`;
+      dualValues = n ? `${n > 12 ? "… " : ""}${dual.values.slice(-12).join(" ")}` : "–";
     }
   }
-  if (info !== shown.info) {
-    shown.info = info;
-    $("#dualInfo").textContent = info;
-    $("#dualInfo").hidden = !info;
+  set("dual", `${dualLabel}|${dualValues}`, () => {
+    const box = $("#dualInfo");
+    box.hidden = !dualLabel;
+    $(".dual-label", box).textContent = dualLabel;
+    $(".dual-values", box).textContent = dualValues;
+  });
+  const tabText = running ? (timerMode || fr.target == null ? count : `${fr.touches}/${fr.target}`) : "";
+  if (tabText !== tabLive.text) renderTabLive(tabText);
+}
+
+// The pass rail: one tick per pass, left to right, the current one taller; a bar for a timer
+// or for very long sets; nothing for "no limit".
+let rail = "";
+function renderRail({ progress, done, target, now }) {
+  const ticks = $("#railTicks"), bar = $("#railBar");
+  const useBar = progress != null || (target != null && target > 60);
+  const useTicks = !useBar && target != null;
+  $("#rail").hidden = !useBar && !useTicks;
+  ticks.hidden = !useTicks;
+  bar.hidden = !useBar;
+  if (useBar) {
+    const frac = progress != null ? progress : done / target;
+    const key = `bar|${Math.round(Math.min(1, Math.max(0, frac)) * 100)}`;
+    if (rail !== key) { rail = key; $("i", bar).style.width = `${key.slice(4)}%`; }
+    return;
   }
+  if (!useTicks) { rail = ""; return; }
+  const key = `ticks|${target}|${done}|${now ? 1 : 0}`;
+  if (rail === key) return;
+  if (!rail.startsWith(`ticks|${target}|`)) ticks.replaceChildren(...Array.from({ length: target }, () => document.createElement("i")));
+  rail = key;
+  const kids = ticks.children;
+  for (let i = 0; i < kids.length; i++) kids[i].className = i < done ? "done" : (now && i === done ? "now" : "");
 }
 
 // ---- data
@@ -526,8 +612,6 @@ const stream = connectState("therapist", (s) => {
   renderControls();
   renderStatus();
   renderLaptop();
-  $("#setCount").textContent = `Set ${s.sets}`;
-  $("#setCount").hidden = !s.sets;
   $("#appVersion").textContent = s.appVersion ? `EyePath ${s.appVersion}` : "";
   const key = JSON.stringify(s.presets.map((x) => x.name));
   if (key !== presetsKey) {
@@ -651,6 +735,24 @@ for (const sheet of $$("dialog.sheet")) {
   grip.addEventListener("pointercancel", release);
 }
 $("#roomBtn").addEventListener("click", () => { const sheet = $("#roomSheet"); if (sheet.showModal) sheet.showModal(); });
+$("#presetBar").addEventListener("click", () => {
+  const sheet = $("#presetSheet");
+  if (!sheet.showModal) return;
+  $("#sheetSaveForm").hidden = true;
+  $("#saveNewBtn").hidden = false;
+  sheet.showModal();
+});
+$("#saveNewBtn").addEventListener("click", () => {
+  $("#saveNewBtn").hidden = true;
+  $("#sheetSaveForm").hidden = false;
+  $("#sheetSaveForm input").focus();
+});
+$("#sheetSaveForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  await saveCurrentAs($("#sheetSaveForm input"));
+  $("#sheetSaveForm").hidden = true;
+  $("#saveNewBtn").hidden = false;
+});
 
 function tick(ts) {
   requestAnimationFrame(tick);
