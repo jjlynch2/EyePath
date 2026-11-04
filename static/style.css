@@ -1,74 +1,70 @@
-/* EyePath: "Mist" theme. One set of colour tokens, in a light and a dark version.
-   The remote and the login page follow the phone's own light/dark setting, or the
-   choice made with the sun/moon button (saved on that phone). The client screen is
-   always dark: it fades into the black light bar, and it faces the client. */
+/* EyePath v2 styling. Colours, type, radii and shadows come from the design tokens in
+   tokens.css (--ep-*), which therapist.html, client.html and login.html link before
+   this file. The remote and the login page follow the phone's own light/dark setting,
+   or the choice saved on that phone (data-theme on <html>). The client screen is
+   always dark: it fades into the black light bar, and it faces the client.
+   The short names below alias the tokens for the rules in this file. They are set on
+   body.client as well as :root because a custom property is resolved where it is
+   declared: the client's dark tokens would never reach an alias set only on :root. */
 
-@font-face { font-family: "Public Sans"; src: url(/static/fonts/PublicSans-Regular.woff2) format("woff2"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "Public Sans"; src: url(/static/fonts/PublicSans-Medium.woff2) format("woff2"); font-weight: 500; font-display: swap; }
-@font-face { font-family: "Public Sans"; src: url(/static/fonts/PublicSans-SemiBold.woff2) format("woff2"); font-weight: 600; font-display: swap; }
-@font-face { font-family: "Public Sans"; src: url(/static/fonts/PublicSans-Bold.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url(/static/fonts/AtkinsonHyperlegibleNext-Variable-latin.woff2) format("woff2"); font-weight: 200 800; font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url(/static/fonts/AtkinsonHyperlegibleNext-Variable-latin-ext.woff2) format("woff2"); font-weight: 200 800; font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
 
-:root {
-  --bg: #EDF1F3;            /* the ground */
-  --surf: #FFFFFF;          /* panels */
-  --surf2: #EDF1F3;         /* controls inside a panel */
-  --line: #DDE4E8;
-  --text: #1E2A30;
-  --muted: #56676F;
-  --acc: #2F7F84;           /* teal */
-  --acc-ink: #24666A;       /* teal as text */
-  --acc-soft: #E1EFF0;      /* a selected control */
-  --on-acc: #FFFFFF;
-  --warm: #D9C59A;          /* Stop, while a set runs */
-  --on-warm: #1E2A30;
-  --note: #8A6416;          /* "changes at the next set", the code banner */
-  --note-bg: #FBF3E0;
-  --bad: #B04A4A;           /* Quit, Stop now, delete, offline */
-  --bad-bg: #F8E7E7;
-  --on-bad: #FFFFFF;
-  --seg-on-bg: #FFFFFF;
-  --seg-on-fg: #1E2A30;
-  --seg-on-shadow: 0 1px 2px rgba(30, 42, 48, .14);
-  --thumb: #FFFFFF;
-  --thumb-ring: 0 0 0 1px rgba(30, 42, 48, .12), 0 2px 4px rgba(30, 42, 48, .2);
-  --shadow: 0 1px 2px rgba(30, 42, 48, .06);
-  --swatch-edge: rgba(30, 42, 48, .12);
-  --radius: 14px;
-  --radius-s: 10px;
+:root, body.client {
+  --bg: var(--ep-bg-page);                /* the ground */
+  --surf: var(--ep-bg-surface);           /* panels */
+  --surf2: var(--ep-bg-surface-2);        /* controls inside a panel */
+  --line: var(--ep-border-default);
+  --text: var(--ep-text-primary);
+  --muted: var(--ep-text-secondary);
+  --acc: var(--ep-accent-default);        /* teal */
+  --acc-ink: var(--ep-text-accent);       /* teal as text */
+  --acc-soft: var(--ep-accent-soft);      /* a selected control */
+  --on-acc: var(--ep-text-on-accent);
+  --warm: var(--ep-bg-inverse);           /* Stop, while a set runs */
+  --on-warm: var(--ep-text-inverse);
+  --note: var(--ep-text-accent);          /* "changes at the next set", the code banner. v2 has no amber: changes read in the accent */
+  --note-bg: var(--ep-accent-soft);
+  --bad: var(--ep-text-danger);           /* Quit, Stop now, delete, offline, as text. Solid danger buttons use --ep-danger-default */
+  --bad-bg: var(--ep-danger-soft);
+  --on-bad: var(--ep-text-on-danger);
+  --seg-on-bg: var(--ep-control-selected);
+  --seg-on-fg: var(--ep-text-primary);
+  --seg-on-shadow: var(--ep-shadow-raised), 0 0 0 1px var(--ep-border-default);
+  --thumb: var(--ep-control-thumb);
+  --thumb-ring: var(--ep-shadow-card);
+  --shadow: var(--ep-shadow-card);
+  --swatch-edge: rgba(0, 0, 0, .12);      /* so white and light swatches show on white */
+  --radius: var(--ep-radius-xl);
+  --radius-s: var(--ep-radius-md);
   color-scheme: light;
 }
-/* The dark version: the phone's setting, or the button. */
+/* The dark version: the phone's setting, or the saved choice. The colours switch in
+   tokens.css. Here only what dark needs on top: shadows don't read on dark, so raised
+   things get a 1px border as well. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) { --dark: 1; }
 }
 :root[data-theme="dark"] { --dark: 1; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]), body.client {
-    --bg: #0F1F23; --surf: #17292E; --surf2: #20353B; --line: #223A40; --text: #E3EEEF; --muted: #93ADB2;
-    --acc: #5FB3B8; --acc-ink: #9ED3D6; --acc-soft: rgba(95, 179, 184, .16); --on-acc: #0F1F23;
-    --warm: #D9C59A; --on-warm: #1E2A30; --note: #E0C08A; --note-bg: rgba(224, 192, 138, .14);
-    --bad: #E3A69A; --bad-bg: rgba(227, 166, 154, .14); --on-bad: #1E2A30;
-    --seg-on-bg: #5FB3B8; --seg-on-fg: #0F1F23; --seg-on-shadow: none;
-    --thumb: #E3EEEF; --thumb-ring: 0 0 0 4px var(--surf);
-    --shadow: 0 1px 0 rgba(0, 0, 0, .25); --swatch-edge: rgba(255, 255, 255, .22);
+    --shadow: var(--ep-shadow-card), 0 0 0 1px var(--ep-border-default);
+    --swatch-edge: var(--ep-border-strong);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"], body.client {
-  --bg: #0F1F23; --surf: #17292E; --surf2: #20353B; --line: #223A40; --text: #E3EEEF; --muted: #93ADB2;
-  --acc: #5FB3B8; --acc-ink: #9ED3D6; --acc-soft: rgba(95, 179, 184, .16); --on-acc: #0F1F23;
-  --warm: #D9C59A; --on-warm: #1E2A30; --note: #E0C08A; --note-bg: rgba(224, 192, 138, .14);
-  --bad: #E3A69A; --bad-bg: rgba(227, 166, 154, .14); --on-bad: #1E2A30;
-  --seg-on-bg: #5FB3B8; --seg-on-fg: #0F1F23; --seg-on-shadow: none;
-  --thumb: #E3EEEF; --thumb-ring: 0 0 0 4px var(--surf);
-  --shadow: 0 1px 0 rgba(0, 0, 0, .25); --swatch-edge: rgba(255, 255, 255, .22);
+  --shadow: var(--ep-shadow-card), 0 0 0 1px var(--ep-border-default);
+  --swatch-edge: var(--ep-border-strong);
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }
 body {
-  font: 16px/1.4 "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font: var(--ep-type-body);
   background: var(--bg);
   color: var(--text);
   -webkit-tap-highlight-color: transparent;
@@ -79,7 +75,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 svg.icon { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---------------------------------------------------------------- stage */
-.stage { position: relative; overflow: hidden; background: #000; contain: strict; }
+.stage { position: relative; overflow: hidden; background: var(--ep-bg-stage); contain: strict; }
 .stage .track { position: absolute; inset: 0; width: 100%; height: 100%; }
 .stage .ball-label {
   position: absolute; left: 50%; top: 50%; display: flex; align-items: center; justify-content: center;
@@ -96,7 +92,7 @@ svg.icon { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-wid
 }
 
 /* ---------------------------------------------------------------- client (always dark) */
-body.client { background: #000; overflow: hidden; }
+body.client { background: var(--ep-bg-stage); overflow: hidden; }
 body.client #stage { position: fixed; inset: 0; }
 body.client.no-cursor, body.client.no-cursor * { cursor: none; }
 .code-screen {
@@ -363,10 +359,10 @@ details.card:not([open]) > summary .val { color: var(--muted); font-weight: 500;
 }
 .toggle input::before {
   content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
-  background: var(--thumb); box-shadow: var(--thumb-ring); transition: transform .15s;
+  background: var(--thumb); box-shadow: var(--ep-shadow-raised); transition: transform .15s;
 }
 .toggle input:checked { background: var(--acc); box-shadow: none; }
-.toggle input:checked::before { transform: translateX(16px); background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+.toggle input:checked::before { transform: translateX(16px); background: var(--ep-control-thumb); box-shadow: var(--ep-shadow-raised); }
 
 .swatches { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .swatches button {
@@ -444,13 +440,13 @@ kbd { font: .78rem ui-monospace, monospace; padding: 1px 6px; border: 1px solid 
 .btn-plain { min-height: 44px; padding: 0 14px; border-radius: var(--radius-s); border: 0; background: var(--surf2); font-weight: 500; }
 .btn-plain:disabled { opacity: .45; cursor: default; }
 .btn-plain.danger { color: var(--bad); background: var(--bad-bg); }
-.btn-plain.confirm-ok { background: var(--bad); color: var(--on-bad); font-weight: 600; }
+.btn-plain.confirm-ok { background: var(--ep-danger-default); color: var(--ep-text-on-danger); font-weight: 600; }
 dialog.confirm {
   border: 0; border-radius: var(--radius); padding: 0; width: min(20rem, calc(100vw - 32px));
-  background: var(--surf); color: var(--text); text-align: center; box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+  background: var(--surf); color: var(--text); text-align: center; box-shadow: var(--ep-shadow-floating);
 }
 dialog.confirm form { padding: 20px; }    /* fills the box, so a click on the dialog itself is outside it */
-dialog.confirm::backdrop { background: rgba(15, 31, 35, .55); }
+dialog.confirm::backdrop { background: var(--ep-bg-scrim, rgba(15, 31, 35, .55)); }   /* the fallback: ::backdrop only inherits custom properties in recent browsers */
 dialog.confirm h2 { font-size: 1.1rem; margin: 0 0 18px; font-weight: 600; }
 .confirm-buttons { display: flex; gap: 10px; }
 .confirm-buttons button { flex: 1; }
