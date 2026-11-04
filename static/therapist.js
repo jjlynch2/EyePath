@@ -13,9 +13,12 @@ let connected = false;
 // `kind` names the question so it can be withdrawn when it no longer applies.
 const confirmBox = $("#confirmDialog");
 let asking = null;                       // the question on screen: { kind, answer }
-function askConfirm(question, okLabel, kind = "") {
+function askConfirm(question, okLabel, kind = "", { body = "", icon = "warning--fill" } = {}) {
   if (!confirmBox.showModal) return Promise.resolve(confirm(question));   // browsers too old for <dialog>
   $("#confirmTitle").textContent = question;
+  $("#confirmBody").textContent = body;
+  $("#confirmBody").hidden = !body;
+  $("#confirmIcon").setAttribute("href", `/static/icons/sprite.svg#${icon}`);
   $("#confirmOk").textContent = okLabel;
   confirmBox.returnValue = "";
   confirmBox.showModal();
@@ -142,7 +145,7 @@ $("#presetForm").addEventListener("submit", async (e) => {
 
 document.addEventListener("keydown", (e) => {
   if (e.target.matches("input:not([type=range]):not([type=checkbox]), textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
-  if (confirmBox.open) return;           // Space and Esc belong to the open question
+  if ($("dialog[open]")) return;         // Space and Esc belong to an open sheet or question
   if (e.code === "Space") { e.preventDefault(); primary(); }
   else if (e.key === "Escape") sendCommand({ type: "stopNow" });
   else if (e.key === "ArrowUp") { e.preventDefault(); step("speed", 0.1); }
@@ -281,34 +284,87 @@ function renderSummaries(p) {
   $("#presetsVal").textContent = n ? `${n} saved` : "";
 }
 
-// ---- light or dark. Starts as the phone's own setting; the button switches, and the
-// choice is kept on this phone.
+// ---- light or dark. "System" follows the phone's own setting (no data-theme on the page
+// and nothing saved); Light or Dark is kept on this phone. The segment is in the Room sheet.
 const THEME_KEY = "eyepath-theme";
 const darkByDefault = matchMedia("(prefers-color-scheme: dark)");
-const currentTheme = () => document.documentElement.dataset.theme || (darkByDefault.matches ? "dark" : "light");
+function themeChoice() {
+  try { const t = localStorage.getItem(THEME_KEY); return t === "light" || t === "dark" ? t : "system"; }
+  catch (e) { return "system"; }
+}
 function applyTheme(choice) {
-  document.documentElement.dataset.theme = choice;
-  $("#themeBtn").setAttribute("aria-label", choice === "dark" ? "Switch to light" : "Switch to dark");
+  if (choice === "system") delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = choice;
+  for (const b of $$("#themeSeg button")) {
+    const on = b.dataset.theme === choice;
+    b.classList.toggle("on", on);
+    b.setAttribute("aria-checked", on);
+  }
   // The browser's own bar matches the page.
   requestAnimationFrame(() => {
     $('meta[name="theme-color"]').content = getComputedStyle(document.body).backgroundColor;
   });
 }
-$("#themeBtn").addEventListener("click", () => {
-  const next = currentTheme() === "dark" ? "light" : "dark";
-  try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* private mode */ }
-  applyTheme(next);
-});
-applyTheme(currentTheme());
+for (const b of $$("#themeSeg button")) {
+  b.addEventListener("click", () => {
+    const choice = b.dataset.theme;
+    try { if (choice === "system") localStorage.removeItem(THEME_KEY); else localStorage.setItem(THEME_KEY, choice); }
+    catch (e) { /* private mode */ }
+    applyTheme(choice);
+  });
+}
+darkByDefault.addEventListener("change", () => { if (themeChoice() === "system") applyTheme("system"); });
+applyTheme(themeChoice());
+
+// An icon from the sprite, for markup made here.
+function ico(name, cls = "ico") {
+  const t = document.createElement("template");
+  t.innerHTML = `<svg class="${cls}" aria-hidden="true"><use href="/static/icons/sprite.svg#${name}"/></svg>`;
+  return t.content.firstChild;
+}
 
 function renderStatus() {
   const chip = $("#conn");
-  const show = (text, cls, title) => { chip.textContent = text; chip.className = `chip ${cls}`; chip.title = title; };
-  if (!connected) return show("Disconnected", "bad", "Can't reach EyePath on the computer. Reconnecting…");
+  const show = (text, cls, title, icon) => {
+    chip.className = `chip ${cls}`;
+    chip.title = title;
+    const mark = icon ? ico(icon) : Object.assign(document.createElement("span"), { className: "dot" });
+    chip.replaceChildren(mark, text);
+  };
+  const room = (title, sub, icon) => {
+    $("#roomConn").textContent = title;
+    $("#roomConnSub").textContent = sub;
+    $("#roomConnIcon").setAttribute("href", `/static/icons/sprite.svg#${icon}`);
+  };
+  renderOfflineToast();
+  if (!connected) {
+    show("Offline", "bad", "Can't reach EyePath on the computer. Reconnecting…", "wifi-slash--regular");
+    return room("Can't reach EyePath", "Reconnecting…", "wifi-slash--regular");
+  }
   if (!state) return;
-  if (state.clients > 1) show(`Connected · ${state.clients} screens`, "ok", `${state.clients} client screens are showing the light`);
-  else if (state.clients > 0) show("Connected", "ok", "The client screen is showing the light");
-  else show("No light screen", "warn", "EyePath is running, but no client screen is open to show the light");
+  if (state.clients > 1) {
+    show(`Connected · ${state.clients} screens`, "ok", `${state.clients} client screens are showing the light`);
+    room("Connected to EyePath", `${state.clients} client screens`, "wifi-high--regular");
+  } else if (state.clients > 0) {
+    show("Connected", "ok", "The client screen is showing the light");
+    room("Connected to EyePath", "1 client screen", "wifi-high--regular");
+  } else {
+    show("No light screen", "warn", "EyePath is running, but no client screen is open to show the light");
+    room("Connected to EyePath", "No client screen is open to show the light", "wifi-high--regular");
+  }
+}
+
+// The offline toast waits a moment, so a reconnect blip (or the first connection) doesn't flash it.
+let offlineToastTimer = null;
+function renderOfflineToast() {
+  const toast = $("#offlineToast");
+  if (connected) {
+    clearTimeout(offlineToastTimer);
+    offlineToastTimer = null;
+    toast.hidden = true;
+  } else if (!offlineToastTimer) {
+    offlineToastTimer = setTimeout(() => { offlineToastTimer = null; toast.hidden = connected; }, 1500);
+  }
 }
 
 function renderPresets() {
@@ -330,7 +386,9 @@ function renderPresets() {
     del.setAttribute("aria-label", `Delete ${preset.name}`);
     del.textContent = "×";
     del.addEventListener("click", async () => {
-      if (await askConfirm(`Delete preset "${preset.name}"?`, "Delete", `delete:${preset.name}`)) {
+      const ok = await askConfirm(`Delete preset "${preset.name}"?`, "Delete", `delete:${preset.name}`,
+        { body: "This removes it for every remote.", icon: "trash--fill" });
+      if (ok) {
         sendCommand({ type: "deletePreset", name: preset.name });
       }
     });
@@ -347,17 +405,6 @@ function renderPresets() {
     row.append(load, move("↑", -1, i === 0), move("↓", 1, i === state.presets.length - 1), del);
     box.append(row);
   });
-  // The first three, under Start.
-  const quick = $("#quickPresets");
-  quick.replaceChildren(...state.presets.slice(0, 3).map((preset, i) => {
-    const b = document.createElement("button");
-    b.innerHTML = `<b>${i + 1}</b>`;
-    b.append(preset.name);
-    b.title = `Load preset: ${preset.name}`;
-    b.addEventListener("click", () => sendCommand({ type: "loadPreset", name: preset.name }));
-    return b;
-  }));
-  quick.hidden = !state.presets.length;
   renderPresetMatch();
 }
 
@@ -369,7 +416,7 @@ function presetMatches(preset, p) {
 function renderPresetMatch() {
   if (!state) return;
   const p = params();
-  for (const sel of [".preset-load", "#quickPresets button"]) {
+  for (const sel of [".preset-load"]) {
     $$(sel).forEach((btn, i) => {
       const preset = state.presets[i];
       const on = !!preset && presetMatches(preset, p);
@@ -437,6 +484,8 @@ function renderLive(fr, t) {
     b.textContent = btn; b.className = btnClass; shown.btn = btn + btnClass;
     $("#stopNowBtn").hidden = !stopNow;
   }
+  const tabText = run.status === "running" ? (fr.target != null && !(p.setMode === "timer" && !run.cleanStop) ? `${fr.touches}/${fr.target}` : count) : "";
+  if (tabText !== tabLive.text) renderTabLive(tabText);
 
   // Dual attention answers, live during the set and kept after it.
   let info = "";
@@ -500,7 +549,10 @@ $("#soundCheckBtn").addEventListener("click", () => {
   setTimeout(() => { b.textContent = "Test sound: left, then right"; }, 1800);
 });
 $("#quitBtn").addEventListener("click", async () => {
-  if (!(await askConfirm("Quit EyePath?", "Quit", "quit"))) return;
+  $("#roomSheet").close();             // the question stands on its own
+  const ok = await askConfirm("Quit EyePath on the computer?", "Quit", "quit",
+    { body: "The light stops and the client screen closes. Open the app again to start a new session.", icon: "sign-out--fill" });
+  if (!ok) return;
   if (!(await sendCommand({ type: "quit" }).catch(() => false))) return;
   stream.close();                      // don't keep trying to reach the app that just quit
   $("#closedScreen").hidden = false;
@@ -524,13 +576,81 @@ function renderLaptop() {
     screensKey = key;
     $("#screenChoice").replaceChildren(...displays.map((d) => {
       const b = document.createElement("button");
-      b.textContent = d.name;
+      b.type = "button";
+      const tile = Object.assign(document.createElement("span"), { className: "row-icon" });
+      tile.append(ico("monitor--regular"));
+      const name = Object.assign(document.createElement("span"), { className: "row-text", textContent: d.name });
+      b.append(tile, name, ico("check--fill", "ico check"));
       b.classList.toggle("on", d.current);
+      b.setAttribute("aria-pressed", d.current);
       b.addEventListener("click", () => sendCommand({ type: "display", id: d.id }));
       return b;
     }));
   }
 }
+
+// ---- tabs. One section at a time; the choice survives a reload (sessionStorage).
+const TAB_KEY = "eyepath-tab";
+let activeTab = "session";
+let tabLive = { text: "", on: false };
+function showTab(name) {
+  if (!$(`.tab[data-tab="${name}"]`)) name = "session";
+  activeTab = name;
+  for (const panel of $$(".tab-panel")) panel.hidden = panel.dataset.tab !== name;
+  for (const tab of $$(".tab")) {
+    if (tab.dataset.tab === name) tab.setAttribute("aria-current", "page");
+    else tab.removeAttribute("aria-current");
+  }
+  try { sessionStorage.setItem(TAB_KEY, name); } catch (e) { /* private mode */ }
+  window.scrollTo(0, 0);
+  renderTabLive();
+}
+for (const tab of $$(".tab")) tab.addEventListener("click", () => showTab(tab.dataset.tab));
+let savedTab = "session";
+try { savedTab = sessionStorage.getItem(TAB_KEY) || "session"; } catch (e) { /* private mode */ }
+showTab(savedTab);
+
+// While a set runs and another section is open, the Session item shows a dot and the count.
+function renderTabLive(text = tabLive.text) {
+  const on = !!text && activeTab !== "session";
+  tabLive = { text, on };
+  const tab = $('.tab[data-tab="session"]');
+  tab.classList.toggle("live", on);
+  $(".tab-label", tab).hidden = on;
+  const count = $(".tab-count", tab);
+  count.hidden = !on;
+  count.textContent = on ? text : "";
+  if (on) tab.setAttribute("aria-label", `Session, running, ${text.includes("/") ? "pass " + text.replace("/", " of ") : text}`);
+  else tab.removeAttribute("aria-label");
+}
+
+// ---- bottom sheets (Room & devices). A <dialog>, so focus is trapped and goes back to the
+// button that opened it. Done, the scrim, Esc or a drag down on the top closes it.
+for (const sheet of $$("dialog.sheet")) {
+  sheet.addEventListener("click", (e) => { if (e.target === sheet) sheet.close(); });
+  $(".sheet-done", sheet).addEventListener("click", () => sheet.close());
+  const grip = $(".sheet-grip", sheet);
+  let dragFrom = null;
+  grip.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || e.target.closest("button")) return;
+    dragFrom = e.clientY;
+    grip.setPointerCapture(e.pointerId);
+  });
+  grip.addEventListener("pointermove", (e) => {
+    if (dragFrom == null) return;
+    sheet.style.transform = `translateY(${Math.max(0, e.clientY - dragFrom)}px)`;
+  });
+  const release = (e) => {
+    if (dragFrom == null) return;
+    const dy = e.clientY - dragFrom;
+    dragFrom = null;
+    sheet.style.transform = "";
+    if (dy > 80) sheet.close();
+  };
+  grip.addEventListener("pointerup", release);
+  grip.addEventListener("pointercancel", release);
+}
+$("#roomBtn").addEventListener("click", () => { const sheet = $("#roomSheet"); if (sheet.showModal) sheet.showModal(); });
 
 function tick(ts) {
   requestAnimationFrame(tick);
