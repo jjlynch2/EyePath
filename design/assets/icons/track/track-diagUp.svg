@@ -1,0 +1,5 @@
+<svg width="48" height="28" viewBox="0 0 48 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path class="track-line" d="M11 22L37 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+<path class="track-trail" d="M25 15.4C26.1046 15.4 27 14.5046 27 13.4C27 12.2955 26.1046 11.4 25 11.4C23.8954 11.4 23 12.2955 23 13.4C23 14.5046 23.8954 15.4 25 15.4Z" fill="currentColor" opacity="0.5"/>
+<path class="track-dot" d="M31 13.2C32.933 13.2 34.5 11.6329 34.5 9.7C34.5 7.767 32.933 6.2 31 6.2C29.067 6.2 27.5 7.767 27.5 9.7C27.5 11.6329 29.067 13.2 31 13.2Z" fill="currentColor"/>
+</svg>
