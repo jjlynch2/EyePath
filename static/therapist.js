@@ -739,10 +739,7 @@ $("#quitBtn").addEventListener("click", async () => {
   const n = state ? state.sets : 0;
   $("#closedSets").textContent = `Session ended after ${n} set${n === 1 ? "" : "s"}`;
   $("#closedSets").hidden = !n;
-  $("#closedScreen").hidden = false;
-  // Browsers only let a page close its own tab in some cases (e.g. a tab opened
-  // just for the remote by scanning the QR code); otherwise the message stays.
-  window.close();
+  $("#closedScreen").hidden = false;   // the tab stays open on this screen; closing it is up to the user
 });
 
 let screensKey = "";
