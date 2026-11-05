@@ -59,16 +59,25 @@ class BilateralAudio {
 
   // Touch k of the current set, reached at server time t, sounding at audio time at.
   playTouch(k, at, params, pattern, t) {
+    const { osc, gain, end } = this.playSide(Motion.touchSide(pattern, k), at, params, params.sound);   // the side the ball is on
+    const entry = { run: this.runId, k, t, at, end, osc, gain };
+    this.pending.push(entry);
+    osc.onended = () => { this.pending = this.pending.filter((e) => e !== entry); };
+  }
+
+  // One sound on one side (-1 left, 1 right): a click (a short triangle blip) or a tone
+  // (a short sine). Used for each touch, and by the sound check.
+  playSide(side, at, params, sound) {
     const ctx = this.ctx;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     const pan = ctx.createStereoPanner();
-    pan.pan.value = Motion.touchSide(pattern, k);   // the side the ball is on
+    pan.pan.value = side;
     osc.frequency.value = params.pitch;
     const peak = params.volume;
     const g = gain.gain;
     let end;
-    if (params.sound === "click") {
+    if (sound === "click") {
       osc.type = "triangle";
       g.setValueAtTime(0, at);
       g.linearRampToValueAtTime(peak, at + 0.002);
@@ -86,30 +95,35 @@ class BilateralAudio {
     osc.connect(gain).connect(pan).connect(this.master);
     osc.start(at);
     osc.stop(end);
-    const entry = { run: this.runId, k, t, at, end, osc, gain };
-    this.pending.push(entry);
-    osc.onended = () => { this.pending = this.pending.filter((e) => e !== entry); };
+    return { osc, gain, end };
   }
 
-  // Sound check: a tone in the left ear, then the right, with the current pitch,
-  // volume, balance and sound delay.
+  // Sound check: the chosen sound in the left ear, then the right, with the current pitch,
+  // volume, balance and sound delay. A tone when sound is off, so the ears can still be
+  // checked. Returns how long each side's label shows and the gap between the two.
   playCheck(serverMs, params) {
-    const toneLen = 0.45, gap = 0.75;
-    [-1, 1].forEach((side, i) => {
-      const at = this.audioTime(serverMs, params.audioOffset) + i * gap;
+    const sound = params.sound === "off" ? "tone" : params.sound;
+    const start = this.audioTime(serverMs, params.audioOffset);
+    if (sound === "sweep") {
+      // The sweep is one steady tone that moves with the light: here, left to right.
+      const len = 1.6;
       const osc = this.ctx.createOscillator(), gain = this.ctx.createGain(), pan = this.ctx.createStereoPanner();
-      pan.pan.value = side;
       osc.type = "sine";
       osc.frequency.value = params.pitch;
-      const g = gain.gain, peak = params.volume * 0.8;
-      g.setValueAtTime(0, at);
-      g.linearRampToValueAtTime(peak, at + 0.02);
-      g.setValueAtTime(peak, at + toneLen - 0.06);
-      g.linearRampToValueAtTime(0, at + toneLen);
+      pan.pan.setValueAtTime(-1, start);
+      pan.pan.linearRampToValueAtTime(1, start + len);
+      const g = gain.gain, level = params.volume * 0.6;
+      g.setValueAtTime(0, start);
+      g.linearRampToValueAtTime(level, start + 0.15);
+      g.setValueAtTime(level, start + len - 0.15);
+      g.linearRampToValueAtTime(0, start + len);
       osc.connect(gain).connect(pan).connect(this.master);
-      osc.start(at);
-      osc.stop(at + toneLen + 0.02);
-    });
+      osc.start(start);
+      osc.stop(start + len + 0.02);
+      return { toneLen: len / 2, gap: len / 2 };
+    }
+    const toneLen = 0.45, gap = 0.75;   // how long "Left" and "Right" show; a click itself is much shorter
+    [-1, 1].forEach((side, i) => this.playSide(side, start + i * gap, params, sound));
     return { toneLen, gap };
   }
 

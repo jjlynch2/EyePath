@@ -113,17 +113,24 @@ for (const group of $$("[data-param]:not(input)")) {
   }
 }
 for (const btn of $$("[data-step]")) {
-  const fire = () => step(btn.dataset.step, Number(btn.dataset.delta));
   let hold = null, repeated = false;
+  const release = () => { clearTimeout(hold); clearInterval(hold); hold = null; };
+  // Stop at the limit: a disabled button gets no pointer events, so the release would be missed.
+  const fire = () => { if (btn.disabled) release(); else step(btn.dataset.step, Number(btn.dataset.delta)); };
   btn.addEventListener("click", () => { if (repeated) repeated = false; else fire(); });
-  btn.addEventListener("pointerdown", () => {
+  btn.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0) return;
     repeated = false;
     clearTimeout(hold);
     hold = setTimeout(() => { repeated = true; fire(); hold = setInterval(fire, 80); }, 400);
   });
-  const release = () => { clearTimeout(hold); clearInterval(hold); hold = null; };
   for (const ev of ["pointerup", "pointercancel", "pointerleave"]) btn.addEventListener(ev, release);
   btn.addEventListener("contextmenu", (e) => e.preventDefault());
+  // The finger may lift somewhere else, or the page may scroll or lose focus: any of those ends the hold.
+  document.addEventListener("pointerup", release);
+  document.addEventListener("pointercancel", release);
+  document.addEventListener("scroll", release, { passive: true });
+  window.addEventListener("blur", release);
 }
 for (const btn of $$("[data-set]")) {
   btn.addEventListener("click", () => setParam(btn.dataset.set, Number(btn.dataset.value), true));
@@ -289,7 +296,6 @@ function renderControls() {
   for (const el of $$("[data-show-easing]")) el.hidden = el.dataset.showEasing !== p.easing;   // one line about the chosen movement
   for (const el of $$("[data-show-sound]")) el.hidden = el.dataset.showSound !== p.sound;
   const running = state.run.status === "running";
-  $("#setNote").hidden = !running;
   $("#patternNote").textContent = running && p.pattern !== state.run.pattern ? "Changes at the next set" : "";
   const setDual = running && state.run.dual ? `${state.run.dual.task}|${state.run.dual.level}` : "off";
   const wantDual = p.dualTask === "off" ? "off" : `${p.dualTask}|${p.dualLevel}`;
@@ -726,7 +732,7 @@ $("#soundCheckBtn").addEventListener("click", () => {
 $("#quitBtn").addEventListener("click", async () => {
   $("#roomSheet").close();             // the question stands on its own
   const ok = await askConfirm("Quit EyePath on the computer?", "Quit", "quit",
-    { body: "The light stops and the client screen closes. Open the app again to start a new session.", icon: "sign-out--fill" });
+    { icon: "sign-out--fill" });
   if (!ok) return;
   if (!(await sendCommand({ type: "quit" }).catch(() => false))) return;
   stream.close();                      // don't keep trying to reach the app that just quit
@@ -749,8 +755,6 @@ function renderLaptop() {
   // "Show on": which screen the light is on, when more than one is connected.
   const displays = state.laptop.displays || [];
   $("#screenRow").hidden = displays.length < 2;
-  $("#showOnRow").hidden = displays.length < 2;
-  $("#showOnVal").textContent = (displays.find((d) => d.current) || {}).name || "";
   const key = JSON.stringify(displays);
   if (key !== screensKey) {
     screensKey = key;
@@ -833,7 +837,6 @@ for (const sheet of $$("dialog.sheet")) {
 $("#roomBtn").addEventListener("click", () => { const sheet = $("#roomSheet"); if (sheet.showModal) sheet.showModal(); });
 $("#picturesBtn").addEventListener("click", () => { const sheet = $("#picturesSheet"); if (sheet.showModal) sheet.showModal(); });
 $("#useShapeBtn").addEventListener("click", () => { setParam("shape", "circle", true); $("#picturesSheet").close(); });
-$("#showOnRow").addEventListener("click", () => { const sheet = $("#roomSheet"); if (sheet.showModal) sheet.showModal(); });
 $("#presetBar").addEventListener("click", () => {
   const sheet = $("#presetSheet");
   if (!sheet.showModal) return;

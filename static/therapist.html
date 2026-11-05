@@ -64,7 +64,7 @@
         <button data-step="speed" data-delta="0.1" aria-label="Faster"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
       </div>
       <hr class="divider">
-      <div class="row-head"><h2>Set length</h2><span id="setNote" class="note" hidden>Applies to the next set</span><span id="setVal" class="val"></span></div>
+      <div class="row-head"><h2>Set length</h2><span id="setVal" class="val"></span></div>
       <div class="seg" data-param="setMode" role="group" aria-label="Set length">
         <button data-value="passes">Passes</button>
         <button data-value="timer">Timer</button>
@@ -137,11 +137,6 @@
         <button data-value="#0b1a33" style="--c:#0b1a33" aria-label="Navy"></button>
         <button data-value="#13261b" style="--c:#13261b" aria-label="Forest"></button>
         <button data-value="#2a1f33" style="--c:#2a1f33" aria-label="Plum"></button>
-        <button data-value="#20353b" style="--c:#20353b" aria-label="Teal grey"></button>
-        <button data-value="#2e3a44" style="--c:#2e3a44" aria-label="Slate"></button>
-        <button data-value="#3b3a36" style="--c:#3b3a36" aria-label="Stone"></button>
-        <button data-value="#3a4a40" style="--c:#3a4a40" aria-label="Sage"></button>
-        <button data-value="#6b7680" style="--c:#6b7680" aria-label="Fog"></button>
         <button data-value="#e9e6df" style="--c:#e9e6df" aria-label="Light"></button>
         <label class="swatch-custom" title="Custom background"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg><input type="color" data-param="background" aria-label="Custom background"></label>
       </div>
@@ -149,7 +144,7 @@
 
     <section class="card rows">
       <div class="setting-row">
-        <span class="row-text"><b>Size</b><span>Share of screen height</span></span>
+        <span class="row-text"><b>Size</b></span>
         <div class="stepper">
             <button data-step="size" data-delta="-1" aria-label="Smaller"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
             <span class="stepper-value" aria-live="polite"><b id="sizeVal"></b></span>
@@ -160,9 +155,6 @@
       <label class="setting-row"><span class="row-text"><b>Glow</b></span><input type="checkbox" role="switch" class="switch" data-param="glow"></label>
       <label class="setting-row"><span class="row-text"><b>Light at rest between sets</b></span><input type="checkbox" role="switch" class="switch" data-param="rest"></label>
       <label class="setting-row"><span class="row-text"><b>Light on</b><span>Off for sound-only sets</span></span><input type="checkbox" role="switch" class="switch" data-param="visual"></label>
-      <button id="showOnRow" type="button" class="setting-row link-row" aria-haspopup="dialog" hidden>
-        <svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#monitor--regular"/></svg><span class="row-text"><b>Show on</b></span><span id="showOnVal" class="val"></span><svg class="ico chev" aria-hidden="true"><use href="/static/icons/sprite.svg#caret-right--regular"/></svg>
-      </button>
     </section>
   </section>
 
@@ -211,7 +203,7 @@
           <input type="range" min="0" max="1000" step="10" data-param="pause" data-num hidden>
         </div>
         <div class="setting-row">
-          <span class="row-text"><b>Track width</b><span>Share of screen width</span></span>
+          <span class="row-text"><b>Track width</b></span>
           <div class="stepper">
             <button data-step="travel" data-delta="-5" aria-label="Narrower"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
             <span class="stepper-value" aria-live="polite"><b id="travelVal"></b></span>
@@ -238,7 +230,7 @@
         <button data-value="medium">Medium</button>
         <button data-value="hard">Hard</button>
       </div>
-      <p class="help">Answers show under the counter. Applies from the next set.</p>
+      <p class="help">Answers show under the counter.</p>
     </section>
   </section>
 
@@ -298,7 +290,6 @@
 
   <section class="tab-panel" data-tab="presets" aria-label="Presets" hidden>
     <header class="tab-head"><h1>Presets</h1><p id="presetsVal" class="tab-summary"></p></header>
-    <p class="intro">Presets are starting points for each client, not clinical recommendations. A preset keeps every setting, including sound delay and balance.</p>
     <div id="presets" class="card list preset-rows" role="group" aria-label="Saved presets"></div>
     <section class="card">
       <div class="row-head"><h2>Save current settings</h2></div>
