@@ -4,13 +4,14 @@
 // for reduced motion, and the social preview card. Run it through Electron, which
 // drives the app's own pages in hidden windows:
 //
-//   env -u ELECTRON_RUN_AS_NODE ./node_modules/electron/dist/electron tools/media.js
+//   env -u ELECTRON_RUN_AS_NODE ./node_modules/electron/dist/electron --no-sandbox tools/media.js
 //
 // (VS Code's terminal sets ELECTRON_RUN_AS_NODE, which makes Electron act as plain
-// Node, hence the env -u.) Needs ffmpeg on the PATH for the animation. Starts the app's
-// server on port 8765 (or the next free one) with throwaway settings in a temp folder,
-// so your own presets and settings are untouched. The QR code and pairing code are
-// whatever that server makes up.
+// Node, hence the env -u. --no-sandbox is for a development checkout, where Electron's
+// sandbox helper isn't set up; it has to be on the command line.) Needs ffmpeg on the
+// PATH for the animation. Starts the app's server on port 8765 (or the next free one)
+// with throwaway settings in a temp folder, so your own presets and settings are
+// untouched. The QR code and pairing code are whatever that server makes up.
 "use strict";
 
 const path = require("path");
@@ -19,7 +20,6 @@ const os = require("os");
 const { spawnSync } = require("child_process");
 const { app, BrowserWindow, nativeTheme } = require("electron");
 
-app.commandLine.appendSwitch("no-sandbox");
 app.disableHardwareAcceleration();
 app.on("window-all-closed", () => {});
 
@@ -130,7 +130,9 @@ app.whenReady().then(async () => {
     console.error(err);
     process.exitCode = 1;
   }
-  if (server) await server.close();
+  // Closing the server waits for its connections to end; don't let that keep the tool alive.
+  if (server) await Promise.race([server.close(), sleep(3000)]);
   if (!process.exitCode) fs.rmSync(WORK, { recursive: true, force: true });
   app.quit();
+  setTimeout(() => app.exit(process.exitCode || 0), 2000);
 });

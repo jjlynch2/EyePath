@@ -731,7 +731,7 @@ $("#soundCheckBtn").addEventListener("click", () => {
 });
 $("#quitBtn").addEventListener("click", async () => {
   $("#roomSheet").close();             // the question stands on its own
-  const ok = await askConfirm("Quit EyePath on the computer?", "Quit", "quit",
+  const ok = await askConfirm("Quit EyePath?", "Quit", "quit",
     { icon: "sign-out--fill" });
   if (!ok) return;
   if (!(await sendCommand({ type: "quit" }).catch(() => false))) return;
