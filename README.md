@@ -186,8 +186,7 @@ sensitivity to flashing light.
 
 ## License
 
-Copyright © 2026 jjlynch2. AGPL-3.0: see [LICENSE](LICENSE). Use, share and change EyePath freely, and if you pass on a changed
-version, or offer it as an online service, share its source under the same terms. The QR code generator credits Project Nayuki's
+Copyright © 2026 jjlynch2. AGPL-3.0; see [LICENSE](LICENSE). The QR code generator credits Project Nayuki's
 MIT-licensed library; see the note at the top of `qr.js`. The fun-shape pictures are
 Google's [Noto Emoji](https://github.com/googlefonts/noto-emoji) (Apache License 2.0); see `static/emoji/`.
 
