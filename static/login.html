@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F2F5F5">
 <title>EyePath Connect</title>
 <script>(function(){try{var t=localStorage.getItem("eyepath-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}})();</script>
@@ -11,27 +11,91 @@
 <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
 </head>
-<body>
-<div class="center">
-  <div class="login">
-    <div class="brand"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12C5 7 8.5 5 12 5s7 2 10 7c-3 5-6.5 7-10 7S5 17 2 12Z"/><circle cx="14" cy="12" r="3" fill="currentColor" stroke="none"/></svg><span>EyePath</span></div>
-    <h1>Connect your phone</h1>
-    <p id="expired" class="err" hidden>That QR code is out of date. Scan the one on the client screen now.</p>
-    <p id="err" class="err" hidden>That code didn't match. Check the code on the client screen and try again.</p>
-    <p class="help">Enter the code shown on the client screen, or scan its QR code.</p>
-    <form method="post" action="/login">
-      <input name="code" placeholder="Code, e.g. K7P-4QD" autocomplete="off" autocapitalize="characters"
-             spellcheck="false" autofocus required>
-      <input type="hidden" name="next" id="next">
-      <button type="submit">Connect</button>
-    </form>
+<body class="connect">
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="brand"><svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M5 24C12 14.5 18 11 24 11C30 11 36 14.5 43 24C36 33.5 30 37 24 37C18 37 12 33.5 5 24Z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"/><circle cx="16.5" cy="24" r="2.4" fill="currentColor" opacity="0.35"/><circle cx="22.5" cy="24" r="3.3" fill="currentColor" opacity="0.6"/><circle cx="30" cy="24" r="5.6" fill="currentColor"/></svg><span>EyePath</span></span>
   </div>
-</div>
+  <div class="topbar-right">
+    <span class="chip" title="The remote only works on the computer's own Wi-Fi"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#wifi-high--regular"/></svg>This Wi-Fi only</span>
+  </div>
+</header>
+<main class="connect-main">
+  <h1 class="headline">Connect the remote</h1>
+  <p class="lead">Enter the 6-character code shown on the computer screen.</p>
+  <form method="post" action="/login" id="connectForm">
+    <!-- Six tiles show what is typed into the one real (invisible) input over them. -->
+    <div class="code-entry" id="codeEntry">
+      <span class="code-tile"></span><span class="code-tile"></span><span class="code-tile"></span>
+      <span class="code-dash" aria-hidden="true">–</span>
+      <span class="code-tile"></span><span class="code-tile"></span><span class="code-tile"></span>
+      <input name="code" id="codeInput" autocomplete="off" autocapitalize="characters" spellcheck="false"
+             inputmode="text" maxlength="7" autofocus required aria-label="Connection code, 6 characters">
+    </div>
+    <p id="expired" class="code-error" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#warning--fill"/></svg>That QR code is out of date. Scan the one on the computer screen now.</p>
+    <p id="err" class="code-error" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#warning--fill"/></svg>That code didn't match. Check the code on the computer screen and try again.</p>
+    <p id="complete" class="code-ok" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#check--fill"/></svg>Code complete</p>
+    <input type="hidden" name="next" id="next">
+    <button type="submit" class="btn-action start">Connect</button>
+  </form>
+  <div class="or"><span>or</span></div>
+  <div class="card info-card">
+    <span class="row-icon accent"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#qr-code--regular"/></svg></span>
+    <span class="row-text"><b>Scan the QR code</b><span>Point the phone's camera at the computer screen.</span></span>
+  </div>
+  <p class="connect-foot"><button type="button" id="fixesBtn" class="link" aria-haspopup="dialog">Phone can't connect?</button></p>
+</main>
+
+<dialog id="fixesSheet" class="sheet" aria-labelledby="fixesTitle">
+  <div class="sheet-grip">
+    <div class="sheet-grabber"></div>
+    <div class="sheet-head"><h2 id="fixesTitle">Phone can't connect?</h2><button type="button" class="sheet-done">Done</button></div>
+  </div>
+  <div class="sheet-body">
+    <ol class="fixes">
+      <li><b>iPhone with Chrome, Firefox, Edge or Brave</b><span>Settings → Privacy &amp; Security → Local Network: turn it on for that browser. Safari doesn't need this.</span></li>
+      <li><b>Same Wi-Fi</b><span>This phone must be on the same Wi-Fi as the computer. Turn off mobile data to be sure.</span></li>
+      <li><b>VPN or ad blocker</b><span>Turn off any VPN or ad-blocking app on this phone.</span></li>
+      <li><b>Firewall</b><span>Allow EyePath through the computer's firewall.</span></li>
+      <li><b>Clinic or guest Wi-Fi</b><span>These often block devices from reaching each other. Turn on this phone's hotspot and join the computer to it.</span></li>
+    </ol>
+  </div>
+</dialog>
+
 <script>
+(function () {
   const q = new URLSearchParams(location.search);
   document.getElementById("next").value = q.get("next") || "/therapist";
-  document.getElementById("err").hidden = !q.has("bad");
-  document.getElementById("expired").hidden = !q.has("expired");
+  const bad = q.has("bad"), expired = q.has("expired");
+  document.getElementById("err").hidden = !bad;
+  document.getElementById("expired").hidden = !expired;
+
+  // The code tiles mirror the real input: letters and digits only, in capitals, six at most.
+  const entry = document.getElementById("codeEntry");
+  const input = document.getElementById("codeInput");
+  const tiles = entry.querySelectorAll(".code-tile");
+  const complete = document.getElementById("complete");
+  entry.classList.toggle("bad", bad || expired);
+  function render() {
+    const v = input.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+    if (v !== input.value) input.value = v;
+    const focused = document.activeElement === input;
+    tiles.forEach((t, i) => {
+      t.textContent = v[i] || "";
+      t.classList.toggle("active", focused && i === v.length);   // the next tile to fill; none once complete
+    });
+    complete.hidden = v.length < 6;
+    if (v.length) entry.classList.remove("bad");
+  }
+  for (const ev of ["input", "focus", "blur"]) input.addEventListener(ev, render);
+  entry.addEventListener("click", () => input.focus());
+  render();
+
+  const sheet = document.getElementById("fixesSheet");
+  document.getElementById("fixesBtn").addEventListener("click", () => { if (sheet.showModal) sheet.showModal(); });
+  sheet.addEventListener("click", (e) => { if (e.target === sheet) sheet.close(); });
+  sheet.querySelector(".sheet-done").addEventListener("click", () => sheet.close());
+})();
 </script>
 </body>
 </html>

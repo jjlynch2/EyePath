@@ -11,13 +11,21 @@ let offline = false;          // can't reach the app for a few seconds
 const silent = () => offline || state.screen === "code";
 
 // ---- connection
+let reachable = true;
+function renderStatus() {
+  const el = $("status");
+  el.classList.toggle("bad", !reachable);
+  el.textContent = !reachable ? "Not connected" : state && state.screen === "code" ? "Waiting for a phone" : "Phone connected";
+}
 connectState("client", (s) => {
   state = s;
-  $("appVersion").textContent = s.appVersion ? `EyePath ${s.appVersion}` : "";
+  $("appVersion").textContent = s.appVersion ? `v${s.appVersion}` : "";
+  renderStatus();
   renderScreen();
   maybeSoundCheck();
 }, (ok) => {
-  $("status").classList.toggle("bad", !ok);
+  reachable = ok;
+  renderStatus();
   if (ok) {
     clearTimeout(lostTimer);
     lostTimer = null;
@@ -54,8 +62,11 @@ function renderCode(info) {
   const onNetwork = /^\d+\.\d+\.\d+\.\d+$/.test(info.address);
   $("addr").textContent = onNetwork ? `${info.address}:${info.port}` : "Not connected to a network";
   $("qr").hidden = !onNetwork;                     // a QR code would lead nowhere without a network
-  $("code").textContent = `${info.code.slice(0, 3)}-${info.code.slice(3)}`;
-  $("prefix").textContent = onNetwork ? info.address.split(".").slice(0, 3).join(".") + "." : "the same numbers";
+  $("code").replaceChildren(...info.code.slice(0, 6).split("").flatMap((c, i) => {
+    const tile = Object.assign(document.createElement("span"), { className: "code-char", textContent: c });
+    return i === 3 ? [Object.assign(document.createElement("span"), { className: "dash", textContent: "–" }), tile] : [tile];
+  }));
+  $("prefix").textContent = onNetwork ? info.address.split(".").slice(0, 3).join(".") : "the same numbers";
   const key = `${info.address}|${info.pairKey}`;
   if (key !== codeKey) {
     codeKey = key;
@@ -68,8 +79,8 @@ function renderCode(info) {
   }
   net.value = info.address;
   $("fwFix").replaceChildren(
-    Object.assign(document.createElement("b"), { textContent: "Allow the app through this computer's firewall. " }),
-    document.createTextNode(firewallFix(info.system, info.port)));
+    Object.assign(document.createElement("b"), { textContent: "Firewall" }),
+    Object.assign(document.createElement("span"), { textContent: firewallFix(info.system, info.port) }));
 }
 
 function firewallFix(system, port) {
@@ -79,6 +90,9 @@ function firewallFix(system, port) {
 }
 
 $("net").addEventListener("change", (e) => sendCommand({ type: "address", address: e.target.value }));
+$("fixesBtn").addEventListener("click", () => { const panel = $("fixpanel"); if (panel.showModal) panel.showModal(); });
+$("fixesClose").addEventListener("click", () => $("fixpanel").close());
+$("fixpanel").addEventListener("click", (e) => { if (e.target === $("fixpanel")) $("fixpanel").close(); });   // the dimmed screen
 // The address can change (Wi-Fi switched, hotspot joined), so refresh while the code shows.
 setInterval(() => { if (state && state.screen === "code") renderScreen(true); }, 5000);
 
@@ -111,7 +125,8 @@ let localSpeed = null, localSpeedAt = 0;
 document.addEventListener("keydown", (e) => {
   resumeSound();
   if (!state || e.ctrlKey || e.metaKey || e.altKey) return;
-  if (e.target instanceof Element && e.target.closest("a, select, summary, button, input")) return;   // let links and menus work
+  if (document.querySelector("dialog[open]")) return;   // Esc closes the panel, nothing more
+  if (e.target instanceof Element && e.target.closest("a, select, button, input")) return;   // let links and menus work
   const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   if (e.code === "Space") {
     e.preventDefault();
