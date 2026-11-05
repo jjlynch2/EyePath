@@ -1,0 +1,70 @@
+/* EyePath website v2: additions on top of tokens.css (copy tokens.css into docs/ as docs/tokens.css).
+   Load order on docs/index.html: tokens.css, then this file, then the page's own styles. */
+
+/* 1. Web type scale (Figma text styles "EyePath v2/Web/*"). App styles (--ep-type-title, -label, -caption…) are reused as is. */
+:root {
+  --ep-type-web-display: 700 72px/76px var(--ep-font);   /* letter-spacing: -0.025em */
+  --ep-type-web-heading: 700 44px/50px var(--ep-font);   /* letter-spacing: -0.02em */
+  --ep-type-web-lead:    400 20px/30px var(--ep-font);
+  --ep-type-web-body:    400 17px/27px var(--ep-font);
+  --ep-web-container: 1200px;
+  --ep-web-gutter: clamp(20px, 8.33vw, 120px);           /* 120 at 1440, 20 at 390 */
+  --ep-web-section-y: 120px;
+}
+@media (max-width: 820px) {
+  :root {
+    --ep-type-web-display: 700 40px/44px var(--ep-font); /* letter-spacing: -0.02em */
+    --ep-type-web-heading: 700 30px/36px var(--ep-font); /* letter-spacing: -0.015em */
+    --ep-type-web-lead:    400 17px/27px var(--ep-font); /* the lead uses body size on mobile */
+    --ep-web-section-y: 72px;
+  }
+}
+
+/* 2. Dark "stage" areas inside the light page (hero, the annotated client screen, step 3 media).
+   tokens.css only switches to Dark on :root[data-theme="dark"] and body.client. Add ".ep-dark" to that
+   selector list in tokens.css (both dark blocks), or keep this local copy of the dark values in sync. */
+.ep-dark {
+  --ep-bg-page: #0c1315; --ep-bg-surface: #141d20; --ep-bg-surface-2: #1c272b;
+  --ep-border-default: #253338; --ep-border-strong: #34464c;
+  --ep-text-primary: #e8eff0; --ep-text-secondary: #95a7ab; --ep-text-accent: #9ad8d3;
+  --ep-text-on-accent: #062120; --ep-accent-default: #5db7b1; --ep-accent-soft: #173533;
+  --ep-text-inverse: #0f1b1d;
+  background: var(--ep-bg-stage);
+  color: var(--ep-text-primary);
+}
+
+/* 3. The light (signature element). The same recipe works at 36, 52, 64 and 88 px; scale the glow with it. */
+.ep-light {
+  --size: 64px;
+  width: var(--size); height: var(--size); border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #8cc8ff 35%, var(--ep-light-default) 100%);
+  box-shadow: 0 0 calc(var(--size) * .6) 2px rgb(77 163 255 / .85),
+              0 0 calc(var(--size) * 2.2) calc(var(--size) * .3) rgb(77 163 255 / .35);
+}
+.ep-light-trail {            /* sits behind the light, ending at its centre; points away from the direction of travel */
+  width: 360px; height: calc(var(--size, 64px) / 2); border-radius: 999px;
+  background: linear-gradient(90deg, rgb(77 163 255 / 0), rgb(77 163 255 / .55));
+  filter: blur(6px);
+}
+.ep-track {                  /* the horizon the light travels on */
+  height: 1px; background: var(--ep-text-primary); opacity: .12;
+}
+/* Optional single authored motion: the hero light glides along the track. Static under reduced motion. */
+@keyframes ep-glide { from { transform: translateX(-160px); } to { transform: translateX(160px); } }
+.ep-hero .ep-light-group { animation: ep-glide 1.4s cubic-bezier(.45,0,.55,1) infinite alternate; }
+@media (prefers-reduced-motion: reduce) { .ep-hero .ep-light-group { animation: none; } }
+
+/* 4. Web button (Figma component "Web/Button"): pill, no glow. Large 56 / Small 44. */
+.ep-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 56px; padding: 0 24px; border-radius: 999px;
+  font: var(--ep-type-body-strong); text-decoration: none;
+  background: var(--ep-bg-surface); color: var(--ep-text-primary);
+  border: 1px solid var(--ep-border-strong); box-shadow: var(--ep-shadow-raised);
+}
+.ep-btn.primary { background: var(--ep-accent-default); color: var(--ep-text-on-accent); border-color: transparent; box-shadow: none; }
+.ep-btn svg { width: 20px; height: 20px; flex: none; }
+.ep-btn:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--ep-accent-default); outline-offset: 2px; }
+
+/* 5. Product images (phones) */
+.ep-device { border-radius: 34px; border: 1px solid var(--ep-border-default); box-shadow: var(--ep-shadow-floating); }
