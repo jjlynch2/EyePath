@@ -8,7 +8,7 @@
 <link rel="canonical" href="https://jjlynch2.github.io/EyePath/">
 <link rel="icon" href="media/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="media/apple-touch-icon.png">
-<meta name="theme-color" content="#203A41">
+<meta name="theme-color" content="#0C1315">
 <meta property="og:type" content="website">
 <meta property="og:title" content="EyePath: a free, open-source EMDR light bar">
 <meta property="og:description" content="The client's screen shows the light with bilateral sound. Your phone is the remote. Free for Windows and Mac, no accounts.">
@@ -32,20 +32,22 @@
 }
 </script>
 <style>
-  @font-face { font-family: "Public Sans"; src: url(fonts/PublicSans-Regular.woff2) format("woff2"); font-weight: 400; font-display: swap; }
-  @font-face { font-family: "Public Sans"; src: url(fonts/PublicSans-SemiBold.woff2) format("woff2"); font-weight: 600; font-display: swap; }
-  @font-face { font-family: "Public Sans"; src: url(fonts/PublicSans-Bold.woff2) format("woff2"); font-weight: 700; font-display: swap; }
+  @font-face { font-family: "Atkinson Hyperlegible Next"; src: url(fonts/AtkinsonHyperlegibleNext-Variable-latin.woff2) format("woff2"); font-weight: 200 800; font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  @font-face { font-family: "Atkinson Hyperlegible Next"; src: url(fonts/AtkinsonHyperlegibleNext-Variable-latin-ext.woff2) format("woff2"); font-weight: 200 800; font-display: swap;
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+  /* The app's dark palette (static/tokens.css), so the site and the client screen match. */
   :root {
-    --bg: #203A41;
-    --surface: #2A474F;
-    --surface-2: #35545C;
-    --line: #3B5A62;
-    --text: #EAF2F3;
-    --muted: #AFC4C8;
-    --accent: #7FC6CB;
-    --accent-ink: #0F1F23;
-    --go: #7FC6CB;
-    --radius: 16px;
+    --bg: #0C1315;
+    --surface: #141D20;
+    --surface-2: #1C272B;
+    --line: #253338;
+    --text: #E8EFF0;
+    --muted: #95A7AB;
+    --accent: #5DB7B1;
+    --accent-ink: #062120;
+    --go: #5DB7B1;
+    --radius: 20px;
     --wrap: 1080px;
     color-scheme: dark;
   }
@@ -56,7 +58,7 @@
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font: 17px/1.6 "Public Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font: 17px/1.6 "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
   a { color: var(--accent); }
@@ -83,7 +85,7 @@
     font-weight: 650; font-size: 16px; text-decoration: none; border: 1px solid var(--line);
     background: var(--surface-2); color: var(--text);
   }
-  .btn:hover { border-color: #4E707A; }
+  .btn:hover { border-color: #34464C; }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .btn.primary:hover { filter: brightness(1.08); }
   .btn svg { width: 18px; height: 18px; flex: none; }
@@ -221,9 +223,9 @@
       <div class="shots">
         <img src="media/qr-screen.png" width="1280" height="720" loading="lazy"
              alt="The pairing screen: a QR code, the address to type and a six-character code, and the computer's keyboard shortcuts.">
-        <img class="phone" src="media/remote.png" width="390" height="760" loading="lazy"
-             alt="The phone remote during a set: a live preview of the light, 4 of 24 passes, a Stop button, and the speed and set length controls.">
-        <img class="phone" src="media/remote-dark.png" width="390" height="760" loading="lazy"
+        <img class="phone" src="media/remote.png" width="390" height="844" loading="lazy"
+             alt="The phone remote during a set: the preset in use, a live preview of the light, the pass count with a rail of passes, the speed and set length, and Stop after this pass and Stop now.">
+        <img class="phone" src="media/remote-dark.png" width="390" height="844" loading="lazy"
              alt="The same remote in dark mode.">
       </div>
     </div>
@@ -294,7 +296,7 @@
         <div class="card"><h3>Sets that end cleanly</h3><p>Choose a number of passes or a timer. Stop finishes the current sweep, then the light glides back to the centre.</p></div>
         <div class="card"><h3>Speed in Hz</h3><p>Shown in sweeps per second and Hz. Change speed mid-set without the light jumping.</p></div>
         <div class="card"><h3>Presets per client</h3><p>Save the settings that work for a client, including their sound delay and balance.</p></div>
-        <div class="card"><h3>Light or dark</h3><p>The remote follows your phone's setting, and a button at the top switches. The client screen stays dark, so it fades straight into the light bar.</p></div>
+        <div class="card"><h3>Light or dark</h3><p>The remote follows your phone's setting, or pick Light or Dark under Room &amp; devices. The client screen stays dark, so it fades straight into the light bar.</p></div>
         <div class="card"><h3>Keys on the computer</h3><p>No phone nearby? Press Space to start or stop, the arrow keys to change speed, or S to move the light to another screen.</p></div>
       </div>
     </div>

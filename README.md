@@ -69,39 +69,44 @@ back (and C again to hide it).
 
 ### Remote controls
 
-- **Start / Stop**: Stop finishes the current sweep, then the ball glides to the centre. **Stop now** glides home straight away.
-- **Light or dark**: the sun/moon button at the top of the remote switches between the two. It starts as the
-  phone's own setting, and the choice is remembered on that phone.
+The remote has five tabs along the bottom: **Session** (the preview, the pass counter, speed, set length and
+Start), **Light**, **Motion**, **Sound** and **Presets**. The ··· button at the top opens **Room & devices**.
+
+- **Start set / Stop after this pass**: Stop finishes the current sweep, then the ball glides to the centre.
+  **Stop now** glides home straight away.
+- **Light or dark**: in **Room & devices**, choose System, Light or Dark. System follows the phone's own
+  setting; Light or Dark is remembered on that phone.
 - **Set length**: a number of passes, a timer, or no limit.
 - **Tracks**: side to side, up and down, both diagonals, and figure 8 and oval in either direction (↺ is reversed).
   **Height on screen** moves the light up or down (tap **Centre** to reset).
-- **Show on**: with more than one screen connected, pick which one shows the light (or press S on the
-  computer).
+- **Show on**: with more than one screen connected, **Room & devices** lists them; pick which one shows the
+  light (or press S on the computer).
 - **Light**: shape (circle, star, heart, diamond or square), colour, background, size and glow.
   **Fun shapes** for children: dog, cat, butterfly, fish, turtle, unicorn, rocket, gold star, rainbow
   and ball.
-- **Speed** is shown in sweeps per second (one side to the other) and in Hz (full back-and-forths per
-  second). The default is 1 Hz. The Fast · 1.2 Hz preset is based on van Veen et al. (2015). The edge
+- **Speed** is shown in Hz (full back-and-forths per second; a sweep from one side to the other is half
+  of one). The default is 1 Hz. The Fast · 1.2 Hz preset is based on van Veen et al. (2015). The edge
   pause is part of each sweep's time, so the speed shown is the real rhythm. Speed and edge pause can
   change during a set without the ball jumping.
 - **Movement**: Smooth (slows at each side), Steady, or Jump (snaps from side to side; based on the
   horizontal saccades in Christman et al., 2003).
 - **Sound**: click or tone on each side, or a sweep that pans with the ball. Use headphones. For Bluetooth
   headphones, raise **Sound delay** (usually 150–250 ms) until the sound lines up with the light.
-  **Test sound** plays a tone in the left ear, then the right, with "Left" / "Right" shown on that side of
-  the client screen, so the client can check the headphones are the right way round.
+  **Test left, then right** plays the chosen sound in the left ear, then the right (a sweep moves across),
+  with "Left" / "Right" shown on that side of the client screen, so the client can check the headphones
+  are the right way round.
   **Left / right balance** turns one ear down for a client who hears less on the other side.
 - **Dual attention** (optional): colour flashes, numbers or letters appear on the light at random
   moments, easy, medium or hard. The client counts the flashes or says each number or letter aloud;
   the answers show under the counter on the remote. Based on Littel & van Schie (2019) and
   Matthijssen et al. (2021).
-- **Set counter**: "Set 3" next to the name at the top of the remote counts the sets started since the app
-  opened.
+- **Set counter**: "Set 3" on the preview at the top of the Session tab counts the sets started since the
+  app opened.
 - **Presets** save the current settings. A fresh install comes with five starter
   presets (Standard, Fast · 1.2 Hz, Slow & short, Sound only, Gentle star);
-  delete or replace them as you like. The first three are also buttons under Start, so a client's
-  preset is one tap away. The arrows next to each preset move it up or down; the first
-  ten load with keys 1–9 and 0.
+  delete or replace them as you like. The preset bar at the top of the Session tab names the one in use
+  and opens the list, so a client's preset is two taps away. On the Presets tab, drag a preset by its
+  handle to reorder it, or use its ··· menu; the first ten load with keys 1–9 and 0.
 - **Keyboard** (when the remote is open on a computer): Space start/stop, Esc stop now, ↑/↓ speed, 1–9 and 0 load presets.
 - **Keys on the client screen**, for when your phone isn't nearby: Space start/stop, Esc stop now,
   ↑/↓ speed, C show/hide the QR code, F full screen on/off, S next screen (with more than one),
@@ -196,5 +201,6 @@ EyePath was built with help from an AI coding assistant.
 - `static/common.js`: clock sync, motion maths and drawing, shared by the pages
 - `static/audio.js`: bilateral sound
 - `static/client.*` (client screen, with the QR code), `static/therapist.*` (remote), `static/login.html`
+- `tools/media.js`: remakes the pictures and the demo animation in `docs/media/` from the real app (how to run it is at the top of the file)
 - `docs/`: the website (served by GitHub Pages from this folder) and the demo GIFs and screenshots in `docs/media/`
 - `test/`: automated tests (`npm test`)

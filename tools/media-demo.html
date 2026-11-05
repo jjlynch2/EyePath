@@ -1,0 +1,26 @@
+<!doctype html>
+<!-- Layout for the demo animation (tools/media.js): the client screen and the phone remote side by side. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 1240px; height: 700px; overflow: hidden; background: #0c1315; }
+  body::before { content: ""; position: absolute; left: 50%; top: 50%; width: 1100px; height: 800px; transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, #5db7b124, transparent); }
+  .client { position: absolute; left: 24px; top: 44px; width: 1440px; height: 900px; transform: scale(.6); transform-origin: top left;
+    border-radius: 24px; overflow: hidden; box-shadow: 0 24px 70px rgba(0, 0, 0, .55); background: #000; }
+  .phone { position: absolute; left: 924px; top: 24px; width: 390px; height: 844px; transform: scale(.75); transform-origin: top left;
+    border-radius: 44px; overflow: hidden; border: 10px solid #1c272b; box-shadow: 0 24px 70px rgba(0, 0, 0, .55); background: #f2f5f5; }
+  iframe { border: 0; width: 100%; height: 100%; display: block; }
+</style>
+</head>
+<body>
+<div class="client"><iframe id="c" title="client"></iframe></div>
+<div class="phone"><iframe id="p" title="remote"></iframe></div>
+<script>
+  const base = new URLSearchParams(location.search).get("base");
+  document.getElementById("c").src = base + "/client";
+  function connectPhone() { document.getElementById("p").src = base + "/therapist"; }
+</script>
+</body>
+</html>

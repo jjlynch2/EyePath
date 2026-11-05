@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- Layout for the social preview card (tools/media.js): the name, a line about the app, and the phone remote. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: "Atkinson Hyperlegible Next"; src: url(../static/fonts/AtkinsonHyperlegibleNext-Variable-latin.woff2) format("woff2"); font-weight: 200 800; }
+  html, body { margin: 0; width: 1280px; height: 640px; overflow: hidden; background: #0c1315; color: #e8eff0;
+    font-family: "Atkinson Hyperlegible Next", system-ui, sans-serif; }
+  body::before { content: ""; position: absolute; left: 70%; top: 50%; width: 900px; height: 900px; transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, #5db7b12e, transparent); }
+  .text { position: absolute; left: 88px; top: 150px; width: 640px; }
+  .brand { display: flex; align-items: center; gap: 14px; font-size: 30px; font-weight: 600; color: #e8eff0; margin-bottom: 44px; }
+  .brand svg { width: 44px; height: 44px; color: #5db7b1; }
+  h1 { margin: 0 0 22px; font-size: 62px; line-height: 1.08; letter-spacing: -.025em; font-weight: 700; }
+  p { margin: 0; font-size: 24px; line-height: 1.4; color: #95a7ab; max-width: 560px; }
+  .pill { display: inline-flex; align-items: center; gap: 10px; margin-top: 36px; padding: 10px 18px; border-radius: 999px;
+    background: #141d20; border: 1px solid #253338; color: #9ad8d3; font-size: 18px; font-weight: 600; }
+  .phone { position: absolute; left: 860px; top: 72px; width: 390px; height: 844px; transform: scale(.72); transform-origin: top left;
+    border-radius: 44px; overflow: hidden; border: 10px solid #1c272b; box-shadow: 0 30px 80px rgba(0, 0, 0, .6); background: #f2f5f5; }
+  iframe { border: 0; width: 100%; height: 100%; display: block; }
+</style>
+</head>
+<body>
+<div class="text">
+  <div class="brand"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M5 24C12 14.5 18 11 24 11C30 11 36 14.5 43 24C36 33.5 30 37 24 37C18 37 12 33.5 5 24Z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"/><circle cx="16.5" cy="24" r="2.4" fill="currentColor" opacity="0.35"/><circle cx="22.5" cy="24" r="3.3" fill="currentColor" opacity="0.6"/><circle cx="30" cy="24" r="5.6" fill="currentColor"/></svg>EyePath</div>
+  <h1>A free, open-source EMDR light bar</h1>
+  <p>The client's screen shows the light with bilateral sound. Your phone is the remote.</p>
+  <span class="pill">Free for Windows and Mac · No accounts</span>
+</div>
+<div class="phone"><iframe id="p" title="remote"></iframe></div>
+<script>
+  const base = new URLSearchParams(location.search).get("base");
+  document.getElementById("p").src = base + "/therapist";
+</script>
+</body>
+</html>
