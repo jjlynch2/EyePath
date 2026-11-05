@@ -3,7 +3,7 @@
   "productName": "EyePath",
   "version": "1.0.0",
   "description": "An open-source light bar for EMDR: the computer shows the light, the therapist's phone is the remote.",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "author": "jjlynch2",
   "main": "main.js",
   "scripts": {
