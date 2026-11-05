@@ -32,8 +32,8 @@
       <input name="code" id="codeInput" autocomplete="off" autocapitalize="characters" spellcheck="false"
              inputmode="text" maxlength="7" autofocus required aria-label="Connection code, 6 characters">
     </div>
-    <p id="expired" class="code-error" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#warning--fill"/></svg>That QR code is out of date. Scan the one on the computer screen now.</p>
-    <p id="err" class="code-error" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#warning--fill"/></svg>That code didn't match. Check the code on the computer screen and try again.</p>
+    <p id="expired" class="code-error" role="alert" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#warning--fill"/></svg>That QR code is out of date. Scan the one on the computer screen now.</p>
+    <p id="err" class="code-error" role="alert" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#warning--fill"/></svg>That code didn't match. Check the code on the computer screen and try again.</p>
     <p id="complete" class="code-ok" hidden><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#check--fill"/></svg>Code complete</p>
     <input type="hidden" name="next" id="next">
     <button type="submit" class="btn-action start">Connect</button>

@@ -174,7 +174,7 @@ body.client .code-screen, body.client .code-screen *, body.client dialog, body.c
   border-radius: var(--ep-radius-sm); background: var(--surf2); border: 1px solid var(--ep-border-strong);
 }
 .key-bar .sep { width: 1px; height: 24px; background: var(--line); }
-.link { border: 0; background: none; color: var(--acc-ink); font: var(--ep-type-label-strong); padding: 0; cursor: pointer; }
+.link { border: 0; background: none; color: var(--acc-ink); font: var(--ep-type-label-strong); padding: 0 8px; margin: 0 -8px; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; }
 /* "Phone can't connect?": a panel over a dimmed screen. */
 dialog.fixpanel {
   border: 0; padding: 0; width: min(720px, calc(100vw - 48px)); max-height: calc(100vh - 48px); overflow: auto;
@@ -200,7 +200,7 @@ dialog.fixpanel::backdrop { background: var(--ep-bg-scrim, rgba(0, 0, 0, .55)); 
 }
 .fixpanel-foot label { display: inline-flex; align-items: center; gap: 10px; }
 .fixpanel-foot select { min-height: 36px; border-radius: var(--ep-radius-sm); background: var(--surf2); color: var(--text); border: 1px solid var(--line); padding: 0 8px; font: inherit; }
-.fixpanel-foot a { color: var(--acc-ink); font: var(--ep-type-label-strong); }
+.fixpanel-foot a { color: var(--acc-ink); font: var(--ep-type-label-strong); display: inline-flex; align-items: center; min-height: 44px; }
 /* "EyePath isn't running". */
 .lost-body { position: relative; display: grid; justify-items: center; align-content: center; text-align: center; gap: 18px; padding: 48px; }
 .lost-tile { width: 80px; height: 80px; border-radius: 24px; display: grid; place-items: center; background: var(--ep-danger-soft); color: var(--ep-text-danger); }
@@ -427,7 +427,8 @@ details.card:not([open]) > summary .val { color: var(--muted); font-weight: 500;
 .chips button.on { color: var(--acc-ink); background: var(--acc-soft); box-shadow: inset 0 0 0 1.5px var(--acc); }
 
 
-.editable { cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; text-decoration-color: var(--muted); }
+.editable { position: relative; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; text-decoration-color: var(--muted); }
+.editable::before { content: ""; position: absolute; inset: -12px 0; }   /* a 44 px tall tap target */
 .num-edit {
   width: 6.5em; font-family: inherit; font-size: 16px; font-weight: 500; color: var(--text);   /* 16px stops iPhone zooming in */
   background: var(--surf2); border: 1px solid var(--acc); border-radius: 6px; padding: 3px 6px; text-align: right;
@@ -467,7 +468,8 @@ kbd { font: .78rem ui-monospace, monospace; padding: 1px 6px; border: 1px solid 
 .row-line > b { font: var(--ep-type-body-strong); }
 .row-value { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font: var(--ep-type-label); font-variant-numeric: tabular-nums; }
 .row-value b { font: var(--ep-type-label-strong); color: var(--text); }
-.link-btn { border: 0; min-height: 28px; padding: 0 10px; border-radius: var(--ep-radius-full); background: var(--acc-soft); color: var(--acc-ink); font: var(--ep-type-label-strong); }
+.link-btn { position: relative; border: 0; min-height: 28px; padding: 0 10px; border-radius: var(--ep-radius-full); background: var(--acc-soft); color: var(--acc-ink); font: var(--ep-type-label-strong); }
+.link-btn::before { content: ""; position: absolute; inset: -8px; }   /* a 44 px hit area */
 .slider-ends { display: flex; justify-content: space-between; color: var(--muted); font: var(--ep-type-caption); margin-top: -4px; }
 /* A row that opens something (Pictures, Show on). */
 .link-row { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 0 0; border: 0; background: none; color: var(--text); text-align: left; width: 100%; }
@@ -529,6 +531,8 @@ kbd { font: .78rem ui-monospace, monospace; padding: 1px 6px; border: 1px solid 
 .swatches button::before { content: ""; position: absolute; inset: -5px; }
 .swatches button.on { box-shadow: inset 0 0 0 1px var(--swatch-edge), 0 0 0 2px var(--surf), 0 0 0 4px var(--text); }
 .swatch-custom { display: grid; place-items: center; border: 1px dashed var(--ep-border-strong); color: var(--muted); cursor: pointer; }
+.swatch-custom::before { content: ""; position: absolute; inset: -5px; }
+.swatch-custom:focus-within { outline: 2px solid var(--acc); outline-offset: 2px; }
 .swatch-custom .ico { width: 18px; height: 18px; }
 .swatch-custom input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
@@ -564,11 +568,11 @@ input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px va
 .preset-row .check { margin-left: auto; color: var(--acc); visibility: hidden; flex: none; }
 .preset-row.on .check { visibility: visible; }
 .preset-handle, .preset-menu {
-  flex: none; width: 36px; height: 44px; border: 0; padding: 0; background: none; color: var(--muted); display: grid; place-items: center;
+  flex: none; width: 44px; height: 44px; border: 0; padding: 0; background: none; color: var(--muted); display: grid; place-items: center;
 }
-.preset-handle { cursor: grab; touch-action: none; margin-left: -10px; }
+.preset-handle { cursor: grab; touch-action: none; margin-left: -14px; }
 .preset-handle .ico, .preset-menu .ico { width: 20px; height: 20px; }
-.preset-menu { margin-right: -10px; }
+.preset-menu { margin-right: -14px; }
 .preset-row.dragging { z-index: 2; background: var(--surf); box-shadow: var(--ep-shadow-floating); border-radius: var(--radius-s); margin: 0 -16px; padding: 0 16px; }
 .preset-row.dragging .preset-handle { cursor: grabbing; }
 .preset-rows .preset-row { transition: transform .15s; }
@@ -626,7 +630,7 @@ dialog.sheet::backdrop { background: var(--ep-bg-scrim, rgba(15, 31, 35, .55)); 
 .sheet-grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--ep-border-strong); margin: 0 auto; }
 .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 0 10px; }
 .sheet-head h2 { margin: 0; font: var(--ep-type-title); }
-.sheet-done { border: 0; background: none; padding: 8px 0 8px 12px; margin: -8px 0; color: var(--acc-ink); font: var(--ep-type-body-strong); }
+.sheet-done { border: 0; background: none; min-height: 44px; padding: 0 0 0 12px; margin: -11px 0; display: inline-flex; align-items: center; color: var(--acc-ink); font: var(--ep-type-body-strong); }
 .sheet-body {
   padding: 2px 16px calc(16px + env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain;
   display: grid; gap: 10px; align-content: start;
@@ -674,6 +678,7 @@ dialog.sheet::backdrop { background: var(--ep-bg-scrim, rgba(15, 31, 35, .55)); 
 @keyframes fade-in { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   dialog.sheet[open], .toast { animation: fade-in .2s ease-out; }
+  .preset-rows .preset-row, .rail-bar i, .code-screen { transition: none; }
 }
 
 /* ---------------------------------------------------------------- shared bits */

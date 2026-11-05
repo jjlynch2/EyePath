@@ -18,7 +18,7 @@
     <span class="brand"><svg class="logo-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M5 24C12 14.5 18 11 24 11C30 11 36 14.5 43 24C36 33.5 30 37 24 37C18 37 12 33.5 5 24Z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"/><circle cx="16.5" cy="24" r="2.4" fill="currentColor" opacity="0.35"/><circle cx="22.5" cy="24" r="3.3" fill="currentColor" opacity="0.6"/><circle cx="30" cy="24" r="5.6" fill="currentColor"/></svg><span>EyePath</span></span>
   </div>
   <div class="topbar-right">
-    <span id="conn" class="chip"><span class="dot"></span>Connecting…</span>
+    <span id="conn" class="chip" role="status"><span class="dot"></span>Connecting…</span>
     <button id="roomBtn" class="btn-round" title="Room and devices" aria-label="Room and devices" aria-haspopup="dialog">
       <svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#dots-three--regular"/></svg>
     </button>
@@ -44,7 +44,7 @@
     <section class="card counter-card" aria-live="off">
       <div class="counter-top">
         <div class="counter-main"><div id="count" class="count">0</div><div id="countSub" class="count-sub">passes</div></div>
-        <div class="counter-side"><span id="statusBadge" class="badge">Ready</span><span id="elapsed" class="elapsed"></span></div>
+        <div class="counter-side"><span id="statusBadge" class="badge" aria-live="polite">Ready</span><span id="elapsed" class="elapsed"></span></div>
       </div>
       <div id="rail" class="rail" aria-hidden="true">
         <span class="rail-end">L</span>
@@ -65,7 +65,7 @@
       </div>
       <hr class="divider">
       <div class="row-head"><h2>Set length</h2><span id="setNote" class="note" hidden>Applies to the next set</span><span id="setVal" class="val"></span></div>
-      <div class="seg" data-param="setMode">
+      <div class="seg" data-param="setMode" role="group" aria-label="Set length">
         <button data-value="passes">Passes</button>
         <button data-value="timer">Timer</button>
         <button data-value="open">No limit</button>
@@ -152,7 +152,7 @@
         <span class="row-text"><b>Size</b><span>Share of screen height</span></span>
         <div class="stepper">
             <button data-step="size" data-delta="-1" aria-label="Smaller"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
-            <span class="stepper-value"><b id="sizeVal"></b></span>
+            <span class="stepper-value" aria-live="polite"><b id="sizeVal"></b></span>
             <button data-step="size" data-delta="1" aria-label="Larger"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
           </div>
           <input type="range" min="1" max="30" step="0.5" data-param="size" data-num hidden>
@@ -192,7 +192,7 @@
 
     <section class="card">
       <div class="row-head"><h2>Movement</h2><span id="movementVal" class="val"></span></div>
-      <div class="seg" data-param="easing">
+      <div class="seg" data-param="easing" role="group" aria-label="Movement">
         <button data-value="sine">Smooth</button>
         <button data-value="linear">Steady</button>
         <button data-value="jump">Jump</button>
@@ -205,7 +205,7 @@
           <span class="row-text"><b>Edge pause</b></span>
           <div class="stepper">
             <button data-step="pause" data-delta="-10" aria-label="Shorter pause"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
-            <span class="stepper-value"><b id="pauseVal"></b></span>
+            <span class="stepper-value" aria-live="polite"><b id="pauseVal"></b></span>
             <button data-step="pause" data-delta="10" aria-label="Longer pause"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
           </div>
           <input type="range" min="0" max="1000" step="10" data-param="pause" data-num hidden>
@@ -214,7 +214,7 @@
           <span class="row-text"><b>Track width</b><span>Share of screen width</span></span>
           <div class="stepper">
             <button data-step="travel" data-delta="-5" aria-label="Narrower"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
-            <span class="stepper-value"><b id="travelVal"></b></span>
+            <span class="stepper-value" aria-live="polite"><b id="travelVal"></b></span>
             <button data-step="travel" data-delta="5" aria-label="Wider"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
           </div>
           <input type="range" min="30" max="100" step="1" data-param="travel" data-num hidden>
@@ -224,7 +224,7 @@
 
     <section class="card">
       <div class="row-head"><h2 class="with-icon"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#brain--regular"/></svg>Dual attention</h2><span id="dualNote" class="note"></span><span id="dualVal" class="val"></span></div>
-      <div class="seg" data-param="dualTask">
+      <div class="seg" data-param="dualTask" role="group" aria-label="Dual attention">
         <button data-value="off">Off</button>
         <button data-value="flash">Flashes</button>
         <button data-value="numbers">Numbers</button>
@@ -233,7 +233,7 @@
       <p class="help">Something for the client to watch for while following the light: count the colour flashes, or say each number or letter aloud.</p>
       <div class="callout"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#warning--fill"/></svg><span>Colour flashes may not suit people with photosensitive epilepsy or sensitivity to flashing light.</span></div>
       <div class="row-head"><h2>How often</h2></div>
-      <div class="seg" data-param="dualLevel">
+      <div class="seg" data-param="dualLevel" role="group" aria-label="How often">
         <button data-value="easy">Easy</button>
         <button data-value="medium">Medium</button>
         <button data-value="hard">Hard</button>
@@ -245,7 +245,7 @@
   <section class="tab-panel" data-tab="sound" aria-label="Sound" hidden>
     <header class="tab-head"><h1>Sound</h1><p id="soundVal" class="tab-summary"></p></header>
     <section class="card">
-      <div class="seg" data-param="sound">
+      <div class="seg" data-param="sound" role="group" aria-label="Sound">
         <button data-value="off">Off</button>
         <button data-value="click">Click</button>
         <button data-value="tone">Tone</button>
@@ -267,7 +267,7 @@
         <span class="row-text"><b>Pitch</b></span>
         <div class="stepper">
             <button data-step="pitch" data-delta="-10" aria-label="Lower pitch"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
-            <span class="stepper-value"><b id="pitchVal"></b></span>
+            <span class="stepper-value" aria-live="polite"><b id="pitchVal"></b></span>
             <button data-step="pitch" data-delta="10" aria-label="Higher pitch"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
           </div>
           <input type="range" min="100" max="1200" step="10" data-param="pitch" data-num hidden>
@@ -288,7 +288,7 @@
         <span class="row-text"><b>Sound delay</b><span>Wired: 0 ms. Bluetooth usually 150–250 ms.</span></span>
         <div class="stepper">
             <button data-step="audioOffset" data-delta="-5" aria-label="Less delay"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#minus--regular"/></svg></button>
-            <span class="stepper-value"><b id="audioOffsetVal"></b></span>
+            <span class="stepper-value" aria-live="polite"><b id="audioOffsetVal"></b></span>
             <button data-step="audioOffset" data-delta="5" aria-label="More delay"><svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#plus--regular"/></svg></button>
           </div>
           <input type="range" min="-300" max="600" step="5" data-param="audioOffset" data-num hidden>

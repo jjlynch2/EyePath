@@ -154,7 +154,7 @@ async function saveCurrentAs(input) {
 $("#presetForm").addEventListener("submit", (e) => { e.preventDefault(); saveCurrentAs($("#presetName")); });
 
 document.addEventListener("keydown", (e) => {
-  if (e.target.matches("input:not([type=range]):not([type=checkbox]), textarea") || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target.matches("input:not([type=range]):not([type=checkbox]), textarea, .editable") || e.metaKey || e.ctrlKey || e.altKey) return;
   if ($("dialog[open]")) return;         // Space and Esc belong to an open sheet or question
   if (e.code === "Space") { e.preventDefault(); primary(); }
   else if (e.key === "Escape") sendCommand({ type: "stopNow" });
@@ -224,12 +224,26 @@ for (const id of Object.keys(NUMBERS)) {
   const el = $(`#${id}`);
   el.classList.add("editable");
   el.title = "Tap to type a value";
+  el.tabIndex = 0;                 // reachable from a keyboard too
+  el.setAttribute("role", "button");
   el.addEventListener("click", (e) => {
     if (e.target !== el || editingNumber === id || !state) return;
     e.preventDefault();          // don't let the surrounding label grab the click
     editNumber(id);
   });
+  el.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === " ") && e.target === el && editingNumber !== id && state) { e.preventDefault(); editNumber(id); }
+  });
 }
+
+// Left and right arrows move along a segmented control.
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  const btn = e.target instanceof Element && e.target.closest(".seg > button");
+  if (!btn) return;
+  const next = e.key === "ArrowRight" ? btn.nextElementSibling : btn.previousElementSibling;
+  if (next && next.tagName === "BUTTON") { e.preventDefault(); next.focus(); next.click(); }
+});
 
 $("#heightReset").addEventListener("click", () => setParam("height", 0, true));
 $("#balanceReset").addEventListener("click", () => setParam("balance", 0, true));
