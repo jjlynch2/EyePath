@@ -1,0 +1,110 @@
+/* EyePath v2 design tokens — generated from Figma variables (Dr Lynch file). Do not edit by hand; re-export. */
+/* Copy of static/tokens.css for the website: Light = :root; .ep-dark areas (the black stages) use the dark values. No OS switch here. */
+:root {
+  --ep-bg-page: #f2f5f5;
+  --ep-bg-surface: #ffffff;
+  --ep-bg-surface-2: #edf1f2;
+  --ep-bg-sunken: #e6eced;
+  --ep-bg-stage: #000000;
+  --ep-bg-scrim: #0f1b1d5c;
+  --ep-border-default: #e2e7e9;
+  --ep-border-strong: #c9d3d6;
+  --ep-text-primary: #0f1b1d;
+  --ep-text-secondary: #5b6a6d;
+  --ep-text-on-accent: #ffffff;
+  --ep-text-accent: #08514d;
+  --ep-text-danger: #a8392f;
+  --ep-accent-default: #0b6b66;
+  --ep-accent-soft: #e3f1ef;
+  --ep-accent-strong: #085a56;
+  --ep-danger-default: #b5110d;
+  --ep-danger-soft: #fbeae7;
+  --ep-control-thumb: #ffffff;
+  --ep-control-track: #869699;
+  --ep-control-selected: #ffffff;
+  --ep-shadow-soft: #0f1b1d0f;
+  --ep-shadow-strong: #0f1b1d1f;
+  --ep-light-default: #4da3ff;
+  --ep-bg-inverse: #13252a;
+  --ep-text-inverse: #ffffff;
+  --ep-text-inverse-secondary: #b7c6c9;
+  --ep-glow-accent: #0b6b6638;
+  --ep-glow-ambient: #5db7b12e;
+  --ep-text-on-danger: #ffffff;
+  --ep-space-2: 2px;
+  --ep-space-4: 4px;
+  --ep-space-6: 6px;
+  --ep-space-8: 8px;
+  --ep-space-10: 10px;
+  --ep-space-12: 12px;
+  --ep-space-16: 16px;
+  --ep-space-20: 20px;
+  --ep-space-24: 24px;
+  --ep-space-32: 32px;
+  --ep-space-40: 40px;
+  --ep-radius-sm: 8px;
+  --ep-radius-md: 12px;
+  --ep-radius-lg: 16px;
+  --ep-radius-xl: 20px;
+  --ep-radius-2xl: 28px;
+  --ep-radius-full: 999px;
+  --ep-font: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --ep-type-hero: 600 64px/64px var(--ep-font); /* tracking -0.030em */
+  --ep-type-headline: 700 36px/40px var(--ep-font); /* tracking -0.025em */
+  --ep-type-display: 700 30px/36px var(--ep-font); /* tracking -0.015em */
+  --ep-type-readout: 600 40px/44px var(--ep-font); /* tracking -0.020em */
+  --ep-type-title: 600 20px/26px var(--ep-font); /* tracking -0.005em */
+  --ep-type-value: 600 18px/24px var(--ep-font);
+  --ep-type-body: 400 16px/22px var(--ep-font);
+  --ep-type-body-strong: 600 16px/22px var(--ep-font);
+  --ep-type-label: 500 14px/20px var(--ep-font);
+  --ep-type-label-strong: 600 14px/20px var(--ep-font);
+  --ep-type-caption: 400 13px/14px var(--ep-font);
+  --ep-type-tab: 500 12px/16px var(--ep-font);
+  --ep-type-tab-strong: 600 12px/16px var(--ep-font);
+  --ep-type-client-hero: 700 60px/68px var(--ep-font); /* tracking -0.025em */
+  --ep-type-client-display: 700 48px/56px var(--ep-font); /* tracking -0.020em */
+  --ep-type-client-address: 600 32px/40px var(--ep-font);
+  --ep-type-client-code-tile: 600 44px/52px var(--ep-font);
+  --ep-type-client-body: 400 22px/32px var(--ep-font);
+  --ep-type-client-lead: 400 20px/28px var(--ep-font);
+  --ep-type-client-check: 700 96px/104px var(--ep-font); /* tracking -0.010em */
+  --ep-shadow-raised: 0px 1px 2px var(--ep-shadow-soft), 0px 1px 1px var(--ep-shadow-soft);
+  --ep-shadow-card: 0px 1px 2px var(--ep-shadow-soft), 0px 6px 16px var(--ep-shadow-soft);
+  --ep-shadow-floating: 0px 2px 6px var(--ep-shadow-soft), 0px 12px 32px var(--ep-shadow-strong);
+  --ep-shadow-sheet: 0px -2px 8px var(--ep-shadow-soft), 0px -12px 40px var(--ep-shadow-strong);
+  --ep-shadow-glow: 0px 1px 2px var(--ep-shadow-soft), 0px 10px 32px var(--ep-glow-accent);
+}
+
+:root[data-theme="dark"], body.client, .ep-dark {
+  --ep-bg-page: #0c1315;
+  --ep-bg-surface: #141d20;
+  --ep-bg-surface-2: #1c272b;
+  --ep-bg-sunken: #0f181a;
+  --ep-bg-stage: #000000;
+  --ep-bg-scrim: #0000008c;
+  --ep-border-default: #253338;
+  --ep-border-strong: #34464c;
+  --ep-text-primary: #e8eff0;
+  --ep-text-secondary: #95a7ab;
+  --ep-text-on-accent: #062120;
+  --ep-text-accent: #9ad8d3;
+  --ep-text-danger: #f0a495;
+  --ep-accent-default: #5db7b1;
+  --ep-accent-soft: #173533;
+  --ep-accent-strong: #7cc9c3;
+  --ep-danger-default: #b5110d;
+  --ep-danger-soft: #3a2220;
+  --ep-control-thumb: #e8eff0;
+  --ep-control-track: #62777d;
+  --ep-control-selected: #33454b;
+  --ep-shadow-soft: #00000059;
+  --ep-shadow-strong: #00000080;
+  --ep-light-default: #4da3ff;
+  --ep-bg-inverse: #e8eff0;
+  --ep-text-inverse: #0f1b1d;
+  --ep-text-inverse-secondary: #3f4f53;
+  --ep-glow-accent: #5db7b14d;
+  --ep-glow-ambient: #5db7b124;
+  --ep-text-on-danger: #ffffff;
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<!-- Framing for the website's product images (tools/media.js): one or more app screens, each
+     scaled into a rounded device frame, on an optional rounded background. The layout comes
+     from the "spec" query parameter (JSON, CSS px at 1x; the tool captures at 2x):
+       { w, h, bg, radius, layers: [{ src, vw, vh, scale, x, y, radius, border, shadow, corners }] }
+     The canvas outside the rounded shapes stays transparent. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: transparent; overflow: hidden; }
+  #canvas { position: relative; overflow: hidden; }
+  .layer { position: absolute; overflow: hidden; }
+  .layer iframe { border: 0; display: block; transform-origin: 0 0; background: transparent; }
+  .layer::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px var(--border, transparent); }
+</style>
+</head>
+<body>
+<div id="canvas"></div>
+<script>
+  const spec = JSON.parse(new URLSearchParams(location.search).get("spec"));
+  const canvas = document.getElementById("canvas");
+  Object.assign(canvas.style, { width: spec.w + "px", height: spec.h + "px", background: spec.bg || "transparent", borderRadius: (spec.radius || 0) + "px" });
+  const layers = spec.layers.map((l, i) => {
+    const box = document.createElement("div");
+    box.className = "layer";
+    const r = l.radius || 0;
+    Object.assign(box.style, {
+      left: l.x + "px", top: l.y + "px", width: l.vw * l.scale + "px", height: (l.clipH || l.vh * l.scale) + "px",
+      borderRadius: l.corners || `${r}px`, boxShadow: l.shadow || "none", zIndex: i + 1,
+    });
+    if (l.border) box.style.setProperty("--border", l.border);
+    const frame = document.createElement("iframe");
+    frame.src = l.src;
+    Object.assign(frame.style, { width: l.vw + "px", height: l.vh + "px", transform: `scale(${l.scale})` });
+    box.append(frame);
+    canvas.append(box);
+    return box;
+  });
+  // The tool moves a layer after measuring something inside it (the step 1 crop).
+  window.place = (i, x, y) => { layers[i].style.left = x + "px"; layers[i].style.top = y + "px"; };
+</script>
+</body>
+</html>
