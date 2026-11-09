@@ -2,8 +2,7 @@
 
 A free, open-source light bar for EMDR therapists that runs on a Windows or Mac computer. A ball moves
 along a track on the client's screen, with bilateral sound in headphones, and the therapist controls
-it from their phone. The moving light is for the eye movements used in EMDR
-(Shapiro, 1989; see [References](#references)).
+it from their phone. The moving light is for the eye movements used in EMDR.
 
 Everything runs on the computer and the local Wi-Fi. No internet, accounts or
 cloud service.
@@ -85,11 +84,9 @@ Start), **Light**, **Motion**, **Sound** and **Presets**. The ··· button at t
   **Fun shapes** for children: dog, cat, butterfly, fish, turtle, unicorn, rocket, gold star, rainbow
   and ball.
 - **Speed** is shown in Hz (full back-and-forths per second; a sweep from one side to the other is half
-  of one). The default is 1 Hz. The Fast · 1.2 Hz preset is based on van Veen et al. (2015). The edge
-  pause is part of each sweep's time, so the speed shown is the real rhythm. Speed and edge pause can
-  change during a set without the ball jumping.
-- **Movement**: Smooth (slows at each side), Steady, or Jump (snaps from side to side; based on the
-  horizontal saccades in Christman et al., 2003).
+  of one). The default is 1 Hz. The edge pause is part of each sweep's time, so the speed shown is the
+  real rhythm. Speed and edge pause can change during a set without the ball jumping.
+- **Movement**: Smooth (slows at each side), Steady, or Jump (snaps from side to side).
 - **Sound**: click or tone on each side, or a sweep that pans with the ball. Use headphones. For Bluetooth
   headphones, raise **Sound delay** (usually 150–250 ms) until the sound lines up with the light.
   **Test left, then right** plays the chosen sound in the left ear, then the right (a sweep moves across),
@@ -98,8 +95,7 @@ Start), **Light**, **Motion**, **Sound** and **Presets**. The ··· button at t
   **Left / right balance** turns one ear down for a client who hears less on the other side.
 - **Dual attention** (optional): colour flashes, numbers or letters appear on the light at random
   moments, easy, medium or hard. The client counts the flashes or says each number or letter aloud;
-  the answers show under the counter on the remote. Based on Littel & van Schie (2019) and
-  Matthijssen et al. (2021).
+  the answers show under the counter on the remote.
 - **Set counter**: "Set 3" on the preview at the top of the Session tab counts the sets started since the
   app opened.
 - **Presets** save the current settings. A fresh install comes with five starter
@@ -154,25 +150,6 @@ npm run dist         # result in dist/
 ```
 
 The version number comes from `package.json`.
-
-## References
-
-- Christman, S. D., Garvey, K. J., Propper, R. E., & Phaneuf, K. A. (2003). Bilateral eye movements
-  enhance the retrieval of episodic memories. *Neuropsychology, 17*(2), 221–229.
-  https://doi.org/10.1037/0894-4105.17.2.221
-- Littel, M., & van Schie, K. (2019). No evidence for the inverted U-curve: More demanding dual tasks cause
-  stronger aversive memory degradation. *Journal of Behavior Therapy and Experimental Psychiatry, 65*,
-  101484. https://doi.org/10.1016/j.jbtep.2019.101484
-- Matthijssen, S. J. M. A., Brouwers, T. C., van Roozendaal, C., Vuister, T. C. M., & de Jongh, A. (2021).
-  The effect of EMDR versus EMDR 2.0 on emotionality and vividness of aversive memories in a non-clinical
-  sample. *European Journal of Psychotraumatology, 12*(1), 1956793.
-  https://doi.org/10.1080/20008198.2021.1956793
-- Shapiro, F. (1989). Efficacy of the eye movement desensitization procedure in the treatment of traumatic
-  memories. *Journal of Traumatic Stress, 2*(2), 199–223. https://doi.org/10.1002/jts.2490020207
-- van Veen, S. C., van Schie, K., Wijngaards-de Meij, L. D. N. V., Littel, M., Engelhard, I. M., &
-  van den Hout, M. A. (2015). Speed matters: Relationship between speed of eye movements and
-  modification of aversive autobiographical memories. *Frontiers in Psychiatry, 6*, 45.
-  https://doi.org/10.3389/fpsyt.2015.00045
 
 ## Disclaimer
 
