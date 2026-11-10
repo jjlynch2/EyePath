@@ -618,6 +618,23 @@ input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px va
 }
 .tab:active { transform: scale(.97); }
 
+/* Start / Stop: a round button floating above the middle of the tab bar on the settings sections
+   (not Session, which has its own). While it shows, the page and the toasts make room for it. */
+.quick-go {
+  position: fixed; left: 50%; translate: -50% 0; bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 6;
+  width: 64px; height: 64px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center;
+  background: var(--acc); color: var(--on-acc); box-shadow: var(--floating); touch-action: manipulation;
+}
+.quick-go.stop { background: var(--warm); color: var(--on-warm); }
+.quick-go.now { background: var(--ep-danger-default); color: var(--ep-text-on-danger); }
+.quick-go:active { scale: .95; }
+.quick-go > .ico { width: 26px; height: 26px; }
+.quick-ring { position: absolute; inset: 0; width: 64px; height: 64px; rotate: -90deg; fill: none; stroke-width: 4; }
+.quick-ring .track { stroke: currentColor; opacity: .2; }
+.quick-ring .done { stroke: var(--acc); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; }
+body.quick-on .panel { padding-bottom: calc(172px + env(safe-area-inset-bottom)); }
+body.quick-on .toasts { bottom: calc(172px + env(safe-area-inset-bottom)); }
+
 /* ---------------------------------------------------------------- bottom sheet */
 dialog.sheet {
   position: fixed; inset: auto 0 0 0; margin: 0 auto; width: min(100%, 430px); max-height: 88vh; max-height: 88dvh;

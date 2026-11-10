@@ -151,6 +151,24 @@ function primary() {
   sendCommand({ type: state.run.status === "running" ? "stop" : "start" });
 }
 
+// The floating round Start / Stop on the settings sections: Start set, then Stop after pass, then
+// Stop now once the set is finishing. renderLive sets the step.
+const quickGo = $("#quickGo");
+let quickMode = "start";
+const QUICK = {
+  start: { icon: "play--fill", label: "Start set", command: "start" },
+  stop: { icon: "stop--fill", label: "Stop after pass", command: "stop" },
+  now: { icon: "x--regular", label: "Stop now", command: "stopNow" },
+};
+function renderQuickMode(mode) {
+  quickMode = mode;
+  quickGo.className = `quick-go ${mode}`;
+  $(".ico use", quickGo).setAttribute("href", `/static/icons/sprite.svg#${QUICK[mode].icon}`);
+  quickGo.setAttribute("aria-label", QUICK[mode].label);
+  quickGo.title = QUICK[mode].label;
+}
+quickGo.addEventListener("click", () => { if (state) sendCommand({ type: QUICK[quickMode].command }); });
+
 async function saveCurrentAs(input) {
   const name = input.value.trim();
   if (!name) return;
@@ -602,6 +620,7 @@ function renderLive(fr, t) {
   const timerMode = running && p.setMode === "timer" && !run.cleanStop;
   const ofPasses = (target) => (target != null ? `of ${target} passes` : "passes");
   let count, sub, badge, live, elapsed, btn, btnClass, stopNow, dual, done, target, now, progress = null;
+  let quick = "start", quickDone = null;
   if (running) {
     const secs = Math.max(0, (t - run.setStartT) / 1000);
     elapsed = fmtTime(secs);
@@ -613,6 +632,8 @@ function renderLive(fr, t) {
     btnClass = finishing ? "btn-go finishing" : "btn-go stop";
     stopNow = true; dual = Dual.shown(run, t);
     done = fr.touches; target = fr.target; now = !finishing;
+    quick = run.cleanStop ? "now" : "stop";   // red only after Stop after pass, not at a set's natural end
+    quickDone = progress != null ? progress : fr.target ? fr.touches / fr.target : null;
   } else if (run.status === "stopping") {
     count = String(fr.touches); sub = ofPasses(fr.target); badge = "Stopping"; live = true; elapsed = "";
     btn = "Start set"; btnClass = "btn-go"; stopNow = false; dual = Dual.shown(run, t);
@@ -637,6 +658,12 @@ function renderLive(fr, t) {
     b.disabled = btnClass.includes("finishing");
     b.replaceChildren(ico(btnClass === "btn-go" ? "play--fill" : "stop--fill"), btn);
     $("#stopNowBtn").hidden = !stopNow;
+  });
+  set("quick", quick, renderQuickMode);
+  const pct = quick === "stop" && quickDone != null ? Math.round(Math.min(1, Math.max(0, quickDone)) * 100) : null;
+  set("quickRing", pct, (v) => {
+    $(".quick-ring", quickGo).toggleAttribute("hidden", v == null);   // an SVG has no .hidden property
+    if (v != null) $(".quick-ring .done", quickGo).style.strokeDashoffset = 100 - v;
   });
   // The chips on the preview: the track, and which set this is.
   const setChip = running || run.status === "stopping" ? `Set ${state.sets}` : state.sets ? `Set ${state.sets} done` : "";
@@ -782,6 +809,8 @@ function showTab(name) {
     if (tab.dataset.tab === name) tab.setAttribute("aria-current", "page");
     else tab.removeAttribute("aria-current");
   }
+  quickGo.hidden = name === "session";
+  document.body.classList.toggle("quick-on", name !== "session");
   try { sessionStorage.setItem(TAB_KEY, name); } catch (e) { /* private mode */ }
   window.scrollTo(0, 0);
   renderTabLive();

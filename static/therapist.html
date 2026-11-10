@@ -302,6 +302,14 @@
   </section>
 </main>
 
+<!-- Start / Stop over the settings sections, for trying a change without going back to Session.
+     Hidden on Session, which has its own buttons. One round button, three steps: play (Start set),
+     then stop with a ring for the set's progress (Stop after pass), then a red X (Stop now). -->
+<button id="quickGo" class="quick-go start" type="button" aria-label="Start set" title="Start set" hidden>
+  <svg class="quick-ring" viewBox="0 0 64 64" aria-hidden="true" hidden><circle class="track" cx="32" cy="32" r="30"/><circle class="done" cx="32" cy="32" r="30" pathLength="100"/></svg>
+  <svg class="ico" aria-hidden="true"><use href="/static/icons/sprite.svg#play--fill"/></svg>
+</button>
+
 <!-- The sections, as a floating bar at the bottom. Each item carries both weights of its icon;
      the active one shows the filled icon. While a set runs and another section is open, the
      Session item shows the pass count instead of its name. -->
