@@ -400,6 +400,7 @@ class Session {
     if (run.status !== "running") return;
     const phi = phaseAt(run, nowMs());
     if (run.target !== null && phi >= run.target) return;   // already gliding home
+    if (!run.cleanStop) run.plannedTarget = run.target;   // the total the therapist chose, for the counter
     run.target = Session.fitTarget(run, Math.floor(phi) + 1);
     run.cleanStop = true;
     this.scheduleEnd();

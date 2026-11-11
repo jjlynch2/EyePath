@@ -152,22 +152,31 @@ function primary() {
 }
 
 // The floating round Start / Stop on the settings sections: Start set, then Stop after pass, then
-// Stop now once the set is finishing. renderLive sets the step.
+// Stop now once the set is finishing. renderLive sets the step. Taps just after a change are
+// ignored, so a double-tap can't run on to the next step (Stop after pass, then Stop now).
 const quickGo = $("#quickGo");
-let quickMode = "start";
+const QUICK_SETTLE_MS = 450;
+let quickMode = "start", quickChangedAt = 0;
 const QUICK = {
   start: { icon: "play--fill", label: "Start set", command: "start" },
   stop: { icon: "stop--fill", label: "Stop after pass", command: "stop" },
   now: { icon: "x--regular", label: "Stop now", command: "stopNow" },
+  end: { icon: "stop--fill", label: "Finishing this pass", command: null },
 };
 function renderQuickMode(mode) {
   quickMode = mode;
+  quickChangedAt = performance.now();
   quickGo.className = `quick-go ${mode}`;
+  quickGo.disabled = !QUICK[mode].command;
   $(".ico use", quickGo).setAttribute("href", `/static/icons/sprite.svg#${QUICK[mode].icon}`);
   quickGo.setAttribute("aria-label", QUICK[mode].label);
   quickGo.title = QUICK[mode].label;
 }
-quickGo.addEventListener("click", () => { if (state) sendCommand({ type: QUICK[quickMode].command }); });
+quickGo.addEventListener("click", () => {
+  const { command } = QUICK[quickMode];
+  if (!state || !command || performance.now() - quickChangedAt < QUICK_SETTLE_MS) return;
+  sendCommand({ type: command });
+});
 
 async function saveCurrentAs(input) {
   const name = input.value.trim();
@@ -595,6 +604,10 @@ function fmtTime(sec) {
 
 // The set that last finished, worked out from the server's record of it, so it's
 // right even if this phone was asleep when the set ended.
+// The set's total as the therapist planned it. Stop after pass shortens run.target so the light
+// ends after the current pass; the counter keeps showing the planned total (none for "no limit").
+const plannedTarget = (run) => (run.cleanStop ? run.plannedTarget : run.target) ?? null;
+
 let lastSetKey = "", lastSetSummary = null;
 function lastSet() {
   const run = state.lastRun;
@@ -606,7 +619,7 @@ function lastSet() {
     const end = stopped ? run.stopT : (run.endT ?? run.endedAt);
     const start = stopped ? run.prev.setStartT : run.setStartT;
     const fr = Motion.frame({ params: state.params, run }, end);
-    lastSetSummary = { touches: fr.touches, target: (stopped ? run.prev : run).target ?? null,
+    lastSetSummary = { touches: fr.touches, target: plannedTarget(stopped ? run.prev : run),
                        seconds: (end - start) / 1000, dual: Dual.shown(run, end) };
   }
   return lastSetSummary;
@@ -617,7 +630,7 @@ function renderLive(fr, t) {
   const run = state.run;
   const p = state.params;
   const running = run.status === "running";
-  const timerMode = running && p.setMode === "timer" && !run.cleanStop;
+  const timerMode = running && p.setMode === "timer";
   const ofPasses = (target) => (target != null ? `of ${target} passes` : "passes");
   let count, sub, badge, live, elapsed, btn, btnClass, stopNow, dual, done, target, now, progress = null;
   let quick = "start", quickDone = null;
@@ -625,19 +638,21 @@ function renderLive(fr, t) {
     const secs = Math.max(0, (t - run.setStartT) / 1000);
     elapsed = fmtTime(secs);
     if (timerMode) { count = fmtTime(secs); sub = `of ${fmtTime(p.seconds)} · ${fr.touches} passes`; progress = secs / p.seconds; }
-    else { count = String(fr.touches); sub = ofPasses(fr.target); }
+    else { count = String(fr.touches); sub = ofPasses(plannedTarget(run)); }
     const finishing = fr.ending || run.cleanStop;
     badge = finishing ? "Finishing" : "Running"; live = true;
     btn = finishing ? "Finishing this pass" : "Stop after this pass";
     btnClass = finishing ? "btn-go finishing" : "btn-go stop";
     stopNow = true; dual = Dual.shown(run, t);
-    done = fr.touches; target = fr.target; now = !finishing;
-    quick = run.cleanStop ? "now" : "stop";   // red only after Stop after pass, not at a set's natural end
-    quickDone = progress != null ? progress : fr.target ? fr.touches / fr.target : null;
+    done = fr.touches; target = plannedTarget(run); now = !finishing;
+    // Red only after Stop after pass; at a set's natural end it dims, as there is nothing left to stop.
+    quick = run.cleanStop ? "now" : fr.ending ? "end" : "stop";
+    quickDone = progress != null ? progress : target ? fr.touches / target : null;
   } else if (run.status === "stopping") {
-    count = String(fr.touches); sub = ofPasses(fr.target); badge = "Stopping"; live = true; elapsed = "";
+    target = plannedTarget(run.prev);
+    count = String(fr.touches); sub = ofPasses(target); badge = "Stopping"; live = true; elapsed = "";
     btn = "Start set"; btnClass = "btn-go"; stopNow = false; dual = Dual.shown(run, t);
-    done = fr.touches; target = fr.target; now = false;
+    done = fr.touches; now = false;
   } else {
     const last = lastSet();
     count = last ? String(last.touches) : "0";
@@ -660,7 +675,7 @@ function renderLive(fr, t) {
     $("#stopNowBtn").hidden = !stopNow;
   });
   set("quick", quick, renderQuickMode);
-  const pct = quick === "stop" && quickDone != null ? Math.round(Math.min(1, Math.max(0, quickDone)) * 100) : null;
+  const pct = (quick === "stop" || quick === "end") && quickDone != null ? Math.round(Math.min(1, Math.max(0, quickDone)) * 100) : null;
   set("quickRing", pct, (v) => {
     $(".quick-ring", quickGo).toggleAttribute("hidden", v == null);   // an SVG has no .hidden property
     if (v != null) $(".quick-ring .done", quickGo).style.strokeDashoffset = 100 - v;
@@ -687,7 +702,7 @@ function renderLive(fr, t) {
     $(".dual-label", box).textContent = dualLabel;
     $(".dual-values", box).textContent = dualValues;
   });
-  const tabText = running ? (timerMode || fr.target == null ? count : `${fr.touches}/${fr.target}`) : "";
+  const tabText = running ? (timerMode || target == null ? count : `${fr.touches}/${target}`) : "";
   if (tabText !== tabLive.text) renderTabLive(tabText);
 }
 
