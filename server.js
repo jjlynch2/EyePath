@@ -379,6 +379,8 @@ class Session {
       anchorT: t0, anchorPhase: moveFrac / 2, rate, moveFrac,
       easing: this.params.easing, pattern: this.params.pattern, target: null,
       setStartT: t0, endT: null, cleanStop: false,
+      // How long the set was meant to be, so the remote can show a timer set as time.
+      setMode: this.params.setMode, seconds: this.params.seconds,
       // Fixed for the whole set so every screen shows (and the remote lists) the same things.
       dual: this.params.dualTask === "off" ? null
         : { task: this.params.dualTask, level: this.params.dualLevel, seed: crypto.randomInt(2 ** 31) },
@@ -439,7 +441,10 @@ class Session {
       const ending = run.target !== null && phi >= run.target;
       const timerRescale = p.setMode === "timer" && ("speed" in changes || "pause" in changes);
       const newMode = [p.setMode, p.passes, p.seconds].join();
-      if (!run.cleanStop && !ending && (newMode !== oldMode || timerRescale)) run.target = this.targetFor(run, phi, t);
+      if (!run.cleanStop && !ending && (newMode !== oldMode || timerRescale)) {
+        run.target = this.targetFor(run, phi, t);
+        Object.assign(run, { setMode: p.setMode, seconds: p.seconds });
+      }
       this.scheduleEnd();
     }
     this.changed(true);

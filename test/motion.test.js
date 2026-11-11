@@ -86,6 +86,36 @@ test("set length: passes, ovals end on an even pass, and timers", () => {
   }
 });
 
+test("Stop after pass ends after this pass but keeps the planned total for the counter", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "eyepath-test-"));
+  const session = new Session(dir);
+  try {
+    const startWith = (p) => { session.run = { status: "idle" }; session.params = { ...DEFAULT_PARAMS, ...p }; session.start(); return session.run; };
+
+    let run = startWith({ setMode: "passes", passes: 24 });
+    assert.equal(run.target, 24);
+    session.stop();
+    assert.equal(run.cleanStop, true);
+    assert.equal(run.target, 1);                  // the light ends after the pass it is on
+    assert.equal(run.plannedTarget, 24);          // the counter still shows the chosen total
+    session.stop();                               // a second Stop must not overwrite it
+    assert.equal(run.plannedTarget, 24);
+
+    run = startWith({ setMode: "open" });
+    session.stop();
+    assert.equal(run.target, 1);
+    assert.equal(run.plannedTarget, null);        // no limit: no total to show
+
+    run = startWith({ setMode: "timer", seconds: 90 });
+    assert.equal(run.setMode, "timer");           // a timer set is shown as time
+    assert.equal(run.seconds, 90);
+  } finally {
+    clearTimeout(session.idleTimer);
+    clearTimeout(session.saveTimer);
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
 test("changing speed, pause or movement during a set doesn't move the light", () => {
   const cases = [
     [{ speed: 2, pause: 80, easing: "sine" }, { speed: 3.5, pause: 0, easing: "sine" }],

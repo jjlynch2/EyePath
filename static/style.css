@@ -628,7 +628,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 3px va
 .quick-go.stop { background: var(--warm); color: var(--on-warm); }
 .quick-go.now { background: var(--ep-danger-default); color: var(--ep-text-on-danger); }
 .quick-go.end { background: var(--surf2); color: var(--muted); cursor: default; }   /* the set ending on its own */
-.quick-go:active:not(:disabled) { scale: .95; }
+.quick-go:active:not([aria-disabled="true"]) { scale: .95; }
 .quick-go > .ico { width: 26px; height: 26px; }
 .quick-ring { position: absolute; inset: 0; width: 64px; height: 64px; rotate: -90deg; fill: none; stroke-width: 4; }
 .quick-ring .track { stroke: currentColor; opacity: .2; }

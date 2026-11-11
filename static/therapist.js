@@ -167,7 +167,7 @@ function renderQuickMode(mode) {
   quickMode = mode;
   quickChangedAt = performance.now();
   quickGo.className = `quick-go ${mode}`;
-  quickGo.disabled = !QUICK[mode].command;
+  quickGo.setAttribute("aria-disabled", String(!QUICK[mode].command));   // not .disabled: that drops keyboard focus
   $(".ico use", quickGo).setAttribute("href", `/static/icons/sprite.svg#${QUICK[mode].icon}`);
   quickGo.setAttribute("aria-label", QUICK[mode].label);
   quickGo.title = QUICK[mode].label;
@@ -607,6 +607,10 @@ function fmtTime(sec) {
 // The set's total as the therapist planned it. Stop after pass shortens run.target so the light
 // ends after the current pass; the counter keeps showing the planned total (none for "no limit").
 const plannedTarget = (run) => (run.cleanStop ? run.plannedTarget : run.target) ?? null;
+// A timer set's length in seconds, or null. A timer set is shown as time, not as a pass total
+// worked out from the timer.
+const timerLength = (run) => (run.setMode === "timer" && run.seconds ? run.seconds : null);
+const timerText = (secs, length, touches) => [fmtTime(Math.min(secs, length)), `of ${fmtTime(length)} · ${touches} passes`];
 
 let lastSetKey = "", lastSetSummary = null;
 function lastSet() {
@@ -616,11 +620,11 @@ function lastSet() {
   if (key !== lastSetKey) {
     lastSetKey = key;
     const stopped = run.status === "stopping";               // ended with Stop now
+    const set = stopped ? run.prev : run;
     const end = stopped ? run.stopT : (run.endT ?? run.endedAt);
-    const start = stopped ? run.prev.setStartT : run.setStartT;
     const fr = Motion.frame({ params: state.params, run }, end);
-    lastSetSummary = { touches: fr.touches, target: plannedTarget(stopped ? run.prev : run),
-                       seconds: (end - start) / 1000, dual: Dual.shown(run, end) };
+    lastSetSummary = { touches: fr.touches, target: plannedTarget(set), timer: timerLength(set),
+                       seconds: (end - set.setStartT) / 1000, dual: Dual.shown(run, end) };
   }
   return lastSetSummary;
 }
@@ -630,14 +634,14 @@ function renderLive(fr, t) {
   const run = state.run;
   const p = state.params;
   const running = run.status === "running";
-  const timerMode = running && p.setMode === "timer";
+  const timer = running ? timerLength(run) : null;
   const ofPasses = (target) => (target != null ? `of ${target} passes` : "passes");
   let count, sub, badge, live, elapsed, btn, btnClass, stopNow, dual, done, target, now, progress = null;
   let quick = "start", quickDone = null;
   if (running) {
     const secs = Math.max(0, (t - run.setStartT) / 1000);
     elapsed = fmtTime(secs);
-    if (timerMode) { count = fmtTime(secs); sub = `of ${fmtTime(p.seconds)} · ${fr.touches} passes`; progress = secs / p.seconds; }
+    if (timer) { [count, sub] = timerText(secs, timer, fr.touches); progress = secs / timer; }
     else { count = String(fr.touches); sub = ofPasses(plannedTarget(run)); }
     const finishing = fr.ending || run.cleanStop;
     badge = finishing ? "Finishing" : "Running"; live = true;
@@ -649,15 +653,25 @@ function renderLive(fr, t) {
     quick = run.cleanStop ? "now" : fr.ending ? "end" : "stop";
     quickDone = progress != null ? progress : target ? fr.touches / target : null;
   } else if (run.status === "stopping") {
-    target = plannedTarget(run.prev);
-    count = String(fr.touches); sub = ofPasses(target); badge = "Stopping"; live = true; elapsed = "";
+    const len = timerLength(run.prev);
+    target = len ? null : plannedTarget(run.prev);
+    if (len) {
+      const secs = Math.max(0, (run.stopT - run.prev.setStartT) / 1000);
+      [count, sub] = timerText(secs, len, fr.touches); progress = Math.min(1, secs / len);
+    } else { count = String(fr.touches); sub = ofPasses(target); }
+    badge = "Stopping"; live = true; elapsed = "";
     btn = "Start set"; btnClass = "btn-go"; stopNow = false; dual = Dual.shown(run, t);
     done = fr.touches; now = false;
   } else {
     const last = lastSet();
-    count = last ? String(last.touches) : "0";
-    target = last ? last.target : (p.setMode === "passes" ? p.passes : null);
-    sub = ofPasses(target);
+    if (last && last.timer) {
+      [count, sub] = timerText(last.seconds, last.timer, last.touches); progress = Math.min(1, last.seconds / last.timer);
+      target = null;
+    } else {
+      count = last ? String(last.touches) : "0";
+      target = last ? last.target : (p.setMode === "passes" ? p.passes : null);
+      sub = ofPasses(target);
+    }
     badge = last ? "Set complete" : "Ready"; live = false; elapsed = last ? fmtTime(last.seconds) : "";
     btn = "Start set"; btnClass = "btn-go"; stopNow = false; dual = last && last.dual;
     done = last ? last.touches : 0; now = false;
@@ -702,7 +716,7 @@ function renderLive(fr, t) {
     $(".dual-label", box).textContent = dualLabel;
     $(".dual-values", box).textContent = dualValues;
   });
-  const tabText = running ? (timerMode || target == null ? count : `${fr.touches}/${target}`) : "";
+  const tabText = running ? (timer || target == null ? count : `${fr.touches}/${target}`) : "";
   if (tabText !== tabLive.text) renderTabLive(tabText);
 }
 
